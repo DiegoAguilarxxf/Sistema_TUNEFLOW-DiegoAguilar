@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,25 +15,32 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class SuscripcionesController : ControllerBase
     {
-        private readonly TUNEFLOWContext _context;
+        private DbConnection connection;
+        /*private readonly TUNEFLOWContext _context;
 
         public SuscripcionesController(TUNEFLOWContext context)
         {
             _context = context;
+        }*/
+        public SuscripcionesController(IConfiguration configuration)
+        {
+            var connString = configuration.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
         }
 
         // GET: api/Suscripciones
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Suscripcion>>> GetSuscripcion()
-        {
-            return await _context.Suscripciones.ToListAsync();
+        public IEnumerable<Suscripcion> GetSuscripcion()
+        { var suscripciones = connection.Query<Suscripcion>("SELECT * FROM \"Suscripciones\"");
+            return suscripciones;
         }
 
         // GET: api/Suscripciones/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Suscripcion>> GetSuscripcion(int id)
+        public ActionResult<Suscripcion> GetSuscripcion(int id)
         {
-            var suscripcion = await _context.Suscripciones.FindAsync(id);
+            var suscripcion = connection.QuerySingle<Suscripcion>(@"SELECT * FROM ""Suscripciones"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (suscripcion == null)
             {
@@ -44,64 +53,53 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/Suscripciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSuscripcion(int id, Suscripcion suscripcion)
+        public void PutSuscripcion(int id, [FromBody] Suscripcion suscripcion)
         {
-            if (id != suscripcion.Id)
-            {
-                return BadRequest();
-            }
+            connection.Execute( @"UPDATE ""Suscripciones"" SET 
+                ""FechaInicio"" = @FechaInicio,
+                ""FechaFin"" = @FechaFin,
+                ""CodigoUnion"" = @CodigoUnion,
+                ""TipoSuscripcion"" = @TipoSuscripcion,
+            WHERE ""Id"" = @Id",
+             new
+             {
+                 Id = id,
+                 FechaInicio = suscripcion.FechaInicio,
+                 FechaFin = suscripcion.FechaFin,
+                 CodigoUnion = suscripcion.CodigoUnion,
+                 TipoSuscripcion = suscripcion.TipoSuscripcion
+             }
 
-            _context.Entry(suscripcion).State = EntityState.Modified;
+  );
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SuscripcionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+           }
 
         // POST: api/Suscripciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Suscripcion>> PostSuscripcion(Suscripcion suscripcion)
+        public Suscripcion PostSuscripcion([FromBody] Suscripcion suscripcion)
         {
-            _context.Suscripciones.Add(suscripcion);
-            await _context.SaveChangesAsync();
+            connection.Execute(@"INSERT INTO ""Suscripciones"" (""FechaInicio"", ""FechaFin"", ""CodigoUnion"", ""TipoSuscripcion"") VALUES (@FechaInicio, @FechaFin, @CodigoUnion, @TipoSuscripcion)", new
+            {
+                FechaInicio = suscripcion.FechaInicio,
+                FechaFin = suscripcion.FechaFin,
+                CodigoUnion = suscripcion.CodigoUnion,
+                TipoSuscripcion = suscripcion.TipoSuscripcion
+            });
 
-            return CreatedAtAction("GetSuscripcion", new { id = suscripcion.Id }, suscripcion);
+            return suscripcion;
+
         }
-
         // DELETE: api/Suscripciones/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSuscripcion(int id)
+        public void DeleteSuscripcion(int id)
         {
-            var suscripcion = await _context.Suscripciones.FindAsync(id);
-            if (suscripcion == null)
-            {
-                return NotFound();
-            }
-
-            _context.Suscripciones.Remove(suscripcion);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+          connection.Execute(@"DELETE FROM ""Suscripciones"" WHERE ""Id"" = @Id", new { Id = id });
         }
-
+/*
         private bool SuscripcionExists(int id)
         {
             return _context.Suscripciones.Any(e => e.Id == id);
-        }
+        }*/
     }
 }

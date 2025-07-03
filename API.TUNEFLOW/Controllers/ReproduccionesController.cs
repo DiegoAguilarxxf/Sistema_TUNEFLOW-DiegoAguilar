@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,25 +15,32 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class ReproduccionesController : ControllerBase
     {
-        private readonly TUNEFLOWContext _context;
+        /* private readonly TUNEFLOWContext _context;
 
-        public ReproduccionesController(TUNEFLOWContext context)
+         public ReproduccionesController(TUNEFLOWContext context)
+         {
+             _context = context;
+         }*/
+        private DbConnection connection;
+        public ReproduccionesController(IConfiguration config)
         {
-            _context = context;
+            var connString = config.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
         }
 
         // GET: api/Reproducciones
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Reproduccion>>> GetReproduccion()
-        {
-            return await _context.Reproducciones.ToListAsync();
+        public IEnumerable<Reproduccion> GetReproduccion()
+        { var reproducciones = connection.Query<Reproduccion>("SELECT * FROM \"Reproducciones\"");
+            return reproducciones;
         }
 
         // GET: api/Reproducciones/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Reproduccion>> GetReproduccion(int id)
+        public ActionResult<Reproduccion> GetReproduccion(int id)
         {
-            var reproduccion = await _context.Reproducciones.FindAsync(id);
+            var reproduccion = connection.QuerySingle<Reproduccion>(@"SELECT * FROM ""Reproducciones"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (reproduccion == null)
             {
@@ -44,64 +53,46 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/Reproducciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReproduccion(int id, Reproduccion reproduccion)
+        public void Reproduccion(int id,[FromBody] Reproduccion reproduccion)
         {
-            if (id != reproduccion.Id)
+            connection.Execute(@"UPDATE ""Reproducciones"" SET 
+                ""FechaHora"" = @FechaHora,
+                ""ClienteId"" = @ClienteId,
+                ""CancionId"" = @CancionId
+            WHERE ""Id"" = @Id", new
             {
-                return BadRequest();
-            }
-
-            _context.Entry(reproduccion).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReproduccionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+                FechaHora = reproduccion.FechaHora,
+                ClienteId = reproduccion.ClienteId,
+                CancionId = reproduccion.CancionId,
+                Id = id
+            });
         }
 
         // POST: api/Reproducciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Reproduccion>> PostReproduccion(Reproduccion reproduccion)
+        public Reproduccion PostReproduccion([FromBody]Reproduccion reproduccion)
         {
-            _context.Reproducciones.Add(reproduccion);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetReproduccion", new { id = reproduccion.Id }, reproduccion);
+            connection.Execute(@"INSERT INTO ""Reproducciones"" (""FechaHora"", ""ClienteId"", ""CancionId"")
+VALUES (@FechaHora, @ClienteId, @CancionId)", new
+            {
+                FechaHora = reproduccion.FechaHora,
+                ClienteId = reproduccion.ClienteId,
+                CancionId = reproduccion.CancionId
+            });
+            return reproduccion;
         }
 
         // DELETE: api/Reproducciones/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReproduccion(int id)
+        [HttpDelete("{ id}")]
+        public void DeleteReproduccion(int id)
         {
-            var reproduccion = await _context.Reproducciones.FindAsync(id);
-            if (reproduccion == null)
-            {
-                return NotFound();
-            }
-
-            _context.Reproducciones.Remove(reproduccion);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            connection.Execute( @"DELETE FROM ""Reproducciones"" WHERE ""Id"" = @Id", new { Id = id });
         }
-
+/*
         private bool ReproduccionExists(int id)
         {
             return _context.Reproducciones.Any(e => e.Id == id);
-        }
+        }*/
     }
 }
