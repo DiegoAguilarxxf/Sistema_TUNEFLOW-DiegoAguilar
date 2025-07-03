@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,25 +15,32 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class EstadisticasArtistasController : ControllerBase
     {
-        private readonly TUNEFLOWContext _context;
+        //private readonly TUNEFLOWContext _context;
+        private DbConnection connection;
 
-        public EstadisticasArtistasController(TUNEFLOWContext context)
+        /*public EstadisticasArtistasController(TUNEFLOWContext context)
         {
             _context = context;
+        }*/
+        public EstadisticasArtistasController(IConfiguration config)
+        {
+            var connString = config.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
         }
 
         // GET: api/EstadisticasArtistas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EstadisticasArtista>>> GetEstadisticasArtista()
-        {
-            return await _context.EstadisticasArtistas.ToListAsync();
+        public IEnumerable<EstadisticasArtista> GetEstadisticasArtista()
+        { var estadisticasartistas = connection.Query<EstadisticasArtista>("SELECT * FROM \"EstadisticasArtistas\"");
+            return estadisticasartistas;
         }
 
         // GET: api/EstadisticasArtistas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<EstadisticasArtista>> GetEstadisticasArtista(int id)
+        public ActionResult<EstadisticasArtista> GetEstadisticasArtista(int id)
         {
-            var estadisticasArtista = await _context.EstadisticasArtistas.FindAsync(id);
+            var estadisticasArtista = connection.QuerySingle<EstadisticasArtista>(@"SELECT * FROM ""EstadisticasArtistas"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (estadisticasArtista == null)
             {
@@ -44,64 +53,57 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/EstadisticasArtistas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEstadisticasArtista(int id, EstadisticasArtista estadisticasArtista)
+        public void PutEstadisticasArtista(int id, [FromBody] EstadisticasArtista estadisticasArtista)
         {
-            if (id != estadisticasArtista.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(estadisticasArtista).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EstadisticasArtistaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+           connection.Execute(@"UPDATE ""EstadisticasArtistas"" SET 
+                ""ArtistaId"" = @ArtistaId,
+                ""ReproduccionesTotales"" = @ReproduccionesTotales,
+                ""SeguidoresTotales"" = @SeguidoresTotales,
+                ""CancionesPublicadas"" = @CancionesPublicadas,
+                ""AlbumesPublicados"" = @AlbumesPublicados
+                WHERE ""Id"" = @Id", new
+           {
+               Id = id,
+               ArtistaId = estadisticasArtista.ArtistaId,
+               ReproduccionesTotales = estadisticasArtista.ReproduccionesTotales,
+               SeguidoresTotales = estadisticasArtista.SeguidoresTotales,
+               CancionesPublicadas = estadisticasArtista.CancionesPublicadas,
+               AlbumesPublicados = estadisticasArtista.AlbumesPublicados
+           });
+            
         }
 
         // POST: api/EstadisticasArtistas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<EstadisticasArtista>> PostEstadisticasArtista(EstadisticasArtista estadisticasArtista)
+        public EstadisticasArtista PostEstadisticasArtista([FromBody]EstadisticasArtista estadisticasArtista)
         {
-            _context.EstadisticasArtistas.Add(estadisticasArtista);
-            await _context.SaveChangesAsync();
+            connection.Execute(@"INSERT INTO ""EstadisticasArtistas"" 
+                (""ArtistaId"", ""ReproduccionesTotales"", ""SeguidoresTotales"", ""CancionesPublicadas"", ""AlbumesPublicados"") 
+                VALUES (@ArtistaId, @ReproduccionesTotales, @SeguidoresTotales, @CancionesPublicadas, @AlbumesPublicados)", new
+            {
+                ArtistaId = estadisticasArtista.ArtistaId,
+                ReproduccionesTotales = estadisticasArtista.ReproduccionesTotales,
+                SeguidoresTotales = estadisticasArtista.SeguidoresTotales,
+                CancionesPublicadas = estadisticasArtista.CancionesPublicadas,
+                AlbumesPublicados = estadisticasArtista.AlbumesPublicados
+            });
 
-            return CreatedAtAction("GetEstadisticasArtista", new { id = estadisticasArtista.Id }, estadisticasArtista);
+            return estadisticasArtista;
         }
 
         // DELETE: api/EstadisticasArtistas/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEstadisticasArtista(int id)
+        public void DeleteEstadisticasArtista(int id)
         {
-            var estadisticasArtista = await _context.EstadisticasArtistas.FindAsync(id);
-            if (estadisticasArtista == null)
-            {
-                return NotFound();
-            }
+            connection.Execute(@"DELETE FROM ""EstadisticasArtistas"" WHERE ""Id"" = @Id", new { Id = id });
 
-            _context.EstadisticasArtistas.Remove(estadisticasArtista);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+           
         }
-
+        /*
         private bool EstadisticasArtistaExists(int id)
         {
             return _context.EstadisticasArtistas.Any(e => e.Id == id);
-        }
+        }*/
     }
 }

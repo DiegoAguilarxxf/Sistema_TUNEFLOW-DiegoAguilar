@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,25 +15,33 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class PagosController : ControllerBase
     {
-        private readonly TUNEFLOWContext _context;
+       /* private readonly TUNEFLOWContext _context;
 
         public PagosController(TUNEFLOWContext context)
         {
             _context = context;
+        */
+
+        private DbConnection connection;
+        public PagosController(IConfiguration config)
+        {
+            var connString = config.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
         }
 
         // GET: api/Pagos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Pago>>> GetPago()
-        {
-            return await _context.Pagos.ToListAsync();
+        public IEnumerable<Pago> GetPago()
+        {   var pagos = connection.Query<Pago>("SELECT * FROM \"Pagos\"");
+            return pagos;
         }
 
         // GET: api/Pagos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Pago>> GetPago(int id)
+        public ActionResult<Pago> GetPago(int id)
         {
-            var pago = await _context.Pagos.FindAsync(id);
+            var pago = connection.QuerySingle<Pago>(@"SELECT * FROM ""Pagos"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (pago == null)
             {
@@ -44,64 +54,49 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/Pagos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPago(int id, Pago pago)
+        public void PutPago(int id, [FromBody] Pago pago)
         {
-            if (id != pago.Id)
+            connection.Execute(@"UPDATE ""Pagos"" SET 
+                ""ClienteId"" = @ClienteId,
+                ""FechaPago"" = @FechaPago,
+                ""Monto"" = @Monto,
+                ""MetodoPago"" = @MetodoPago
+                WHERE ""Id"" = @Id", new
             {
-                return BadRequest();
-            }
-
-            _context.Entry(pago).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PagoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+                Id = id,
+                ClienteId = pago.ClienteId,
+                FechaPago = pago.FechaPago,
+                Monto = pago.Monto,
+                MetodoPago = pago.MetodoPago
+            });
         }
 
         // POST: api/Pagos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Pago>> PostPago(Pago pago)
+        public Pago PostPago([FromBody]Pago pago)
+        { connection.Execute(@"INSERT INTO ""Pagos"" (""ClienteId"", ""FechaPago"", ""Monto"", ""MetodoPago"") 
+                VALUES (@ClienteId, @FechaPago, @Monto, @MetodoPago) RETURNING ""Id""", new
         {
-            _context.Pagos.Add(pago);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPago", new { id = pago.Id }, pago);
+            ClienteId = pago.ClienteId,
+            FechaPago = pago.FechaPago,
+            Monto = pago.Monto,
+            MetodoPago = pago.MetodoPago
+        });
+            return pago;
         }
 
         // DELETE: api/Pagos/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePago(int id)
+        public void DeletePago(int id)
         {
-            var pago = await _context.Pagos.FindAsync(id);
-            if (pago == null)
-            {
-                return NotFound();
-            }
-
-            _context.Pagos.Remove(pago);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+           connection.Execute(@"DELETE FROM ""Pagos"" WERE ""Id"" = @Id", new { Id = id });
+           
         }
-
+        /*
         private bool PagoExists(int id)
         {
             return _context.Pagos.Any(e => e.Id == id);
-        }
+        }*/
     }
 }

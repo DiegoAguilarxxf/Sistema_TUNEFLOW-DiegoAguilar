@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,95 +15,94 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class CancionesController : ControllerBase
     {
-        private readonly TUNEFLOWContext _context;
+        /*rivate readonly TUNEFLOWContext _context;
 
         public CancionesController(TUNEFLOWContext context)
         {
             _context = context;
+        }*/
+        private DbConnection connection;
+        public CancionesController(IConfiguration config)
+        {
+            var connString = config.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
         }
 
         // GET: api/Canciones
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cancion>>> GetCancion()
-        {
-            return await _context.Canciones.ToListAsync();
+        public IEnumerable<Cancion> GetCancion()
+        {   var cancion= connection.Query<Cancion>("SELECT * FROM \"Canciones\"");
+            return cancion;
         }
 
         // GET: api/Canciones/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cancion>> GetCancion(int id)
-        {
-            var cancion = await _context.Canciones.FindAsync(id);
-
-            if (cancion == null)
-            {
-                return NotFound();
-            }
-
+        public ActionResult<Cancion> GetCancion(int id)
+        {   var cancion = connection.QuerySingle<Cancion>(@"SELECT * FROM ""Canciones"" WHERE ""Id"" = @Id", new { Id = id });
             return cancion;
         }
 
         // PUT: api/Canciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCancion(int id, Cancion cancion)
+        public void PutCancion(int id,[FromBody]Cancion cancion)
         {
-            if (id != cancion.Id)
+            connection.Execute(@"UPDATE ""Canciones"" SET 
+                ""Titulo"" = @Titulo, 
+                ""Duracion"" = @Duracion, 
+                ""Genero"" = @Genero, 
+                ""FechaLanzamiento"" = @FechaLanzamiento, 
+                ""ArtistaId"" = @ArtistaId, 
+                ""AlbumId"" = @AlbumId, 
+                ""RutaArchivo"" = @RutaArchivo, 
+                ""ContenidoExplicito"" = @ContenidoExplicito
+            WHERE ""Id"" = @Id", new
             {
-                return BadRequest();
-            }
-
-            _context.Entry(cancion).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CancionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+                                   Id = id,
+                Titulo = cancion.Titulo,
+                Duracion = cancion.Duracion,
+                Genero = cancion.Genero,
+                FechaLanzamiento = cancion.FechaLanzamiento,
+                ArtistaId = cancion.ArtistaId,
+                AlbumId = cancion.AlbumId,
+                RutaArchivo = cancion.RutaArchivo,
+                ContenidoExplicito = cancion.ContenidoExplicito
+            });
         }
 
         // POST: api/Canciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Cancion>> PostCancion(Cancion cancion)
+        public Cancion PostCancion([FromBody]Cancion cancion)
         {
-            _context.Canciones.Add(cancion);
-            await _context.SaveChangesAsync();
+            connection.Execute(@"INSERT INTO ""Canciones"" 
+                (""Titulo"", ""Duracion"", ""Genero"", ""FechaLanzamiento"", ""ArtistaId"", ""AlbumId"", ""RutaArchivo"", ""ContenidoExplicito"") 
+                VALUES (@Titulo, @Duracion, @Genero, @FechaLanzamiento, @ArtistaId, @AlbumId, @RutaArchivo, @ContenidoExplicito)", new
+            {
+               Titulo= cancion.Titulo,
+                Duracion= cancion.Duracion,
+               Genero= cancion.Genero,
+               FechaLanzamiento= cancion.FechaLanzamiento,
+               ArtistaId= cancion.ArtistaId,
+               AlbumId= cancion.AlbumId,
+               RutaArchivo= cancion.RutaArchivo,
+               ContenidoExplicito= cancion.ContenidoExplicito
+            });
 
-            return CreatedAtAction("GetCancion", new { id = cancion.Id }, cancion);
+            return cancion;
         }
 
         // DELETE: api/Canciones/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCancion(int id)
+        public void DeleteCancion(int id)
         {
-            var cancion = await _context.Canciones.FindAsync(id);
-            if (cancion == null)
-            {
-                return NotFound();
-            }
-
-            _context.Canciones.Remove(cancion);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+           connection.Execute(@"DELETE FROM ""Canciones"" WHERE ""Id"" = @Id", new { Id = id });    
         }
-
+/*
         private bool CancionExists(int id)
         {
             return _context.Canciones.Any(e => e.Id == id);
-        }
+        }*/
     }
 }

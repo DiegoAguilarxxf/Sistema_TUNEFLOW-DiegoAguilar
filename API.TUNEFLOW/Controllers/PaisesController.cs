@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,25 +15,33 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class PaisesController : ControllerBase
     {
-        private readonly TUNEFLOWContext _context;
+       /* private readonly TUNEFLOWContext _context;
 
         public PaisesController(TUNEFLOWContext context)
         {
             _context = context;
+        }*/
+       private DbConnection connection;
+        public PaisesController(IConfiguration config)
+        {
+            var connString = config.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
         }
 
         // GET: api/Paises
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Pais>>> GetPais()
+        public IEnumerable<Pais> GetPais()
         {
-            return await _context.Paises.ToListAsync();
+            var paises = connection.Query<Pais>("SELECT * FROM \"Paises\"");
+            return paises;
         }
 
         // GET: api/Paises/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Pais>> GetPais(int id)
+        public ActionResult<Pais> GetPais(int id)
         {
-            var pais = await _context.Paises.FindAsync(id);
+            var pais = connection.QuerySingle<Pais>(@"SELECT * FROM ""Paises"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (pais == null)
             {
@@ -44,64 +54,35 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/Paises/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPais(int id, Pais pais)
+        public void PutPais(int id,[FromBody] Pais pais)
         {
-            if (id != pais.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(pais).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PaisExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            connection.Execute(@"UPDATE ""Paises"" SET 
+              ""Name""= @Name,
+              "" Continente""= @Continente,
+              ""Moneda""= @Moneda
+            WHERE ""Id"" = @Id", new { Id = id, Name = pais.Name, Continente = pais.Continente, Moneda=pais.Moneda });
         }
 
         // POST: api/Paises
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Pais>> PostPais(Pais pais)
+        public Pais PostPais([FromBody]Pais pais)
         {
-            _context.Paises.Add(pais);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPais", new { id = pais.Id }, pais);
+           connection.Execute(@"INSERT INTO ""Paises"" (""Name"", ""Continente"", ""Moneda"") 
+            VALUES (@Name, @Continente, @Moneda)", new { Name = pais.Name, Continente = pais.Continente, Moneda = pais.Moneda });
+            return pais;
         }
 
         // DELETE: api/Paises/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePais(int id)
+        public void DeletePais(int id)
         {
-            var pais = await _context.Paises.FindAsync(id);
-            if (pais == null)
-            {
-                return NotFound();
-            }
-
-            _context.Paises.Remove(pais);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            connection.Execute(@"DELETE FROM ""Paises"" WHERE ""Id"" = @Id", new { Id = id });
         }
-
+        /*
         private bool PaisExists(int id)
         {
             return _context.Paises.Any(e => e.Id == id);
-        }
+        }*/
     }
 }
