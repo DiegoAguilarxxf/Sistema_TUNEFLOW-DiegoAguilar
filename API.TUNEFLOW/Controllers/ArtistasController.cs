@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,25 +15,33 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class ArtistasController : ControllerBase
     {
-        private readonly TUNEFLOWContext _context;
+        private DbConnection connection;
+        /*private readonly TUNEFLOWContext _context;
 
         public ArtistasController(TUNEFLOWContext context)
         {
             _context = context;
-        }
+        }*/
 
         // GET: api/Artistas
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Artista>>> GetArtista()
+        public ArtistasController(IConfiguration config)
         {
-            return await _context.Artistas.ToListAsync();
+            var connString = config.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
+        }
+        [HttpGet]
+        public IEnumerable<Artista> GetArtista()
+        {
+           var artistas = connection.Query<Artista>("SELECT * FROM \"Artistas\"");
+            return artistas;
         }
 
         // GET: api/Artistas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Artista>> GetArtista(int id)
+        public ActionResult<Artista> GetArtista(int id)
         {
-            var artista = await _context.Artistas.FindAsync(id);
+            var artista = connection.QuerySingle<Artista>(@"SELECT * FROM ""Artistas"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (artista == null)
             {
@@ -44,64 +54,53 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/Artistas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutArtista(int id, Artista artista)
+        public void  PutArtista(int id,[FromBody] Artista artista)
         {
-            if (id != artista.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(artista).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ArtistaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+           connection.Execute(@"UPDATE ""Artistas"" SET 
+                ""NombreArtistico"" = @NombreArtistico, 
+                ""GeneroMusical"" = @GeneroMusical, 
+                ""Biografia"" = @Biografia, 
+                ""PaisId"" = @PaisId, 
+                ""verificado"" = @verificado
+                WHERE ""Id"" = @Id", new
+           {
+               artista.NombreArtistico,
+               artista.GeneroMusical,
+               artista.Biografia,
+               artista.PaisId,
+               artista.verificado,
+               Id = id
+           });
         }
 
         // POST: api/Artistas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Artista>> PostArtista(Artista artista)
-        {
-            _context.Artistas.Add(artista);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetArtista", new { id = artista.Id }, artista);
+        public Artista PostArtista([FromBody]Artista artista)
+        {connection.Execute(@"INSERT INTO ""Artistas"" 
+                (""NombreArtistico"", ""GeneroMusical"", ""Biografia"", ""PaisId"", ""verificado"") 
+                VALUES (@NombreArtistico, @GeneroMusical, @Biografia, @PaisId, @verificado) RETURNING ""Id""",
+                new
+                {
+                    artista.NombreArtistico,
+                    artista.GeneroMusical,
+                    artista.Biografia,
+                    artista.PaisId,
+                    artista.verificado
+                });
+            return artista;
         }
 
         // DELETE: api/Artistas/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteArtista(int id)
-        {
-            var artista = await _context.Artistas.FindAsync(id);
-            if (artista == null)
-            {
-                return NotFound();
-            }
+        public void DeleteArtista(int id)
+        { connection.Execute(@"DELETE FROM ""Artistas"" WHERE ""Id"" = @Id", new { Id = id });
 
-            _context.Artistas.Remove(artista);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
-
+/*
         private bool ArtistaExists(int id)
         {
             return _context.Artistas.Any(e => e.Id == id);
-        }
+        }*/
     }
 }

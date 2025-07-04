@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,25 +15,26 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class CancionesFavoritasController : ControllerBase
     {
-        private readonly TUNEFLOWContext _context;
+        /* private readonly TUNEFLOWContext _context;
 
-        public CancionesFavoritasController(TUNEFLOWContext context)
-        {
-            _context = context;
-        }
-
+         public CancionesFavoritasController(TUNEFLOWContext context)
+         {
+             _context = context;
+         }
+        */
+        private DbConnection connection;
         // GET: api/CancionesFavoritas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CancionFavorita>>> GetCancionFavorita()
-        {
-            return await _context.CancionesFavoritas.ToListAsync();
+        public IEnumerable<CancionFavorita> GetCancionFavorita()
+        { var cancionesfav = connection.Query<CancionFavorita>("SELECT * FROM \"CancionesFavoritas\"");
+            return cancionesfav;
         }
 
         // GET: api/CancionesFavoritas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CancionFavorita>> GetCancionFavorita(int id)
+        public ActionResult<CancionFavorita> GetCancionFavorita(int id)
         {
-            var cancionFavorita = await _context.CancionesFavoritas.FindAsync(id);
+            var cancionFavorita = connection.QuerySingle<CancionFavorita>(@"SELECT * FROM ""CancionesFavoritas"" WERE ""Id""= @Id", new { Id = id });
 
             if (cancionFavorita == null)
             {
@@ -44,64 +47,48 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/CancionesFavoritas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCancionFavorita(int id, CancionFavorita cancionFavorita)
+        public void PutCancionFavorita(int id,[FromBody] CancionFavorita cancionFavorita)
         {
-            if (id != cancionFavorita.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(cancionFavorita).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CancionFavoritaExists(id))
+            connection.Execute(@"UPDATE ""CancionesFavoritas"" SET " +
+                "\"ClienteId\" = @ClienteId, " +
+                "\"CancionId\" = @CancionId, " +
+                "\"FechaAgregado\" = @FechaAgregado " +
+                "WHERE \"Id\" = @Id",new
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+                    ClienteId=cancionFavorita.ClienteId,
+                    CancionId=cancionFavorita.CancionId,
+                    FechaAgregado = cancionFavorita.FechaAgregado,
+                    Id = id
+                } );
         }
 
         // POST: api/CancionesFavoritas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<CancionFavorita>> PostCancionFavorita(CancionFavorita cancionFavorita)
-        {
-            _context.CancionesFavoritas.Add(cancionFavorita);
-            await _context.SaveChangesAsync();
+        public CancionFavorita PostCancionFavorita([FromBody]CancionFavorita cancionfavorita)
+        {   connection.Execute(@"INSERT INTO ""CancionesFavoritas"" (""ClienteId"", ""CancionId"", ""FechaAgregado"") " +
+                "VALUES (@ClienteId, @CancionId, @FechaAgregado) RETURNING *",
+                new
+                {
+                    ClienteId = cancionfavorita.ClienteId,
+                    CancionId = cancionfavorita.CancionId,
+                    FechaAgregado = cancionfavorita.FechaAgregado
+                });
 
-            return CreatedAtAction("GetCancionFavorita", new { id = cancionFavorita.Id }, cancionFavorita);
+
+            return cancionfavorita;
         }
 
         // DELETE: api/CancionesFavoritas/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCancionFavorita(int id)
+        public void DeleteCancionFavorita(int id)
         {
-            var cancionFavorita = await _context.CancionesFavoritas.FindAsync(id);
-            if (cancionFavorita == null)
-            {
-                return NotFound();
-            }
-
-            _context.CancionesFavoritas.Remove(cancionFavorita);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+           connection.Execute(@"DELETE FROM ""CancionesFavoritas"" WHERE ""Id"" = @Id", new { Id = id });
         }
 
-        private bool CancionFavoritaExists(int id)
+       /* private bool CancionFavoritaExists(int id)
         {
             return _context.CancionesFavoritas.Any(e => e.Id == id);
-        }
+        }*/
     }
 }

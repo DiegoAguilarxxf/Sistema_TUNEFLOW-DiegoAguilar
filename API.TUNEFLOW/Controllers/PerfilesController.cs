@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,25 +15,35 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class PerfilesController : ControllerBase
     {
-        private readonly TUNEFLOWContext _context;
+        /*private readonly TUNEFLOWContext _context;
 
         public PerfilesController(TUNEFLOWContext context)
         {
             _context = context;
+        }*/
+
+        private DbConnection connection;    
+
+        public PerfilesController(IConfiguration config)
+        {
+            var connString = config.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
         }
 
         // GET: api/Perfiles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Perfil>>> GetPerfil()
+        public IEnumerable<Perfil> GetPerfil()
         {
-            return await _context.Perfiles.ToListAsync();
+            var perfiles = connection.Query<Perfil>("SELECT * FROM \"Perfiles\"");
+            return perfiles;
         }
 
         // GET: api/Perfiles/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Perfil>> GetPerfil(int id)
+        public ActionResult<Perfil> GetPerfil(int id)
         {
-            var perfil = await _context.Perfiles.FindAsync(id);
+            var perfil = connection.QuerySingle<Perfil>(@"SELECT * FROM ""Perfiles"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (perfil == null)
             {
@@ -44,64 +56,55 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/Perfiles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPerfil(int id, Perfil perfil)
+        public void PutPerfil(int id,[FromBody] Perfil perfil)
         {
-            if (id != perfil.Id)
+            connection.Execute(@"UPDATE ""Perfiles"" SET 
+                ""ClienteId"" = @ClienteId,
+                ""ArtistaId"" = @ArtistaId,
+                ""ImagenPerfil"" = @ImagenPerfil,
+                ""Biografia""=@Biografia,
+                ""FechaCreacion""=@FechaCreacion
+                
+            WHERE ""Id"" = @Id", new
             {
-                return BadRequest();
-            }
-
-            _context.Entry(perfil).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PerfilExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+                Id = id,
+                ClienteId=perfil.ClienteId,
+                ArtistaId=perfil.ArtistaId,
+                ImagenPerfil = perfil.ImagenPerfil,
+                Biografia = perfil.Biografia,
+                FechaCreacion = perfil.FechaCreacion
+            });
         }
 
         // POST: api/Perfiles
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Perfil>> PostPerfil(Perfil perfil)
+        public Perfil PostPerfil([FromBody]Perfil perfil)
         {
-            _context.Perfiles.Add(perfil);
-            await _context.SaveChangesAsync();
+            connection.Execute(@"INSERT INTO ""Perfiles"" (""ClienteId"", ""ArtistaId"", ""ImagenPerfil"", ""Biografia"", ""FechaCreacion"")
+VALUES
+            (@ClienteId, @ArtistaId, @ImagenPerfil, @Biografia, @FechaCreacion)", new
+            {
+                ClienteId = perfil.ClienteId,
+                ArtistaId = perfil.ArtistaId,
+                ImagenPerfil = perfil.ImagenPerfil,
+                Biografia = perfil.Biografia,
+                FechaCreacion = perfil.FechaCreacion
+            });
 
-            return CreatedAtAction("GetPerfil", new { id = perfil.Id }, perfil);
+            return perfil;
         }
 
         // DELETE: api/Perfiles/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePerfil(int id)
+        public void DeletePerfil(int id)
         {
-            var perfil = await _context.Perfiles.FindAsync(id);
-            if (perfil == null)
-            {
-                return NotFound();
-            }
-
-            _context.Perfiles.Remove(perfil);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            connection.Execute(@"DELETE FROM ""Perfiles"" WHERE ""Id"" = @Id", new { Id = id });
         }
-
+        /*
         private bool PerfilExists(int id)
         {
             return _context.Perfiles.Any(e => e.Id == id);
-        }
+        }*/
     }
 }
