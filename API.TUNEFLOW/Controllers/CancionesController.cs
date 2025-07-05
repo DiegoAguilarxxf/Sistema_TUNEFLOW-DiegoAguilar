@@ -43,6 +43,17 @@ namespace API.TUNEFLOW.Controllers
             return cancion;
         }
 
+        [HttpGet("Titulo")]
+        public IEnumerable<Cancion> GetCancionByTitulo(string titulo)
+        {
+            var canciones = connection.Query<Cancion>(
+            @"SELECT * FROM ""Canciones"" WHERE ""Titulo"" ILIKE @Titulo",  
+            new { Titulo = "%" + titulo + "%" }
+    );
+            return canciones;
+        }
+
+
         // PUT: api/Canciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -63,7 +74,6 @@ namespace API.TUNEFLOW.Controllers
                 Titulo = cancion.Titulo,
                 Duracion = cancion.Duracion,
                 Genero = cancion.Genero,
-                FechaLanzamiento = cancion.FechaLanzamiento,
                 ArtistaId = cancion.ArtistaId,
                 AlbumId = cancion.AlbumId,
                 RutaArchivo = cancion.RutaArchivo,
@@ -83,7 +93,6 @@ namespace API.TUNEFLOW.Controllers
                Titulo= cancion.Titulo,
                 Duracion= cancion.Duracion,
                Genero= cancion.Genero,
-               FechaLanzamiento= cancion.FechaLanzamiento,
                ArtistaId= cancion.ArtistaId,
                AlbumId= cancion.AlbumId,
                RutaArchivo= cancion.RutaArchivo,

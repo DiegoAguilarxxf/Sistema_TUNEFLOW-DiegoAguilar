@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Modelos.Tuneflow.Modelos;
 using Modelos.Tuneflow.Usuario.Produccion;
+using NuGet.Protocol.Plugins;
 
 namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 {
@@ -23,15 +24,13 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterArtistaModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly TUNEFLOWContext _context;
 
         public RegisterArtistaModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterArtistaModel> logger,
-            IEmailSender emailSender,
-            TUNEFLOWContext context)
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -39,7 +38,6 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _context = context;
         }
 
         [BindProperty]
@@ -124,11 +122,11 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                         TipoCuenta = "Artista",
                         Activo = true,
                         FechaRegistro = DateTime.UtcNow,
-                        verificado = false // por defecto
+                        verificado = false, // por defecto
+                        Password = Input.Password
                     };
 
-                    _context.Artistas.Add(artista);
-                    await _context.SaveChangesAsync();
+                    var artistaNuevo = await Crud<Artista>.CreateAsync(artista);
 
                     await _userManager.AddToRoleAsync(user, "artista");
 

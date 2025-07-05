@@ -23,15 +23,13 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterClienteModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly TUNEFLOWContext _context;
 
         public RegisterClienteModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterClienteModel> logger,
-            IEmailSender emailSender,
-            TUNEFLOWContext context)
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -39,7 +37,6 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _context = context;
         }
 
         [BindProperty]
@@ -119,8 +116,9 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                 FechaInicio = DateTime.UtcNow,
                 TipoSuscripcionId = 1 // Básica por defecto
             };
-            _context.Suscripciones.Add(suscripcion);
-            await _context.SaveChangesAsync();
+
+            var suscripcionNueva = await Crud<Suscripcion>.CreateAsync(suscripcion);
+
 
             // Crear cliente
             var cliente = new Cliente
@@ -134,10 +132,11 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                 TipoCuenta = "Cliente",
                 Activo = true,
                 FechaRegistro = DateTime.UtcNow,
-                SuscripcionId = suscripcion.Id
+                SuscripcionId = suscripcionNueva.Id,
+                Password = Input.Password
             };
-            _context.Clientes.Add(cliente);
-            await _context.SaveChangesAsync();
+            
+            var clienteNuevo = await Crud<Cliente>.CreateAsync(cliente);
 
             await _userManager.AddToRoleAsync(user, "cliente");
 

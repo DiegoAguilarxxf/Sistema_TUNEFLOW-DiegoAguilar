@@ -39,9 +39,9 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Clientes/5
         [HttpGet("{id}")]
-        public ActionResult<Cliente> GetCliente(int id)
+        public ActionResult<Cliente> GetClienteById(int id)
         {
-            var cliente = connection.QuerySingle<Cliente>(@"SELECT * FROM ""Clientes"" WHERE ""Id"" = @Id", new { Id = id });
+            var cliente = connection.QuerySingleOrDefault<Cliente>(@"SELECT * FROM ""Clientes"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (cliente == null)
             {
@@ -79,20 +79,30 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Clientes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Cliente PostCliente([FromBody]Cliente cliente)
+        public ActionResult<Cliente> PostCliente([FromBody]Cliente cliente)
         {
-           connection.Execute(@"INSERT INTO ""Clientes"" (""Nombre"", ""Apellido"", ""Email"", ""FechaNacimiento"", ""PaisId"", ""SuscripcionId"") 
-                VALUES (@Nombre, @Apellido, @Email, @FechaNacimiento, @PaisId, @SuscripcionId)", new
+            var sql = @"INSERT INTO ""Clientes"" (""PaisId"", ""SuscripcionId"", ""Nombre"", ""Apellido"", ""Email"", ""Password"",""Telefono"",""FechaNacimiento"",""TipoCuenta"",""Activo"",""FechaRegistro"") 
+                VALUES (@PaisId, @SuscripcionId, @Nombre, @Apellido, @Email, @Password, @Telefono, @FechaNacimiento, @TipoCuenta, @Activo, @FechaRegistro) RETURNING ""Id"";";
+            
+            var idDevuelto = connection.ExecuteScalar<int>(sql,new
            {
+               PaisId = cliente.PaisId,
+               SuscripcionId = cliente.SuscripcionId,
                Nombre = cliente.Nombre,
                Apellido = cliente.Apellido,
                Email = cliente.Email,
+               Password = cliente.Password,
+               Telefono = cliente.Telefono,
                FechaNacimiento = cliente.FechaNacimiento,
-               PaisId = cliente.PaisId,
-               SuscripcionId = cliente.SuscripcionId
+               TipoCuenta = cliente.TipoCuenta,
+               Activo = cliente.Activo,
+               FechaRegistro = cliente.FechaRegistro
+               
            });
 
-            return cliente;
+            cliente.Id = idDevuelto;
+
+            return CreatedAtAction(nameof(GetClienteById), new { id = idDevuelto }, cliente);
         }
 
         // DELETE: api/Clientes/5

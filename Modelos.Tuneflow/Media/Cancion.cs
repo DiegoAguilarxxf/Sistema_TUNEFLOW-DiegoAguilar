@@ -16,7 +16,6 @@ namespace Modelos.Tuneflow.Media
         public string Titulo { get; set; }
         public int Duracion { get; set; } // Duración en segundos
         public string Genero { get; set; } // Pop, Rock, Hip-Hop, etc.
-        public DateTime FechaLanzamiento { get; set; }
         [ForeignKey(nameof(Artista))] public int ArtistaId { get; set; }
         [ForeignKey(nameof(Album))] public int? AlbumId { get; set; } // Puede ser nulo si la canción no pertenece a un álbum específico
         public string RutaArchivo { get; set; } // Ruta del archivo de la canción en el servidor o almacenamiento en la nube

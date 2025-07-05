@@ -38,9 +38,9 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Suscripciones/5
         [HttpGet("{id}")]
-        public ActionResult<Suscripcion> GetSuscripcion(int id)
+        public ActionResult<Suscripcion> GetSuscripcionById(int id)
         {
-            var suscripcion = connection.QuerySingle<Suscripcion>(@"SELECT * FROM ""Suscripciones"" WHERE ""Id"" = @Id", new { Id = id });
+            var suscripcion = connection.QuerySingleOrDefault<Suscripcion>(@"SELECT * FROM ""Suscripciones"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (suscripcion == null)
             {
@@ -77,18 +77,21 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Suscripciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Suscripcion PostSuscripcion([FromBody] Suscripcion suscripcion)
+        public ActionResult<Suscripcion> PostSuscripcion([FromBody] Suscripcion suscripcion)
         {
-            connection.Execute(@"INSERT INTO ""Suscripciones"" (""FechaInicio"", ""FechaFin"", ""CodigoUnion"", ""TipoSuscripcion"") VALUES (@FechaInicio, @FechaFin, @CodigoUnion, @TipoSuscripcion)", new
+            var sql = @"INSERT INTO ""Suscripciones"" (""FechaInicio"", ""TipoSuscripcionId"") 
+                VALUES (@FechaInicio, @TipoSuscripcionId) 
+                RETURNING ""Id"";";
+
+            int idDevuelto = connection.ExecuteScalar<int>(sql, new
             {
                 FechaInicio = suscripcion.FechaInicio,
-                FechaFin = suscripcion.FechaFin,
-                CodigoUnion = suscripcion.CodigoUnion,
-                TipoSuscripcion = suscripcion.TipoSuscripcion
+                TipoSuscripcionId = suscripcion.TipoSuscripcionId
             });
 
-            return suscripcion;
+            suscripcion.Id = idDevuelto;
 
+            return CreatedAtAction(nameof(GetSuscripcionById), new { id = idDevuelto }, suscripcion);
         }
         // DELETE: api/Suscripciones/5
         [HttpDelete("{id}")]

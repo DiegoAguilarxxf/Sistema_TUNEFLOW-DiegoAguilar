@@ -7,6 +7,7 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Produccion;
 
 namespace API.TUNEFLOW.Controllers
@@ -39,9 +40,9 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Artistas/5
         [HttpGet("{id}")]
-        public ActionResult<Artista> GetArtista(int id)
+        public ActionResult<Artista> GetArtistaById(int id)
         {
-            var artista = connection.QuerySingle<Artista>(@"SELECT * FROM ""Artistas"" WHERE ""Id"" = @Id", new { Id = id });
+            var artista = connection.QuerySingleOrDefault<Artista>(@"SELECT * FROM ""Artistas"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (artista == null)
             {
@@ -76,19 +77,34 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Artistas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Artista PostArtista([FromBody]Artista artista)
-        {connection.Execute(@"INSERT INTO ""Artistas"" 
-                (""NombreArtistico"", ""GeneroMusical"", ""Biografia"", ""PaisId"", ""verificado"") 
-                VALUES (@NombreArtistico, @GeneroMusical, @Biografia, @PaisId, @verificado) RETURNING ""Id""",
-                new
+        public ActionResult<Artista> PostArtista([FromBody]Artista artista)
+        {
+
+            var sql = @"INSERT INTO ""Artistas"" 
+                (""NombreArtistico"",""GeneroMusical"",""Biografia"",""PaisId"",""verificado"",""Nombre"",""Apellido"",""Email"",""Password"",""Telefono"",""FechaNacimiento"",""TipoCuenta"",""Activo"",""FechaRegistro"") 
+                VALUES (@NombreArtistico, @GeneroMusical, @Biografia, @PaisId, @verificado, @Nombre, @Apellido, @Email, @Password, @Telefono, @FechaNacimiento, @TipoCuenta, @Activo, @FechaRegistro) RETURNING ""Id"";";
+                
+            var idDevuelto = connection.ExecuteScalar<int>(sql,new
                 {
-                    artista.NombreArtistico,
-                    artista.GeneroMusical,
-                    artista.Biografia,
-                    artista.PaisId,
-                    artista.verificado
-                });
-            return artista;
+                    NombreArtistico = artista.NombreArtistico,
+                    GeneroMusical = artista.GeneroMusical,
+                    Biografia = artista.Biografia,
+                    PaisId = artista.PaisId,
+                    verificado = artista.verificado,
+                    Nombre = artista.Nombre,
+                    Apellido = artista.Apellido,
+                    Email = artista.Email,
+                    Password = artista.Password,
+                    Telefono = artista.Telefono,
+                    FechaNacimiento = artista.FechaNacimiento,
+                    TipoCuenta = artista.TipoCuenta,
+                    Activo = artista.Activo,
+                    FechaRegistro = artista.FechaRegistro
+            });
+
+            artista.Id = idDevuelto;
+
+            return CreatedAtAction(nameof(GetArtistaById), new { id = idDevuelto }, artista);
         }
 
         // DELETE: api/Artistas/5

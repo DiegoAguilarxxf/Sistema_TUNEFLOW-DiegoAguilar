@@ -43,22 +43,6 @@ namespace API.Consumer
             }
         }
 
-        public static async Task<List<T>> GetNoAtendidasAsync()
-        {
-            using (var client = new HttpClient())
-            {
-                var response = await client.GetAsync("https://localhost:7158/AlertasNoAtendidas");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<T>>(json);
-                }
-                else
-                {
-                    throw new Exception($"Error: {response.StatusCode}");
-                }
-            }
-        }
 
         public static async Task<List<T>> GetByAsync(string campo, int id)
         {
