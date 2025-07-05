@@ -1,0 +1,96 @@
+﻿@page
+@model MVC.TUNEFLOW.Areas.Identity.Pages.Account.RegisterArtistaModel
+@{
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = "Registro Artista";
+}
+
+<div class="container mt-5">
+    <div class="row">
+
+        <div class="col-md-6 d-none d-md-block text-center">
+            <img src="~/img/RegisterArtista.png" alt="Imagen de artista" class="img-fluid rounded-start" />
+        </div>
+
+        <div class="col-md-6">
+            <h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Input.Nombre"></label>
+                        <input asp-for="Input.Nombre" class="form-control" />
+                        <span asp-validation-for="Input.Nombre" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Input.Apellido"></label>
+                        <input asp-for="Input.Apellido" class="form-control" />
+                        <span asp-validation-for="Input.Apellido" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Telefono"></label>
+                    <input asp-for="Input.Telefono" class="form-control" />
+                    <span asp-validation-for="Input.Telefono" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.PaisId"></label>
+                    <select asp-for="Input.PaisId" asp-items="Model.Paises" class="form-select"></select>
+                    <span asp-validation-for="Input.PaisId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.FechaNacimiento"></label>
+                    <input asp-for="Input.FechaNacimiento" type="date" class="form-control" />
+                    <span asp-validation-for="Input.FechaNacimiento" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.NombreArtistico"></label>
+                    <input asp-for="Input.NombreArtistico" class="form-control" />
+                    <span asp-validation-for="Input.NombreArtistico" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.GeneroMusical"></label>
+                    <input asp-for="Input.GeneroMusical" class="form-control" />
+                    <span asp-validation-for="Input.GeneroMusical" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Biografia"></label>
+                    <textarea asp-for="Input.Biografia" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Input.Biografia" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Input.Password"></label>
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Input.ConfirmPassword"></label>
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Registrar Artista</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

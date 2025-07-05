@@ -63,7 +63,7 @@ namespace API.TUNEFLOW.Controllers
                 WHERE ""Id"" = @Id",
                 new
                 {
-                   Titulo= album.Titulo,
+                    Titulo= album.Titulo,
                     FechaLanzamiento=album.FechaLanzamiento,
                     Genero = album.Genero,
                     FechaCreacion = album.FechaCreacion,
