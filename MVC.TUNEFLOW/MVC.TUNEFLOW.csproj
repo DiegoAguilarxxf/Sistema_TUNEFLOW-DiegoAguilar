@@ -27,4 +27,8 @@
     <ProjectReference Include="..\Modelos.Tuneflow\Modelos.Tuneflow.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\img_descubre\" />
+  </ItemGroup>
+
 </Project>
