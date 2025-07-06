@@ -10,31 +10,29 @@
     <button type="submit" style="padding:8px;">Buscar</button>
 </form>
 
-@if (Model != null)
+
+@if(Model != null && Model.Any())
 {
     <table class="table">
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Titulo)
+                          
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Duracion)
+                    @Html.DisplayNameFor(model => model.Titulo)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Genero)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.RutaArchivo)
+                    @Html.DisplayNameFor(model => model.Artista)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.ContenidoExplicito)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Artista)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Album)
+                    @Html.DisplayNameFor(model => model.Duracion)
                 </th>
                 <th></th>
             </tr>
@@ -44,31 +42,29 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Titulo)
+                        @Html.DisplayFor(modelItem => item.RutaImagen)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Duracion)
+                        @Html.DisplayFor(modelItem => item.Titulo)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Genero)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.RutaArchivo)
+                        @Html.DisplayFor(modelItem => item.Artista.NombreArtistico)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.ContenidoExplicito)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Artista.Apellido)
+                        @Html.DisplayFor(modelItem => item.Duracion)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Album.Descripcion)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Reproducir</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+

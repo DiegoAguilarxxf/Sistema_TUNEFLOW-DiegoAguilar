@@ -20,6 +20,7 @@ namespace Modelos.Tuneflow.Media
         [ForeignKey(nameof(Album))] public int? AlbumId { get; set; } // Puede ser nulo si la canción no pertenece a un álbum específico
         public string RutaArchivo { get; set; } // Ruta del archivo de la canción en el servidor o almacenamiento en la nube
         public bool ContenidoExplicito { get; set; } // Indica si la canción tiene contenido explícito (palabras groseras, temas sensibles, etc.)
+        public string RutaImagen { get; set; }
         public Artista? Artista { get; set; } // Relación con el artista que creó la canción
         public Album? Album { get; set; } // Relación con el álbum al que pertenece la canción (opcional)
     }

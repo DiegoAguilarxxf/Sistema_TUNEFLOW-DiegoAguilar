@@ -1,5 +1,7 @@
-﻿using Modelos.Tuneflow.Usuario.Administracion;
+﻿using Modelos.Tuneflow.Media;
+using Modelos.Tuneflow.Usuario.Administracion;
 using Newtonsoft.Json;
+using System.Globalization;
 using System.Net;
 using System.Text;
 
@@ -118,6 +120,28 @@ namespace API.Consumer
                 if (response.IsSuccessStatusCode)
                 {
                     return true;
+                }
+                else
+                {
+                    throw new Exception($"Error: {response.StatusCode}");
+                }
+            }
+        }
+
+        public static async Task<List<Cancion>> GetCancionesPorPalabrasClave(string palabraClave)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/Titulo/{Uri.EscapeDataString(palabraClave)}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<Cancion>>(json);
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return new List<Cancion>(); // Devuelve lista vacía si no hay resultados
                 }
                 else
                 {

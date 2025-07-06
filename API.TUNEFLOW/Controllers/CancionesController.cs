@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Media;
+using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Usuario.Produccion;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -43,14 +45,35 @@ namespace API.TUNEFLOW.Controllers
             return cancion;
         }
 
-        [HttpGet("Titulo")]
-        public IEnumerable<Cancion> GetCancionByTitulo(string titulo)
+        [HttpGet("Titulo/{titulo}")]
+        public ActionResult<IEnumerable<Cancion>> GetCancionByTitulo(string titulo)
         {
-            var canciones = connection.Query<Cancion>(
-            @"SELECT * FROM ""Canciones"" WHERE ""Titulo"" ILIKE @Titulo",  
-            new { Titulo = "%" + titulo + "%" }
-    );
-            return canciones;
+            string sql = @"
+                            SELECT 
+                                c.""Id"", c.""Titulo"", c.""Duracion"", c.""Genero"", c.""RutaArchivo"", c.""ContenidoExplicito"",
+                                al.""Titulo"" AS AlbumTitulo,
+                                ar.""NombreArtistico"" AS NombreArtistico
+                            FROM ""Canciones"" c
+                            LEFT JOIN ""Albums"" al ON c.""AlbumId"" = al.""Id""
+                            LEFT JOIN ""Artistas"" ar ON c.""ArtistaId"" = ar.""Id""
+                            WHERE c.""Titulo"" ILIKE @Titulo";
+
+            var canciones = connection.Query<Cancion, string, string, Cancion>(
+                sql,
+                (cancion, albumTitulo, nombreArtistico) =>
+                {
+                    cancion.Album = new Album { Titulo = albumTitulo };
+                    cancion.Artista = new Artista { NombreArtistico = nombreArtistico };
+                    return cancion;
+                },
+                new { Titulo = $"%{titulo}%" },
+                splitOn: "AlbumTitulo,NombreArtistico"
+            ).ToList();
+
+            if (!canciones.Any())
+                return NotFound("No se encontraron canciones con ese título.");
+
+            return Ok(canciones);
         }
 
 
