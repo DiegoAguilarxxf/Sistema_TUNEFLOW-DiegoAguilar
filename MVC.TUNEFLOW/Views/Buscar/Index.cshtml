@@ -42,7 +42,7 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.RutaImagen)
+                        <img src="@item.RutaImagen" alt="Imagen de @item.Titulo" style="max-height: 100px;" />
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Titulo)
@@ -57,7 +57,7 @@
                         @Html.DisplayFor(modelItem => item.ContenidoExplicito)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Duracion)
+                        @item.TiempoEnMinutos(item.Duracion)
                     </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id">Reproducir</a>

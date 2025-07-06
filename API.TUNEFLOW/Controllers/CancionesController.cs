@@ -50,7 +50,7 @@ namespace API.TUNEFLOW.Controllers
         {
             string sql = @"
                             SELECT 
-                                c.""Id"", c.""Titulo"", c.""Duracion"", c.""Genero"", c.""RutaArchivo"", c.""ContenidoExplicito"",
+                                c.""Id"", c.""Titulo"", c.""Duracion"", c.""Genero"", c.""RutaArchivo"", c.""ContenidoExplicito"", c.""RutaImagen"",
                                 al.""Titulo"" AS AlbumTitulo,
                                 ar.""NombreArtistico"" AS NombreArtistico
                             FROM ""Canciones"" c

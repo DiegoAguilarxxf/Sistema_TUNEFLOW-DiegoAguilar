@@ -23,5 +23,20 @@ namespace Modelos.Tuneflow.Media
         public string RutaImagen { get; set; }
         public Artista? Artista { get; set; } // Relación con el artista que creó la canción
         public Album? Album { get; set; } // Relación con el álbum al que pertenece la canción (opcional)
+
+
+        public string TiempoEnMinutos(int tiempo)
+        {
+            var resultado = "";
+
+            var doble = tiempo / 60;
+
+            int minutos = doble;
+
+            int segundos = tiempo - (minutos * 60);
+
+            resultado = $"{minutos}:{segundos}";
+            return resultado;
+        }
     }
 }
