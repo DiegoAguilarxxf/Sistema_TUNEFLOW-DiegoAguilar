@@ -60,11 +60,35 @@
                         @item.TiempoEnMinutos(item.Duracion)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Reproducir</a>
+                        <button class="btn btn-sm btn-success" onclick="cargarDetalle(@item.Id)">Reproducir</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modalContent">
+            <!-- Aquí se carga el contenido del modal desde el controlador -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function cargarDetalle(id) {
+        fetch(`/Reproductor/Reproducir?id=${id}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('modalContent').innerHTML = html;
+                const modal = new bootstrap.Modal(document.getElementById('detalleModal'));
+                modal.show();
+            })
+            .catch(err => {
+                console.error("Error al cargar detalle:", err);
+                alert("No se pudo cargar el reproductor.");
+            });
+    }
+</script>
 

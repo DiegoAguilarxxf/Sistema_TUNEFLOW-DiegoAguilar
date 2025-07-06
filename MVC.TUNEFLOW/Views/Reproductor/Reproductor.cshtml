@@ -1,0 +1,15 @@
+﻿@using Modelos.Tuneflow.Media
+@model Cancion
+
+<div class="modal-header">
+    <h5 class="modal-title">@Model.Titulo</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+    <img src="@Model.RutaImagen" style="width: 100%; max-height: 200px; object-fit: cover;" />
+    <p><strong>Duración:</strong> @Model.TiempoEnMinutos(Model.Duracion)</p>
+    <audio controls autoplay style="width: 100%;">
+        <source src="@Model.RutaArchivo" type="audio/mpeg" />
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+</div>
