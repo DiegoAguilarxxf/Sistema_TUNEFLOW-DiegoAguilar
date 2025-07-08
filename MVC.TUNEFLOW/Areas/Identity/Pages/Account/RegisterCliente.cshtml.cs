@@ -121,7 +121,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 
 
             // Crear cliente
-            var cliente = new Cliente
+            var cliente = new Modelos.Tuneflow.Usuario.Consumidor.Cliente
             {
                 Nombre = Input.Nombre,
                 Apellido = Input.Apellido,
@@ -135,8 +135,9 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                 SuscripcionId = suscripcionNueva.Id,
                 Password = Input.Password
             };
-            
-            var clienteNuevo = await Crud<Cliente>.CreateAsync(cliente);
+
+
+            var clienteNuevo = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.CreateAsync(cliente);
 
             await _userManager.AddToRoleAsync(user, "cliente");
 

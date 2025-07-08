@@ -38,8 +38,6 @@ namespace MVC.TUNEFLOW
             Crud<Playlist>.EndPoint = "https://localhost:7031/api/Playlists";
             Crud<Pais>.EndPoint = "https://localhost:7031/api/Paises";
 
-            // Add services to the container.
-            var connectionString = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
@@ -77,8 +75,13 @@ namespace MVC.TUNEFLOW
             app.UseAuthorization();
 
             app.MapControllerRoute(
+            name: "areas",
+            pattern: "{area:exists}/{controller=Panel}/{action=Panel}/{id?}");
+ 
+            app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.MapRazorPages();
 
             app.Run();

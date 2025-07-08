@@ -1,32 +1,29 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MVC.TUNEFLOW.Controllers
+namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
+    [Area("Cliente")]
     public class DescubreController : Controller
     {
-        // GET: DescubreController
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View();
         }
 
-        // GET: DescubreController/Details/5
-        public ActionResult Details(int id)
+        public IActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: DescubreController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
 
-        // POST: DescubreController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult Create(IFormCollection collection)
         {
             try
             {
@@ -38,16 +35,14 @@ namespace MVC.TUNEFLOW.Controllers
             }
         }
 
-        // GET: DescubreController/Edit/5
-        public ActionResult Edit(int id)
+        public IActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: DescubreController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public IActionResult Edit(int id, IFormCollection collection)
         {
             try
             {
@@ -59,16 +54,14 @@ namespace MVC.TUNEFLOW.Controllers
             }
         }
 
-        // GET: DescubreController/Delete/5
-        public ActionResult Delete(int id)
+        public IActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: DescubreController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public IActionResult Delete(int id, IFormCollection collection)
         {
             try
             {

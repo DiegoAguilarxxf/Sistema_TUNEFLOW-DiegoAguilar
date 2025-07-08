@@ -22,6 +22,12 @@ namespace API.TUNEFLOW.Controllers
             _context = context;
         }*/
         private DbConnection connection;
+        public PlaylistsController(IConfiguration config)
+        {
+            var connString = config.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
+        }
 
         // GET: api/Playlists
         [HttpGet]

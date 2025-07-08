@@ -1,0 +1,493 @@
+﻿/* ===============================
+   🎨 Variables de Tema y Base
+================================ */
+:root {
+    --sidebar-bg: #181818;
+    --main-bg: #121212;
+    --text-color: #fff;
+    --primary: #1db954;
+    --reproductor-bg: #222;
+}
+
+[data-theme="light"] {
+    --sidebar-bg: #f2f2f2;
+    --main-bg: #ffffff;
+    --text-color: #222;
+    --primary: #644fff;
+    --reproductor-bg: #dee2e6;
+}
+
+body.cliente-body {
+    margin: 0;
+    background: var(--main-bg);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ===============================
+   📌 Sidebar
+================================ */
+.cliente-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 100vh;
+    background-color: var(--sidebar-bg);
+    color: var(--text-color);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 1000;
+}
+
+    .cliente-sidebar .logo {
+        font-size: 24px;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+        text-align: center;
+    }
+
+    .cliente-sidebar nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .cliente-sidebar nav ul li {
+            margin-bottom: 1rem;
+        }
+
+            .cliente-sidebar nav ul li a {
+                color: var(--text-color);
+                text-decoration: none;
+                font-weight: 600;
+                display: block;
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                transition: background-color 0.3s ease;
+            }
+
+                .cliente-sidebar nav ul li a:hover,
+                .cliente-sidebar nav ul li a.active {
+                    background-color: var(--primary);
+                    color: #fff;
+                }
+
+/* ===============================
+   🌗 Switch de Tema
+================================ */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+}
+
+    .theme-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .theme-switch .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #999;
+        border-radius: 34px;
+        transition: 0.4s;
+    }
+
+        .theme-switch .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.4s;
+        }
+
+    .theme-switch input:checked + .slider {
+        background-color: var(--primary);
+    }
+
+        .theme-switch input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+.switch-label {
+    margin-left: 10px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+/* ===============================
+   🧱 Contenido Principal
+================================ */
+.cliente-content {
+    margin-left: 220px;
+    padding: 2rem 2rem 120px 2rem;
+    min-height: 100vh;
+    background-color: var(--main-bg);
+}
+
+/* 🔍 Barra de Búsqueda */
+.top-bar {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .top-bar input[type="text"],
+    .buscar-input {
+        width: 50%;
+        padding: 12px 20px;
+        border-radius: 25px;
+        border: none;
+        background: #222;
+        color: white;
+        box-shadow: inset 2px 2px 6px rgba(0,0,0,0.7);
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+        .top-bar input::placeholder,
+        .buscar-input::placeholder {
+            color: #888;
+            font-style: italic;
+        }
+
+        .top-bar input:focus,
+        .buscar-input:focus {
+            outline: none;
+            background-color: #333;
+            box-shadow: inset 3px 3px 8px rgba(100,79,255,0.8);
+        }
+
+[data-theme="light"] .buscar-input {
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+/* ===============================
+   🟩 Botones generales
+================================ */
+.buttons, .buscar-botones {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .btn.eliminar {
+        background-color: transparent;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+    }
+
+        .btn.eliminar:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+    .btn.comenzar {
+        background-color: var(--primary);
+        color: black;
+    }
+
+        .btn.comenzar:hover {
+            background-color: #17b94b;
+            color: white;
+        }
+
+/* 🏆 Tarjetas TOP 50 pro */
+.top50 .cards {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.top50 .card {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: white;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+    .top50 .card:hover {
+        transform: scale(1.05);
+    }
+
+    .top50 .card p {
+        z-index: 1;
+        margin: 0;
+        text-align: center;
+        text-shadow: 0 0 5px rgba(0,0,0,0.7);
+    }
+
+/* Degradados por país */
+.top50 .chile {
+    background: linear-gradient(to bottom, #c33764, #1d2671);
+}
+
+.top50 .peru {
+    background: linear-gradient(to bottom, #ff6a00, #ee0979);
+}
+
+.top50 .global {
+    background: linear-gradient(to bottom, #0f2027, #2c5364);
+}
+
+.top50 .usa {
+    background: linear-gradient(to bottom, #fc466b, #3f5efb);
+}
+
+.top50 .pr {
+    background: linear-gradient(to bottom, #ff416c, #ff4b2b);
+}
+
+.play-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    z-index: 2;
+}
+
+    .play-btn:hover {
+        background: #ddd;
+    }
+
+
+/* ===============================
+   🎼 Información y Controles
+================================ */
+.player-song-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+    .player-song-meta .title,
+    .player-song-meta .artist {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px;
+        position: relative;
+    }
+
+        .player-song-meta .title.marquee,
+        .player-song-meta .artist.marquee {
+            animation: marquee 10s linear infinite;
+            position: relative;
+            left: 0;
+        }
+
+@keyframes marquee {
+    0% {
+        left: 0;
+    }
+
+    100% {
+        left: -100%;
+    }
+}
+
+.player-controls {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+    .player-controls button {
+        background: none;
+        border: none;
+        color: var(--text-color);
+        font-size: 28px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+        .player-controls button:hover {
+            color: var(--primary);
+        }
+
+.player-volume {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .player-volume input[type="range"] {
+        width: 100px;
+    }
+
+/* ===============================
+   📱 Responsive
+================================ */
+@media (max-width: 768px) {
+    .cliente-sidebar {
+        display: none;
+    }
+
+    .cliente-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .cliente-reproductor {
+        left: 0;
+        border-radius: 0;
+    }
+}
+/* ===============================
+   🎵 Mejoras al Reproductor
+================================ */
+.cliente-reproductor {
+    position: fixed;
+    bottom: 0;
+    left: 220px;
+    right: 0;
+    height: 80px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    z-index: 1000;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    box-shadow: none; /* sin sombra */
+    transition: height 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    overflow: hidden;
+}
+
+    .cliente-reproductor.expanded {
+        height: 100vh;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background-color: var(--background-expanded);
+    }
+
+.reproductor-info {
+    flex-grow: 1;
+    font-weight: bold;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1rem;
+}
+
+.reproductor-controles {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.reproductor-progreso {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 1rem;
+    min-width: 200px;
+}
+
+#barraProgreso {
+    width: 150px;
+    accent-color: var(--primary);
+    cursor: pointer;
+    height: 4px;
+    border-radius: 2px;
+    background-color: var(--progress-bg);
+}
+
+#tiempoActual,
+#duracionTotal {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    min-width: 32px;
+    text-align: center;
+}
+
+.btn-toggle-player {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: none;
+    color: var(--btn-color);
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+/* ===============================
+   📊 Tablas oscuras y claras
+================================ */
+table.table {
+    background-color: var(--table-bg);
+    color: var(--text-color);
+    border-color: var(--table-border);
+}
+
+    table.table th,
+    table.table td {
+        background-color: transparent;
+        color: inherit;
+        border-top: 1px solid var(--table-border);
+    }
+
+[data-theme="light"] table.table {
+    background-color: #fff;
+    color: #000;
+}
