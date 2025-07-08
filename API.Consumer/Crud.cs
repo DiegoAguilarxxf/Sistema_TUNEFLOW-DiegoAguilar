@@ -1,5 +1,6 @@
 ﻿using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Usuario.Administracion;
+using Modelos.Tuneflow.Usuario.Consumidor;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Globalization;
@@ -163,6 +164,23 @@ namespace API.Consumer
             {
                 Console.WriteLine($"Excepción en llamada API: {ex.Message}");
                 return new List<Cancion>();
+            }
+        }
+
+        public static async Task<Cliente> GetClientePorUsuarioId(string idUsuario)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/Usuario/{idUsuario}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<Cliente>(json);
+                }
+                else
+                {
+                    throw new Exception($"Error: {response.StatusCode}");
+                }
             }
         }
 

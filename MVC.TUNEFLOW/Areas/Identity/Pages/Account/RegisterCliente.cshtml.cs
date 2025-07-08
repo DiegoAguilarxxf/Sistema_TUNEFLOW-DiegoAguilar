@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Modelos.Tuneflow.Modelos;
 using Modelos.Tuneflow.Usuario.Consumidor;
+using Modelos.Tuneflow.Usuario.Perfiles;
 
 namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 {
@@ -133,11 +134,23 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                 Activo = true,
                 FechaRegistro = DateTime.UtcNow,
                 SuscripcionId = suscripcionNueva.Id,
-                Password = Input.Password
+                Password = Input.Password,
+                UsuarioId = user.Id // Asignar el ID del usuario recién creado
             };
 
 
             var clienteNuevo = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.CreateAsync(cliente);
+
+            var perfil = new Perfil
+            {
+                ClienteId = clienteNuevo.Id,
+                ArtistaId = 0, // Inicialmente no es un artista
+                ImagenPerfil = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/ImagenDefault.jpeg",
+                Biografia = "Apasionado de la Música",
+                FechaCreacion = DateTime.UtcNow,
+            };
+
+            var perfilNuevo = await Crud<Perfil>.CreateAsync(perfil);
 
             await _userManager.AddToRoleAsync(user, "cliente");
 

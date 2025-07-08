@@ -16,6 +16,7 @@ namespace Modelos.Tuneflow.Usuario.Produccion
         public string Biografia { get; set; }
         [ForeignKey(nameof(Pais))] public int PaisId { get; set; }
         public bool verificado { get; set; } // Indica si el artista ha sido verificado por la plataforma.
+        public string UsuarioId { get; set; } // Identificador único del usuario artista, puede ser un GUID o un ID de base de datos.
         public Pais? Pais { get; set; }
 
     }

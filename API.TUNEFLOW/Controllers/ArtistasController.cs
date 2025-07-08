@@ -81,8 +81,8 @@ namespace API.TUNEFLOW.Controllers
         {
 
             var sql = @"INSERT INTO ""Artistas"" 
-                (""NombreArtistico"",""GeneroMusical"",""Biografia"",""PaisId"",""verificado"",""Nombre"",""Apellido"",""Email"",""Password"",""Telefono"",""FechaNacimiento"",""TipoCuenta"",""Activo"",""FechaRegistro"") 
-                VALUES (@NombreArtistico, @GeneroMusical, @Biografia, @PaisId, @verificado, @Nombre, @Apellido, @Email, @Password, @Telefono, @FechaNacimiento, @TipoCuenta, @Activo, @FechaRegistro) RETURNING ""Id"";";
+                (""NombreArtistico"",""GeneroMusical"",""Biografia"",""PaisId"",""verificado"",""Nombre"",""Apellido"",""Email"",""Password"",""Telefono"",""FechaNacimiento"",""TipoCuenta"",""Activo"",""FechaRegistro"",""UsuarioId"") 
+                VALUES (@NombreArtistico, @GeneroMusical, @Biografia, @PaisId, @verificado, @Nombre, @Apellido, @Email, @Password, @Telefono, @FechaNacimiento, @TipoCuenta, @Activo, @FechaRegistro, @UsuarioId) RETURNING ""Id"";";
                 
             var idDevuelto = connection.ExecuteScalar<int>(sql,new
                 {
@@ -99,7 +99,8 @@ namespace API.TUNEFLOW.Controllers
                     FechaNacimiento = artista.FechaNacimiento,
                     TipoCuenta = artista.TipoCuenta,
                     Activo = artista.Activo,
-                    FechaRegistro = artista.FechaRegistro
+                    FechaRegistro = artista.FechaRegistro,
+                    UsuarioId = artista.UsuarioId
             });
 
             artista.Id = idDevuelto;

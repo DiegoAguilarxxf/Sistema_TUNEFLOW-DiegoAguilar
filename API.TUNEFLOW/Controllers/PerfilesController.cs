@@ -7,6 +7,7 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
 
 namespace API.TUNEFLOW.Controllers
@@ -41,9 +42,9 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Perfiles/5
         [HttpGet("{id}")]
-        public ActionResult<Perfil> GetPerfil(int id)
+        public ActionResult<Perfil> GetPerfilById(int id)
         {
-            var perfil = connection.QuerySingle<Perfil>(@"SELECT * FROM ""Perfiles"" WHERE ""Id"" = @Id", new { Id = id });
+            var perfil = connection.QuerySingleOrDefault<Perfil>(@"SELECT * FROM ""Perfiles"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (perfil == null)
             {
@@ -79,20 +80,42 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Perfiles
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Perfil PostPerfil([FromBody]Perfil perfil)
-        {
-            connection.Execute(@"INSERT INTO ""Perfiles"" (""ClienteId"", ""ArtistaId"", ""ImagenPerfil"", ""Biografia"", ""FechaCreacion"")
-VALUES
-            (@ClienteId, @ArtistaId, @ImagenPerfil, @Biografia, @FechaCreacion)", new
-            {
-                ClienteId = perfil.ClienteId,
-                ArtistaId = perfil.ArtistaId,
-                ImagenPerfil = perfil.ImagenPerfil,
-                Biografia = perfil.Biografia,
-                FechaCreacion = perfil.FechaCreacion
-            });
+        public ActionResult<Perfil> PostPerfil([FromBody] Perfil perfil)
+        { 
+            var idDevuelto = 0;
 
-            return perfil;
+            if (perfil.ArtistaId == 0)
+            {
+                var sql = @"INSERT INTO ""Perfiles"" (""ClienteId"", ""ImagenPerfil"", ""Biografia"", ""FechaCreacion"")
+                            VALUES
+                            (@ClienteId,@ImagenPerfil,@Biografia,@FechaCreacion) RETURNING ""Id"";";
+
+                idDevuelto = connection.ExecuteScalar<int>(sql, new
+                {
+                    ClienteId = perfil.ClienteId,
+                    ImagenPerfil = perfil.ImagenPerfil,
+                    Biografia = perfil.Biografia,
+                    FechaCreacion = perfil.FechaCreacion
+                });
+                perfil.Id = idDevuelto;
+
+            }
+            else if(perfil.ClienteId == 0)
+            {
+                var sql = @"INSERT INTO ""Perfiles"" (""ArtistaId"", ""ImagenPerfil"", ""Biografia"", ""FechaCreacion"")
+                            VALUES
+                            (@ArtistaId,@ImagenPerfil,@Biografia,@FechaCreacion) RETURNING ""Id"";";
+                idDevuelto = connection.ExecuteScalar<int>(sql, new
+                {
+                    ArtistaId = perfil.ArtistaId,
+                    ImagenPerfil = perfil.ImagenPerfil,
+                    Biografia = perfil.Biografia,
+                    FechaCreacion = perfil.FechaCreacion
+                });
+                perfil.Id = idDevuelto;
+            }
+
+                return CreatedAtAction(nameof(GetPerfilById), new { id = idDevuelto }, perfil);
         }
 
         // DELETE: api/Perfiles/5

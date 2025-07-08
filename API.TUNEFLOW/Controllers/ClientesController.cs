@@ -51,6 +51,17 @@ namespace API.TUNEFLOW.Controllers
             return cliente;
         }
 
+        [HttpGet("/Usuario/{idUsuario}")]
+        public ActionResult<Cliente> GetClienteByUsuarioId(string idUsuario)
+        {
+            var cliente = connection.QuerySingleOrDefault<Cliente>(@"SELECT * FROM ""Clientes"" WHERE ""UsuarioId"" = @UsuarioId", new { UsuarioId = idUsuario });
+            if (cliente == null)
+            {
+                return NotFound();
+            }
+            return cliente;
+        }
+
         // PUT: api/Clientes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -81,8 +92,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<Cliente> PostCliente([FromBody]Cliente cliente)
         {
-            var sql = @"INSERT INTO ""Clientes"" (""PaisId"", ""SuscripcionId"", ""Nombre"", ""Apellido"", ""Email"", ""Password"",""Telefono"",""FechaNacimiento"",""TipoCuenta"",""Activo"",""FechaRegistro"") 
-                VALUES (@PaisId, @SuscripcionId, @Nombre, @Apellido, @Email, @Password, @Telefono, @FechaNacimiento, @TipoCuenta, @Activo, @FechaRegistro) RETURNING ""Id"";";
+            var sql = @"INSERT INTO ""Clientes"" (""PaisId"", ""SuscripcionId"", ""Nombre"", ""Apellido"", ""Email"", ""Password"",""Telefono"",""FechaNacimiento"",""TipoCuenta"",""Activo"",""FechaRegistro"",""UsuarioId"") 
+                VALUES (@PaisId, @SuscripcionId, @Nombre, @Apellido, @Email, @Password, @Telefono, @FechaNacimiento, @TipoCuenta, @Activo, @FechaRegistro, @UsuarioId) RETURNING ""Id"";";
             
             var idDevuelto = connection.ExecuteScalar<int>(sql,new
            {
@@ -96,9 +107,10 @@ namespace API.TUNEFLOW.Controllers
                FechaNacimiento = cliente.FechaNacimiento,
                TipoCuenta = cliente.TipoCuenta,
                Activo = cliente.Activo,
-               FechaRegistro = cliente.FechaRegistro
-               
-           });
+               FechaRegistro = cliente.FechaRegistro,
+               UsuarioId = cliente.UsuarioId
+
+            });
 
             cliente.Id = idDevuelto;
 

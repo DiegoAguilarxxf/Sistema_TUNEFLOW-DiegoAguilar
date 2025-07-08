@@ -33,9 +33,33 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Canciones
         [HttpGet]
-        public IEnumerable<Cancion> GetCancion()
-        {   var cancion= connection.Query<Cancion>("SELECT * FROM \"Canciones\"");
-            return cancion;
+        public ActionResult<IEnumerable<Cancion>> GetCancion()
+        {
+            string sql = @"
+                            SELECT 
+                                c.""Id"", c.""Titulo"", c.""Duracion"", c.""Genero"", c.""RutaArchivo"", c.""ContenidoExplicito"", c.""RutaImagen"",
+                                al.""Titulo"" AS AlbumTitulo,
+                                ar.""NombreArtistico"" AS NombreArtistico
+                            FROM ""Canciones"" c
+                            LEFT JOIN ""Albums"" al ON c.""AlbumId"" = al.""Id""
+                            LEFT JOIN ""Artistas"" ar ON c.""ArtistaId"" = ar.""Id""";
+
+            var canciones = connection.Query<Cancion, string, string, Cancion>(
+                sql,
+                (cancion, albumTitulo, nombreArtistico) =>
+                {
+                    cancion.Album = new Album { Titulo = albumTitulo };
+                    cancion.Artista = new Artista { NombreArtistico = nombreArtistico };
+                    return cancion;
+                },
+
+                splitOn: "AlbumTitulo,NombreArtistico"
+            ).ToList();
+
+            if (!canciones.Any())
+                return NotFound("No se encontraron canciones con ese título.");
+
+            return Ok(canciones);
         }
 
         // GET: api/Canciones/5

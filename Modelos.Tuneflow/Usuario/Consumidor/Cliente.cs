@@ -13,6 +13,8 @@ namespace Modelos.Tuneflow.Usuario.Consumidor
     {
         [ForeignKey(nameof(Pais))]public int PaisId  { get; set; }
         [ForeignKey(nameof(Suscripcion))] public int SuscripcionId { get; set; }
+
+        public string UsuarioId { get; set; } // Identificador único del usuario cliente, puede ser un GUID o un ID de base de datos.
         public Suscripcion? Suscripcion { get; set; }
 
         public Pais? Pais { get; set; }
