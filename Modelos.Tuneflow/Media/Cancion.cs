@@ -27,16 +27,11 @@ namespace Modelos.Tuneflow.Media
 
         public string TiempoEnMinutos(int tiempo)
         {
-            var resultado = "";
+            int minutos = tiempo / 60;
+            int segundos = tiempo % 60; // mejor usar operador módulo
 
-            var doble = tiempo / 60;
-
-            int minutos = doble;
-
-            int segundos = tiempo - (minutos * 60);
-
-            resultado = $"{minutos}:{segundos}";
-            return resultado;
+            return $"{minutos}:{segundos:D2}"; // D2 para que segundos tengan siempre dos dígitos
         }
+
     }
 }

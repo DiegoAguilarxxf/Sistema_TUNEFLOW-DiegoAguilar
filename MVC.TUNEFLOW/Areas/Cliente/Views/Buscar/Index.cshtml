@@ -1,0 +1,84 @@
+﻿@model IEnumerable<Modelos.Tuneflow.Media.Cancion>
+
+@{
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
+    ViewData["Title"] = "Buscar Canciones";
+}
+
+<h2>🎧 Buscar canciones</h2>
+
+<form method="get" action="/Cliente/Buscar/Buscar" class="mb-3">
+    <input type="text" name="nameCancion" placeholder="Busca tu canción" class="form-control d-inline-block w-50" />
+    <button type="submit" class="btn btn-primary ms-2">Buscar</button>
+</form>
+
+
+
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning">No se encontraron canciones con ese título.</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Título</th>
+                <th>Género</th>
+                <th>Artista</th>
+                <th>Contenido Explícito</th>
+                <th>Duración</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@item.RutaImagen" alt="Imagen de @item.Titulo" style="max-height: 100px;" />
+                    </td>
+                    <td>@item.Titulo</td>
+                    <td>@item.Genero</td>
+                    <td>@(item.Artista?.NombreArtistico ?? "Desconocido")</td>
+                    <td>@(item.ContenidoExplicito ? "Sí" : "No")</td>
+                    <td>@item.TiempoEnMinutos(item.Duracion)</td>
+                    <td>
+                        <button class="btn btn-sm btn-success" type="button"
+                                onclick="reproducirCancion('@item.Titulo', '@item.RutaArchivo', '@item.RutaImagen')">
+                            ▶ Reproducir
+                        </button>
+
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modalContent">
+            <!-- Aquí se carga el contenido del modal desde el controlador -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function cargarDetalle(id) {
+        fetch(`/Reproductor/Reproducir?id=${id}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('modalContent').innerHTML = html;
+                const modal = new bootstrap.Modal(document.getElementById('detalleModal'));
+                modal.show();
+            })
+            .catch(err => {
+                console.error("Error al cargar detalle:", err);
+                alert("No se pudo cargar el reproductor.");
+            });
+    }
+</script>

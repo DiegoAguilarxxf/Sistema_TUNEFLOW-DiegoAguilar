@@ -28,6 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Admin\Controllers\" />
+    <Folder Include="Areas\Admin\Views\Shared\" />
+    <Folder Include="Areas\Artista\Controllers\" />
+    <Folder Include="Areas\Artista\Views\Shared\" />
     <Folder Include="wwwroot\img_descubre\" />
   </ItemGroup>
 

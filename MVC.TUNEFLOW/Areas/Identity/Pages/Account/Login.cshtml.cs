@@ -19,11 +19,16 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(
+            SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager,
+            ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -60,7 +65,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 
             returnUrl ??= Url.Content("~/");
 
-            // Limpia los inicios de sesión externos
+            // Limpia cualquier cookie de inicio de sesión externa
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -70,6 +75,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Action("MainPage", "Home");
+
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
@@ -79,6 +85,22 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("Usuario inició sesión correctamente.");
+
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+
+                    if (user != null)
+                    {
+                        var roles = await _userManager.GetRolesAsync(user);
+
+                        if (roles.Contains("cliente"))
+                            return RedirectToAction("Panel", "Panel", new { area = "Cliente" });
+                        else if (roles.Contains("artista"))
+                            return RedirectToAction("Panel", "Panel", new { area = "Artista" });
+                        else if (roles.Contains("admin"))
+                            return RedirectToAction("Panel", "Panel", new { area = "Admin" });
+                    }
+
+
                     return LocalRedirect(returnUrl);
                 }
 

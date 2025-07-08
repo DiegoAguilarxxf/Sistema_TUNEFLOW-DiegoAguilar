@@ -1,6 +1,7 @@
 ﻿using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Usuario.Administracion;
 using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Text;
@@ -130,25 +131,42 @@ namespace API.Consumer
 
         public static async Task<List<Cancion>> GetCancionesPorPalabrasClave(string palabraClave)
         {
-            using (var client = new HttpClient())
+            try
             {
-                var response = await client.GetAsync($"{EndPoint}/Titulo/{Uri.EscapeDataString(palabraClave)}");
+                using (var client = new HttpClient())
+                {
+                    var url = $"{EndPoint}/Titulo/{Uri.EscapeDataString(palabraClave)}";
+                    Console.WriteLine($"Llamando a API: {url}");
+                    var response = await client.GetAsync(url);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<Cancion>>(json);
-                }
-                else if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    return new List<Cancion>(); // Devuelve lista vacía si no hay resultados
-                }
-                else
-                {
-                    throw new Exception($"Error: {response.StatusCode}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine($"Respuesta JSON: {json.Substring(0, Math.Min(json.Length, 200))}..."); // imprime primeros 200 caracteres
+                        var canciones = JsonConvert.DeserializeObject<List<Cancion>>(json);
+                        Console.WriteLine($"Canciones deserializadas: {canciones?.Count ?? 0}");
+                        return canciones;
+                    }
+                    else if (response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        Console.WriteLine("No se encontraron canciones.");
+                        return new List<Cancion>();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                        return new List<Cancion>();
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción en llamada API: {ex.Message}");
+                return new List<Cancion>();
+            }
         }
+
+
 
     }
 }
