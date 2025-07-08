@@ -1,5 +1,50 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<Modelos.Tuneflow.Media.Cancion>
+
 @{
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
+    ViewData["Title"] = "Biblioteca";
+}
+
+<h2>🎼 TUNFLOW Biblioteca</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">Aún no hay canciones en la biblioteca.</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Título</th>
+                <th>Género</th>
+                <th>Artista</th>
+                <th>Contenido Explícito</th>
+                <th>Duración</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@item.RutaImagen" alt="Imagen de @item.Titulo" style="max-height: 100px;" />
+                    </td>
+                    <td>@item.Titulo</td>
+                    <td>@item.Genero</td>
+                    <td>@(item.Artista?.NombreArtistico ?? "Desconocido")</td>
+                    <td>@(item.ContenidoExplicito ? "Sí" : "No")</td>
+                    <td>@item.TiempoEnMinutos(item.Duracion)</td>
+                    <td>
+                        <button class="btn btn-sm btn-success" type="button"
+                                onclick="reproducirCancion('@item.Titulo', '@item.RutaArchivo', '@item.RutaImagen')">
+                            ▶ Reproducir
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
