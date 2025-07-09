@@ -1,28 +1,36 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using API.Consumer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using Modelos.Tuneflow.Usuario.Consumidor;
+using Modelos.Tuneflow.Usuario.Perfiles;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
+    [Area("Cliente")]
     public class PerfilController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public PerfilController(UserManager<IdentityUser> userManager)
-        {
-            _userManager = userManager;
-        }
         // GET: PerfilController
-        public ActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (string.IsNullOrEmpty(userId))
             {
                 return RedirectToAction("Login", "Account");
             }
-            var cliente = 0;
-                return View();
+            var cliente = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.GetClientePorUsuarioId(userId);
+
+            if (cliente == null)
+            {
+                return RedirectToAction("Index", "Buscar");
+            }
+
+            var perfil = await Crud<Perfil>.GetPerfilPorClienteId(cliente.Id);
+
+            return View(perfil);
         }
 
         // GET: PerfilController/Details/5

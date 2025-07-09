@@ -1,6 +1,7 @@
 ﻿using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Usuario.Administracion;
 using Modelos.Tuneflow.Usuario.Consumidor;
+using Modelos.Tuneflow.Usuario.Perfiles;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Globalization;
@@ -172,19 +173,48 @@ namespace API.Consumer
             using (var client = new HttpClient())
             {
                 var response = await client.GetAsync($"{EndPoint}/Usuario/{idUsuario}");
+                Console.WriteLine($"{EndPoint}/Usuario/{idUsuario}");
+
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<Cliente>(json);
+                    Console.WriteLine("JSON recibido: " + json);
+
+                    try
+                    {
+                        var cliente = JsonConvert.DeserializeObject<Cliente>(json);
+                        return cliente;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error de deserialización: " + ex.Message);
+                        throw;
+                    }
                 }
                 else
                 {
-                    throw new Exception($"Error: {response.StatusCode}");
+                    Console.WriteLine("La API devolvió: " + response.StatusCode);
+                    return null;
                 }
             }
         }
 
-
+        public static async Task<Perfil> GetPerfilPorClienteId(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/Usuario/Obtencion/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<Perfil>(json);
+                }
+                else
+                {
+                    return new Perfil();
+                }
+            }
+        }
 
     }
 }

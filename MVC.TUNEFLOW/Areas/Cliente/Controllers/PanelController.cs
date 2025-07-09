@@ -6,6 +6,7 @@ using Modelos.Tuneflow.Modelos;
 using API.Consumer;
 using System.Diagnostics;
 using Modelos.Tuneflow.Usuario.Administracion;
+using System.Security.Claims;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -37,6 +38,8 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
                 ViewBag.TopPlaylists = topPlaylists;
                 ViewBag.ArtistasPopulares = artistasPopulares;
+
+                
 
                 return View();
             }

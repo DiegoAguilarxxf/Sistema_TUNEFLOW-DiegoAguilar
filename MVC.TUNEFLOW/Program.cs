@@ -37,6 +37,7 @@ namespace MVC.TUNEFLOW
             Crud<TipoSuscripcion>.EndPoint = "https://localhost:7031/api/TiposSuscripciones";
             Crud<Playlist>.EndPoint = "https://localhost:7031/api/Playlists";
             Crud<Pais>.EndPoint = "https://localhost:7031/api/Paises";
+            Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.EndPoint = "https://localhost:7031/api/Clientes";
 
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
