@@ -59,12 +59,26 @@ namespace API.TUNEFLOW.Controllers
         public ActionResult<Perfil> ObtenerPerfilPorClienteId(int idAmbos)
         {
             var sql = @"SELECT * FROM ""Perfiles"" 
-            WHERE ""ClienteId"" = @Id OR ""ArtistaId"" = @Id";
+                WHERE ""ClienteId"" = @Id OR ""ArtistaId"" = @Id";
 
             var perfil = connection.QueryFirstOrDefault<Perfil>(sql, new { Id = idAmbos });
 
             if (perfil == null)
                 return NotFound();
+
+            // Si tiene ClienteId, obtener Cliente
+            if (perfil.ClienteId != null && perfil.ClienteId != 0)
+            {
+                var clienteSql = @"SELECT ""Id"", ""Nombre"", ""Apellido"" FROM ""Clientes"" WHERE ""Id"" = @Id";
+                perfil.Cliente = connection.QueryFirstOrDefault<Cliente>(clienteSql, new { Id = perfil.ClienteId });
+            }
+
+            // Si tiene ArtistaId, obtener Artista
+            if (perfil.ArtistaId != null && perfil.ArtistaId != 0)
+            {
+                var artistaSql = @"SELECT ""Id"", ""NombreArtistico"" FROM ""Artistas"" WHERE ""Id"" = @Id";
+                perfil.Artista = connection.QueryFirstOrDefault<Artista>(artistaSql, new { Id = perfil.ArtistaId });
+            }
 
             return perfil;
         }

@@ -22,8 +22,6 @@
     </div>
 
     <nav>
-        <a class="btn btn-primary">
-            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
-        </a>
+        @Html.ActionLink("Editar Perfil", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary" })
     </nav>
 </div>
