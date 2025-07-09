@@ -58,31 +58,10 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("Usuario/Obtencion/{idAmbos}")]
         public ActionResult<Perfil> ObtenerPerfilPorClienteId(int idAmbos)
         {
-            var sql = @"SELECT 
-             p.""Id"", p.""ClienteId"", p.""ArtistaId"", p.""ImagenPerfil"", p.""Biografia"", p.""FechaCreacion"",
+            var sql = @"SELECT * FROM ""Perfiles"" 
+            WHERE ""ClienteId"" = @Id OR ""ArtistaId"" = @Id";
 
-             c.""PaisId"", c.""SuscripcionId"", c.""UsuarioId"", c.""Id"", c.""Nombre"", c.""Apellido"", c.""Email"", 
-             c.""Password"", c.""Telefono"", c.""FechaNacimiento"", c.""TipoCuenta"", c.""Activo"", c.""FechaRegistro"",
-
-             a.""NombreArtistico"", a.""GeneroMusical"", a.""Biografia"", a.""PaisId"", a.""verificado"", a.""UsuarioId"",
-             a.""Id"", a.""Nombre"", a.""Apellido"", a.""Email"", a.""Password"", a.""Telefono"", a.""FechaNacimiento"", 
-             a.""TipoCuenta"", a.""Activo"", a.""FechaRegistro""
-         FROM ""Perfiles"" p
-         LEFT JOIN ""Clientes"" c ON p.""ClienteId"" = c.""Id""
-         LEFT JOIN ""Artistas"" a ON p.""ArtistaId"" = a.""Id""
-         WHERE p.""ClienteId"" = @Id OR p.""ArtistaId"" = @Id";
-
-            var perfil = connection.Query<Perfil, Cliente, Artista, Perfil>(
-                sql,
-                (p, cliente, artista) =>
-                {
-                    p.Cliente = cliente;
-                    p.Artista = artista;
-                    return p;
-                },
-                new { Id = idAmbos },
-                splitOn: "Nombre,Nombre" // Usa la primera columna de C y A
-            ).FirstOrDefault();
+            var perfil = connection.QueryFirstOrDefault<Perfil>(sql, new { Id = idAmbos });
 
             if (perfil == null)
                 return NotFound();

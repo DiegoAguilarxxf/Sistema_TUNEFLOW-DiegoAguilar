@@ -61,9 +61,10 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         }
 
         // GET: PerfilController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            var perfil = await Crud<Perfil>.GetByIdAsync(id);
+            return View(perfil);
         }
 
         // POST: PerfilController/Edit/5

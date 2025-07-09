@@ -5,18 +5,25 @@
     ViewData["Title"] = "Perfil";
 }
 
-<div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center;">
-    <img src="@Model.ImagenPerfil" alt="Foto perfil"
-         style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid white; margin-right: 2rem;" />
-
-    <div>
-        <h4 style="color: white; margin: 0;">Perfil</h4>
-        <h2 style="color: white; margin: 0; font-size: 2rem; font-weight: bold;">
-            @(
-                Model.Cliente != null
-                ? $"{Model.Cliente.Nombre} {Model.Cliente.Apellido}"
-                : Model.Artista?.NombreArtistico
+<div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <img src="@Model.ImagenPerfil" alt="Foto perfil"
+             style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid white;" />
+        <div>
+            <h4 style="color: white; margin: 0;">Perfil</h4>
+            <h2 style="color: white; margin: 0; font-size: 2rem; font-weight: bold;">
+                @(
+                    Model.Cliente != null
+                    ? $"{Model.Cliente.Nombre} {Model.Cliente.Apellido}"
+                    : Model.Artista?.NombreArtistico
                 )
-        </h2>
+            </h2>
+        </div>
     </div>
+
+    <nav>
+        <a class="btn btn-primary">
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+        </a>
+    </nav>
 </div>

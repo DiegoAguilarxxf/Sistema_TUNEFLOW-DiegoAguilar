@@ -1,0 +1,80 @@
+﻿@model Modelos.Tuneflow.Usuario.Perfiles.Perfil;
+
+@{
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
+    ViewData["Title"] = "Editar Perfil";
+}
+
+<form asp-action="Edit" asp-controller="Perfil" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <input type="hidden" asp-for="Id" />
+
+    <!-- Imagen de Perfil -->
+    <div class="mb-3">
+        <label for="imagenPerfil" class="form-label">Imagen de Perfil</label>
+        <input type="file" class="form-control" id="imagenPerfil" name="ImagenPerfil" accept="image/*" required />
+        <div class="invalid-feedback">
+            Por favor selecciona una imagen válida.
+        </div>
+        @* Si tienes la URL actual puedes mostrar la imagen así *@
+        @if (!string.IsNullOrEmpty(Model.ImagenPerfil))
+        {
+            <img src="@Model.ImagenPerfil" alt="Imagen de perfil actual" style="max-height:150px; margin-top:10px;" />
+        }
+    </div>
+
+    <!-- Biografía -->
+    <div class="mb-3">
+        <label for="biografia" class="form-label">Biografía (máximo 100 palabras)</label>
+        <textarea class="form-control" id="biografia" name="Biografia" rows="5" maxlength="800" required>@Model.Biografia</textarea>
+        <div class="form-text">
+            Palabras usadas: <span id="wordCount">0</span>/100
+        </div>
+        <div class="invalid-feedback">
+            Por favor ingresa una biografía válida (máximo 100 palabras).
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+
+<script>
+    // Validación Bootstrap
+    (() => {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity() || contarPalabras() > 100) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Función para contar palabras en el textarea biografía
+    const biografia = document.getElementById('biografia')
+    const wordCountSpan = document.getElementById('wordCount')
+
+    function contarPalabras() {
+        if (!biografia.value) return 0
+        return biografia.value.trim().split(/\s+/).filter(word => word.length > 0).length
+    }
+
+    biografia.addEventListener('input', () => {
+        const count = contarPalabras()
+        wordCountSpan.textContent = count
+        if (count > 100) {
+            biografia.setCustomValidity('Excediste el límite de 100 palabras')
+        } else {
+            biografia.setCustomValidity('')
+        }
+    })
+
+    // Inicializar contador con el texto actual (por si editas)
+    wordCountSpan.textContent = contarPalabras()
+</script>
+
+
