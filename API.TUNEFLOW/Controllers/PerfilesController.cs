@@ -72,24 +72,22 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/Perfiles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutPerfil(int id,[FromBody] Perfil perfil)
+        public ActionResult PutPerfil(int id,[FromBody] Perfil perfil)
         {
+            if (perfil == null || perfil.Id != id)
+                return BadRequest("ID en URL no coincide con el perfil.");
+
             connection.Execute(@"UPDATE ""Perfiles"" SET 
-                ""ClienteId"" = @ClienteId,
-                ""ArtistaId"" = @ArtistaId,
-                ""ImagenPerfil"" = @ImagenPerfil,
-                ""Biografia""=@Biografia,
-                ""FechaCreacion""=@FechaCreacion
-                
-            WHERE ""Id"" = @Id", new
+                            ""ImagenPerfil"" = @ImagenPerfil,
+                            ""Biografia"" = @Biografia
+                         WHERE ""Id"" = @Id", new
             {
-                Id = id,
-                ClienteId=perfil.ClienteId,
-                ArtistaId=perfil.ArtistaId,
                 ImagenPerfil = perfil.ImagenPerfil,
                 Biografia = perfil.Biografia,
-                FechaCreacion = perfil.FechaCreacion
+                Id = id
             });
+
+            return NoContent(); // HTTP 204
         }
 
         // POST: api/Perfiles
