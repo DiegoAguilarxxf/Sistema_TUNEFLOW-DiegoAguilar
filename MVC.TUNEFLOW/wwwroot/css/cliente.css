@@ -396,16 +396,16 @@ body.cliente-body {
     left: 220px;
     right: 0;
     height: 80px;
-    background-color: var(--background-color);
+    background: linear-gradient(to right, var(--primary), #1b1f23);
     color: var(--text-color);
     display: flex;
     align-items: center;
     padding: 0 1.5rem;
     z-index: 1000;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    box-shadow: none; /* sin sombra */
-    transition: height 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    transition: height 0.4s ease-in-out, background 0.4s ease-in-out;
     overflow: hidden;
 }
 
@@ -415,7 +415,7 @@ body.cliente-body {
         align-items: center;
         justify-content: center;
         padding: 2rem;
-        background-color: var(--background-expanded);
+        background: linear-gradient(to bottom right, var(--primary), #000);
     }
 
 .reproductor-info {
@@ -469,12 +469,10 @@ body.cliente-body {
     font-size: 20px;
     cursor: pointer;
     transition: color 0.3s ease;
-}
-
-/* ===============================
+    /* ===============================
    📊 Tablas oscuras y claras
 ================================ */
-table.table {
+    table .table {
     background-color: var(--table-bg);
     color: var(--text-color);
     border-color: var(--table-border);
