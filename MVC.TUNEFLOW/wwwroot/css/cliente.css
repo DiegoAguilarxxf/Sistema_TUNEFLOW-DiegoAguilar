@@ -1,28 +1,34 @@
 ﻿/* ===============================
-   🎨 Variables de Tema y Base
+    🎨 Variables de Tema y Base
 ================================ */
 :root {
-    --sidebar-bg: #181818;
+    --sidebar-bg: #1e1e1e; /* Tono más oscuro y profundo */
     --main-bg: #121212;
-    --text-color: #fff;
-    --primary: #1db954;
-    --reproductor-bg: #222;
-    --table-bg: #1e1e1e;
-    --table-border: #333;
-    --btn-color: #fff;
-    --progress-bg: #444;
+    --text-color: #e0e0e0; /* Texto ligeramente más suave */
+    --primary: #644fff; /* Púrpura vibrante */
+    --primary-rgb: 100, 79, 255; /* RGB para rgba() */
+    --primary-hover: #7b68ee; /* Un poco más claro para hover */
+    --reproductor-bg: #282828; /* Fondo del reproductor un poco más claro que el main */
+    --table-bg: #222222; /* Fondo de tabla ligeramente diferente */
+    --table-border: #444444; /* Borde de tabla más definido */
+    --btn-color: #ffffff;
+    --progress-bg: #555555; /* Gris más oscuro para el fondo de la barra de progreso */
+    --card-border: rgba(255, 255, 255, 0.1); /* Borde sutil para tarjetas */
 }
 
 [data-theme="light"] {
-    --sidebar-bg: #f2f2f2;
+    --sidebar-bg: #f5f5f5;
     --main-bg: #ffffff;
-    --text-color: #222;
+    --text-color: #333333;
     --primary: #644fff;
-    --reproductor-bg: #dee2e6;
-    --table-bg: #fff;
-    --table-border: #ccc;
-    --btn-color: #222;
-    --progress-bg: #ddd;
+    --primary-rgb: 100, 79, 255;
+    --primary-hover: #7b68ee;
+    --reproductor-bg: #e0e0e0;
+    --table-bg: #f8f8f8;
+    --table-border: #cccccc;
+    --btn-color: #333333;
+    --progress-bg: #dddddd;
+    --card-border: rgba(0, 0, 0, 0.1);
 }
 
 body.cliente-body {
@@ -32,11 +38,12 @@ body.cliente-body {
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
-    transition: background 0.4s, color 0.4s;
+    transition: background 0.4s ease, color 0.4s ease;
+    display: flex; /* Añadido para facilitar el layout principal */
 }
 
 /* ===============================
-   📌 Sidebar
+    📌 Sidebar
 ================================ */
 .cliente-sidebar {
     position: fixed;
@@ -51,52 +58,56 @@ body.cliente-body {
     flex-direction: column;
     justify-content: space-between;
     z-index: 1000;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4); /* Sombra más pronunciada */
+    transition: transform 0.3s ease, background-color 0.4s ease;
 }
 
-    .cliente-sidebar .logo {
-        font-size: 24px;
-        font-weight: 900;
-        margin-bottom: 1.5rem;
-        color: var(--primary);
+    .cliente-sidebar .text-center img { /* Asegura que la imagen del logo esté bien centrada */
+        display: block;
+        margin: 0 auto;
+    }
+
+    .cliente-sidebar nav .nav-link { /* Estilos de los enlaces/botones del sidebar */
+        color: var(--text-color); /* Color de texto predeterminado */
+        text-decoration: none;
+        font-weight: 600;
+        display: block;
+        padding: 0.8rem 1rem; /* Relleno ajustado para más área de clic */
+        margin-bottom: 0.5rem; /* Espacio entre los botones */
+        border-radius: 8px;
+        transition: all 0.2s ease; /* Transición más rápida para feedback inmediato */
         text-align: center;
+        background-color: transparent; /* Fondo transparente por defecto */
+        border: 1px solid transparent; /* Borde transparente por defecto */
     }
 
-    .cliente-sidebar nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-        .cliente-sidebar nav ul li {
-            margin-bottom: 1rem;
+        .cliente-sidebar nav .nav-link:hover {
+            background-color: rgba(var(--primary-rgb), 0.1); /* Ligero fondo con color primario */
+            color: var(--primary-hover); /* Texto cambia a un tono de primary al pasar el mouse */
+            transform: translateY(-2px); /* Pequeño levantamiento al pasar el mouse */
+            border-color: rgba(var(--primary-rgb), 0.3); /* Borde sutil al pasar el mouse */
         }
 
-            .cliente-sidebar nav ul li a {
-                color: var(--text-color);
-                text-decoration: none;
-                font-weight: 600;
-                display: block;
-                padding: 0.5rem 1rem;
-                border-radius: 8px;
-                transition: all 0.3s ease;
-            }
+        .cliente-sidebar nav .nav-link.active,
+        .cliente-sidebar nav .nav-link.active:hover { /* Estilo para el enlace activo */
+            background-color: var(--primary); /* Fondo sólido con el color primario */
+            color: var(--btn-color); /* Texto blanco para el botón activo */
+            transform: scale(1.02); /* Ligeramente más grande y levantado */
+            box-shadow: 0 4px 10px rgba(var(--primary-rgb), 0.4); /* Sombra para el activo */
+            border-color: var(--primary); /* Borde sólido del color primario */
+        }
 
-                .cliente-sidebar nav ul li a:hover,
-                .cliente-sidebar nav ul li a.active {
-                    background-color: var(--primary);
-                    color: #fff;
-                    transform: scale(1.05);
-                }
 
 /* ===============================
-   🌗 Switch de Tema
+    🌗 Switch de Tema
 ================================ */
 .theme-switch-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--table-border); /* Separador visual */
 }
 
 .theme-switch {
@@ -119,7 +130,7 @@ body.cliente-body {
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #999;
+        background-color: #777; /* Gris más oscuro para el slider apagado */
         border-radius: 34px;
         transition: 0.4s;
     }
@@ -137,7 +148,7 @@ body.cliente-body {
         }
 
     .theme-switch input:checked + .slider {
-        background-color: var(--primary);
+        background-color: var(--primary); /* Cambia a primary cuando está encendido */
     }
 
         .theme-switch input:checked + .slider:before {
@@ -146,25 +157,27 @@ body.cliente-body {
 
 .switch-label {
     margin-left: 10px;
-    font-size: 0.9rem;
+    font-size: 0.95rem; /* Fuente un poco más grande */
     color: var(--text-color);
 }
 
 /* ===============================
-   🧱 Contenido Principal
+    🧱 Contenido Principal
 ================================ */
 .cliente-content {
-    margin-left: 220px;
-    padding: 2rem 2rem 120px 2rem;
+    margin-left: 220px; /* Offset por el sidebar */
+    padding: 2rem 2.5rem 120px 2.5rem; /* Más padding horizontal */
     min-height: 100vh;
     background-color: var(--main-bg);
+    flex-grow: 1; /* Permite que el contenido ocupe el espacio restante */
+    transition: margin-left 0.3s ease, background-color 0.4s ease;
 }
 
 /* ===============================
-   🔍 Barra de Búsqueda
+    🔍 Barra de Búsqueda
 ================================ */
 .top-bar {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem; /* Más espacio debajo de la barra */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -172,75 +185,92 @@ body.cliente-body {
 
     .top-bar input[type="text"],
     .buscar-input {
-        width: 50%;
-        padding: 12px 20px;
-        border-radius: 25px;
-        border: none;
-        background: #222;
-        color: white;
-        box-shadow: inset 2px 2px 6px rgba(0,0,0,0.7);
-        font-size: 16px;
-        transition: background-color 0.3s ease;
+        width: 60%; /* Un poco más ancho */
+        max-width: 500px; /* Ancho máximo para no ocupar todo el espacio en pantallas grandes */
+        padding: 14px 22px; /* Más padding para una mejor sensación */
+        border-radius: 30px; /* Más redondeado */
+        border: 1px solid var(--table-border); /* Borde sutil */
+        background: var(--table-bg); /* Utiliza un color de fondo más neutral del tema */
+        color: var(--text-color);
+        box-shadow: inset 1px 1px 4px rgba(0,0,0,0.5); /* Sombra interior sutil */
+        font-size: 1.1rem; /* Fuente más grande */
+        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
         .top-bar input::placeholder,
         .buscar-input::placeholder {
-            color: #888;
-            font-style: italic;
+            color: #a0a0a0; /* Placeholder más claro */
+            font-style: normal; /* No cursiva por defecto */
         }
 
         .top-bar input:focus,
         .buscar-input:focus {
             outline: none;
-            background-color: #333;
-            box-shadow: inset 3px 3px 8px rgba(100,79,255,0.8);
+            background-color: var(--sidebar-bg); /* Fondo más oscuro al enfocar */
+            border-color: var(--primary); /* Borde del color primario */
+            box-shadow: inset 1px 1px 6px rgba(0,0,0,0.6), 0 0 0 3px rgba(var(--primary-rgb), 0.2); /* Sombra de enfoque */
         }
 
 [data-theme="light"] .buscar-input {
     background-color: #f0f0f0;
-    color: #000;
+    color: #333;
+    border-color: #c0c0c0;
+    box-shadow: inset 1px 1px 4px rgba(0,0,0,0.1);
 }
 
+    [data-theme="light"] .buscar-input:focus {
+        background-color: #ffffff;
+        border-color: var(--primary);
+        box-shadow: inset 1px 1px 6px rgba(0,0,0,0.15), 0 0 0 3px rgba(var(--primary-rgb), 0.2);
+    }
+
 /* ===============================
-   📊 Tablas Modernas
+    📊 Tablas Modernas
 ================================ */
 table.table {
     width: 100%;
-    background-color: transparent;
-    border-collapse: collapse;
-    margin-bottom: 1rem;
+    background-color: var(--table-bg); /* Usa el color de fondo de tabla */
+    border-collapse: separate; /* Permite border-radius */
+    border-spacing: 0; /* Elimina espacio entre celdas */
+    margin-bottom: 2rem; /* Más margen abajo */
     border-radius: 12px;
-    overflow: hidden;
+    overflow: hidden; /* Asegura que el border-radius se aplique */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil para la tabla */
 }
 
     table.table thead {
-        background-color: var(--sidebar-bg);
+        background-color: var(--sidebar-bg); /* Usa el color del sidebar para el encabezado */
         color: var(--text-color);
         font-weight: bold;
     }
 
         table.table thead th {
             border-bottom: 1px solid var(--table-border);
-            padding: 0.75rem 1rem;
+            padding: 1rem 1.2rem; /* Más padding en el encabezado */
+            text-align: left; /* Alinea el texto a la izquierda */
         }
 
     table.table tbody td {
-        padding: 0.75rem 1rem;
+        padding: 0.9rem 1.2rem; /* Más padding en las celdas */
         border-top: none;
         border-bottom: 1px solid var(--table-border);
-        transition: background-color 0.3s;
+        transition: background-color 0.3s ease;
+    }
+
+    table.table tbody tr:last-child td { /* Elimina el borde inferior de la última fila */
+        border-bottom: none;
     }
 
     table.table tbody tr:hover {
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: rgba(var(--primary-rgb), 0.08); /* Fondo con un toque del color primario al pasar el mouse */
     }
 
 [data-theme="light"] table.table tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: rgba(var(--primary-rgb), 0.05);
 }
 
 /* ===============================
-   🔘 Botones
+    🔘 Botones Generales
 ================================ */
 .btn {
     padding: 10px 20px;
@@ -250,151 +280,262 @@ table.table {
     cursor: pointer;
     transition: all 0.3s ease;
     background-color: var(--primary);
-    color: #fff;
+    color: var(--btn-color);
+    box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3); /* Sombra para los botones */
+    text-decoration: none; /* Asegura que no haya subrayado en enlaces con clase btn */
 }
 
     .btn:hover {
-        filter: brightness(1.1);
-        transform: scale(1.05);
+        background-color: var(--primary-hover); /* Cambia al color de hover definido */
+        transform: translateY(-2px) scale(1.02); /* Ligero levantamiento y escala */
+        box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.4); /* Sombra más grande al pasar el mouse */
     }
 
     .btn.eliminar {
         background-color: transparent;
-        border: 1px solid var(--primary);
-        color: var(--primary);
+        border: 1px solid #dc3545; /* Rojo de Bootstrap para eliminar */
+        color: #dc3545;
+        box-shadow: none; /* Sin sombra por defecto */
     }
 
         .btn.eliminar:hover {
-            background-color: var(--primary);
+            background-color: #dc3545;
             color: white;
+            transform: translateY(-1px) scale(1.01);
+            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.4);
         }
 
 /* ===============================
-   🎵 Reproductor
+    🎵 Reproductor Fijo
 ================================ */
 .cliente-reproductor {
     position: fixed;
     bottom: 0;
     left: 220px;
     right: 0;
-    height: 80px;
-    background: linear-gradient(to right, var(--primary), #1b1f23);
+    height: 90px; /* Un poco más alto */
+    background: linear-gradient(to right, var(--reproductor-bg), var(--sidebar-bg)); /* Degradado más sutil */
     color: var(--text-color);
     display: flex;
     align-items: center;
-    padding: 0 1.5rem;
-    z-index: 1000;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-    transition: height 0.4s ease-in-out, background 0.4s ease-in-out;
+    padding: 0 2rem; /* Más padding horizontal */
+    z-index: 1050; /* Z-index más alto que el sidebar para que esté por encima */
+    border-top-left-radius: 1.5rem; /* Esquinas más redondeadas */
+    border-top-right-radius: 1.5rem;
+    box-shadow: 0 -6px 25px rgba(0, 0, 0, 0.4); /* Sombra más fuerte */
+    transition: height 0.4s ease-in-out, background 0.4s ease-in-out, left 0.3s ease;
     overflow: hidden;
 }
 
     .cliente-reproductor.expanded {
         height: 100vh;
+        left: 0; /* Ocupa todo el ancho cuando está expandido */
         flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 2rem;
-        background: linear-gradient(to bottom right, var(--primary), #000);
+        background: linear-gradient(to bottom right, var(--main-bg), var(--sidebar-bg)); /* Fondo más oscuro y cohesivo */
+        border-radius: 0; /* Elimina radios al expandir */
     }
+
+.reproductor-portada img {
+    border-radius: 8px; /* Pequeño radio para las portadas */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Sombra para la portada */
+}
 
 .reproductor-info {
     flex-grow: 1;
     font-weight: bold;
-    text-align: center;
+    text-align: left; /* Alineado a la izquierda para mejor lectura */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 1rem;
+    font-size: 1.05rem; /* Un poco más grande */
+    margin-right: 1.5rem; /* Espacio entre info y controles */
 }
+
+    .reproductor-info strong {
+        display: block; /* Título en su propia línea */
+        font-size: 1.15rem;
+        color: var(--text-color);
+    }
+
+    .reproductor-info .d-flex { /* Controles de tiempo y barra de progreso */
+        align-items: center;
+        margin-top: 0.5rem;
+    }
 
 .reproductor-controles {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.8rem; /* Espacio ajustado entre controles */
 }
 
-.reproductor-progreso {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-left: 1rem;
-    min-width: 200px;
-}
+    .reproductor-controles .btn { /* Estilos para los botones de control del reproductor */
+        background-color: rgba(var(--primary-rgb), 0.1); /* Fondo sutil para los botones de control */
+        border: 1px solid rgba(var(--primary-rgb), 0.3);
+        color: var(--text-color);
+        width: 40px; /* Ancho y alto fijos para botones pequeños */
+        height: 40px;
+        border-radius: 50%; /* Redondos */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: none; /* Sin sombra para estos botones */
+    }
+
+        .reproductor-controles .btn:hover {
+            background-color: var(--primary); /* Fondo sólido al pasar el mouse */
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3);
+        }
+
+    .reproductor-controles .btn-light { /* Botón de Play/Pause */
+        background-color: var(--primary); /* Play/Pause con color primario */
+        color: white;
+        width: 45px; /* Un poco más grande */
+        height: 45px;
+        font-size: 1.5rem;
+        box-shadow: 0 3px 10px rgba(var(--primary-rgb), 0.4);
+    }
+
+        .reproductor-controles .btn-light:hover {
+            background-color: var(--primary-hover);
+        }
+
 
 #barraProgreso {
-    width: 150px;
-    accent-color: var(--primary);
-    cursor: pointer;
-    height: 4px;
-    border-radius: 2px;
+    width: 200px; /* Ancho ajustado */
+    height: 6px; /* Más grueso */
+    accent-color: var(--primary); /* Color primario para el relleno */
     background-color: var(--progress-bg);
+    border-radius: 3px;
+    cursor: grab;
+    outline: none; /* Elimina el borde de enfoque por defecto */
 }
+
+    #barraProgreso::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px; /* Tamaño del thumb */
+        height: 16px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.4); /* Anillo al thumb */
+    }
+
+    #barraProgreso::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.4);
+    }
+
 
 #tiempoActual,
 #duracionTotal {
-    font-size: 0.85rem;
+    font-size: 0.95rem; /* Un poco más grande */
     color: var(--text-color);
-    min-width: 32px;
+    min-width: 45px; /* Para que no se mueva */
     text-align: center;
 }
 
+#volumenControl {
+    width: 120px; /* Ancho ajustado */
+    height: 5px; /* Más grueso */
+    accent-color: var(--primary); /* Color primario para el volumen */
+    background-color: var(--progress-bg);
+    border-radius: 3px;
+    cursor: grab;
+    outline: none;
+}
+
+    #volumenControl::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.3);
+    }
+
+    #volumenControl::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.3);
+    }
+
+
 .btn-toggle-player {
     position: absolute;
-    top: 5px;
-    right: 10px;
+    top: 8px; /* Ajuste de posición */
+    right: 15px; /* Ajuste de posición */
     background: none;
-    color: var(--btn-color);
+    color: var(--text-color); /* Color del texto del botón */
     border: none;
-    font-size: 20px;
+    font-size: 24px; /* Un poco más grande */
     cursor: pointer;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, transform 0.2s ease;
+    padding: 5px; /* Relleno para que sea más fácil de clickear */
 }
 
     .btn-toggle-player:hover {
-        color: var(--primary);
+        color: var(--primary-hover); /* Cambia al color de hover definido */
+        transform: scale(1.1);
     }
 
 /* ===============================
-   🏆 Tarjetas Top 50
+    🏆 Tarjetas Top 50
 ================================ */
 .top50 .cards {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
+    display: grid; /* Usar Grid para mejor control de layout */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Columnas responsivas */
+    gap: 20px; /* Espacio entre tarjetas */
+    padding-bottom: 2rem; /* Espacio inferior */
 }
 
 .top50 .card {
     position: relative;
-    width: 250px;
-    height: 250px;
-    border-radius: 10px;
-    padding: 15px;
+    height: 220px; /* Altura fija para consistencia */
+    border-radius: 12px; /* Más redondeado */
+    padding: 20px; /* Más padding */
     display: flex;
-    align-items: flex-end;
-    justify-content: center;
+    flex-direction: column; /* Para alinear contenido */
+    align-items: center;
+    justify-content: flex-end; /* Texto abajo */
     font-weight: bold;
-    font-size: 14px;
+    font-size: 1.1rem; /* Texto un poco más grande */
     color: white;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.05);
+    border: 1px solid var(--card-border); /* Borde sutil basado en el tema */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra para las tarjetas */
+    text-align: center; /* Centrar texto */
+    cursor: pointer; /* Indica que es clickeable */
 }
 
     .top50 .card:hover {
-        transform: scale(1.05);
+        transform: translateY(-5px) scale(1.03); /* Levantamiento y escala */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35); /* Sombra más grande al pasar el mouse */
     }
 
     .top50 .card p {
         z-index: 1;
         margin: 0;
-        text-align: center;
-        text-shadow: 0 0 5px rgba(0,0,0,0.7);
+        text-shadow: 0 0 8px rgba(0,0,0,0.8); /* Sombra de texto más fuerte */
     }
 
-/* Degradados por país */
+/* Degradados por país (mantienen los colores que tenías) */
 .top50 .chile {
     background: linear-gradient(to bottom, #c33764, #1d2671);
 }
@@ -411,45 +552,233 @@ table.table {
     background: linear-gradient(to bottom, #fc466b, #3f5efb);
 }
 
-.top50 .pr {
+.top50 .pr { /* Puerto Rico */
     background: linear-gradient(to bottom, #ff416c, #ff4b2b);
 }
 
-.play-btn {
+.top50 .card .play-icon { /* Usaremos un icono de reproducción dentro de la tarjeta */
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8); /* Centrado y ligeramente más pequeño */
     background: white;
     color: black;
-    border: none;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-    z-index: 2;
+    width: 60px; /* Tamaño del icono */
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem; /* Tamaño del símbolo de play */
+    opacity: 0; /* Oculto por defecto */
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    z-index: 2; /* Para que esté sobre el fondo */
 }
 
-    .play-btn:hover {
-        background: #ddd;
-    }
+.top50 .card:hover .play-icon {
+    opacity: 1; /* Visible al pasar el mouse */
+    transform: translate(-50%, -50%) scale(1); /* Crece un poco */
+}
+
+/* Puedes usar un icono de Bootstrap, por ejemplo:
+   <i class="bi bi-play-fill"></i> dentro de un div con clase "play-icon"
+*/
+
 
 /* ===============================
-   📱 Responsive
+    📱 Responsive
 ================================ */
-@media (max-width: 768px) {
+@media (max-width: 992px) { /* Ajustes para tabletas y pantallas medianas */
     .cliente-sidebar {
-        display: none;
+        width: 180px; /* Sidebar un poco más estrecho */
+        padding: 1rem 0.8rem;
     }
 
+        .cliente-sidebar nav .nav-link {
+            padding: 0.6rem 0.8rem;
+        }
+
     .cliente-content {
-        margin-left: 0;
-        padding: 1rem;
+        margin-left: 180px;
+        padding: 1.5rem 1.8rem 100px 1.8rem;
     }
 
     .cliente-reproductor {
-        left: 0;
-        border-radius: 0;
+        left: 180px;
+        height: 80px;
+        padding: 0 1rem;
+    }
+
+    .top50 .cards {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .top50 .card {
+        height: 200px;
+        font-size: 1rem;
+        padding: 15px;
+    }
+}
+
+
+@media (max-width: 768px) { /* Ajustes para móviles */
+    .cliente-body {
+        flex-direction: column; /* Contenido y reproductor se apilan */
+    }
+
+    .cliente-sidebar {
+        position: relative; /* Ya no es fijo, se integra en el flujo */
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+        box-shadow: none;
+        border-bottom: 1px solid var(--table-border);
+        transform: none; /* Elimina transformaciones si las hubiera de esconder/mostrar */
+    }
+
+        .cliente-sidebar nav {
+            flex-direction: row; /* Enlaces en fila para móvil */
+            flex-wrap: wrap; /* Permite que los enlaces se envuelvan */
+            justify-content: center;
+        }
+
+            .cliente-sidebar nav .nav-link {
+                flex: 1 1 auto; /* Permite que ocupen el espacio disponible */
+                max-width: 150px; /* Limita el ancho de cada botón en fila */
+                margin: 0.3rem; /* Espacio reducido entre botones */
+                font-size: 0.9rem;
+            }
+
+        .cliente-sidebar .text-center,
+        .theme-switch-wrapper {
+            margin-bottom: 1rem;
+        }
+
+    .cliente-content {
+        margin-left: 0; /* Sin offset del sidebar */
+        padding: 1rem; /* Relleno reducido */
+        padding-bottom: 120px; /* Espacio para el reproductor fijo */
+    }
+
+    .cliente-reproductor {
+        left: 0; /* Ocupa todo el ancho */
+        right: 0;
+        border-radius: 0; /* Sin bordes redondeados en móvil */
+        height: 100px; /* Un poco más alto para móvil */
+        padding: 0.8rem 1rem;
+        flex-wrap: wrap; /* Permite que los elementos se envuelvan */
+        justify-content: center;
+    }
+
+        .cliente-reproductor.expanded {
+            height: 100vh;
+            width: 100%;
+            border-radius: 0;
+        }
+
+    .reproductor-portada {
+        flex-shrink: 0; /* Evita que la portada se encoja */
+        margin-right: 0.8rem !important;
+    }
+
+    .reproductor-info {
+        text-align: center; /* Centra info de canción en móvil */
+        margin-right: 0 !important;
+        width: 100%;
+        order: 1; /* Mueve la info de canción arriba en el orden flex */
+        margin-bottom: 0.5rem;
+    }
+
+        .reproductor-info strong {
+            font-size: 1rem;
+        }
+
+        .reproductor-info .d-flex {
+            justify-content: center; /* Centra el tiempo y la barra */
+        }
+
+    .reproductor-controles {
+        width: 100%; /* Ocupa todo el ancho disponible */
+        justify-content: center; /* Centra los controles */
+        margin-top: 0.8rem;
+        order: 2; /* Mueve los controles abajo en el orden flex */
+        flex-wrap: wrap; /* Envuelve los botones si no hay espacio */
+    }
+
+        .reproductor-controles .btn {
+            width: 38px;
+            height: 38px;
+            font-size: 1.1rem;
+            gap: 0.5rem;
+        }
+
+        .reproductor-controles .btn-light {
+            width: 42px;
+            height: 42px;
+            font-size: 1.3rem;
+        }
+
+    #barraProgreso, #volumenControl {
+        width: 100px; /* Ancho más pequeño para móviles */
+    }
+
+    .btn-toggle-player {
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        .top-bar input[type="text"],
+        .buscar-input {
+            width: 100%; /* Ocupa todo el ancho */
+            margin-bottom: 1rem;
+        }
+
+    .top50 .cards {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Más pequeñas en móvil */
+        gap: 10px;
+    }
+
+    .top50 .card {
+        height: 180px;
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+
+        .top50 .card .play-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.8rem;
+        }
+}
+
+/* Extra small devices (less than 576px) */
+@media (max-width: 575.98px) {
+    .cliente-sidebar nav .nav-link {
+        max-width: 100%; /* Cada botón ocupa una línea completa */
+        margin: 0.3rem 0;
+    }
+
+    .reproductor-controles {
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+
+        .reproductor-controles .btn,
+        .reproductor-controles .btn-light {
+            width: 34px;
+            height: 34px;
+            font-size: 1rem;
+        }
+
+    .top50 .cards {
+        grid-template-columns: 1fr; /* Una columna en pantallas muy pequeñas */
     }
 }
