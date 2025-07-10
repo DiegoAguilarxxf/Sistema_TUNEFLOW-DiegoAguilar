@@ -7,6 +7,10 @@
     --text-color: #fff;
     --primary: #1db954;
     --reproductor-bg: #222;
+    --table-bg: #1e1e1e;
+    --table-border: #333;
+    --btn-color: #fff;
+    --progress-bg: #444;
 }
 
 [data-theme="light"] {
@@ -15,6 +19,10 @@
     --text-color: #222;
     --primary: #644fff;
     --reproductor-bg: #dee2e6;
+    --table-bg: #fff;
+    --table-border: #ccc;
+    --btn-color: #222;
+    --progress-bg: #ddd;
 }
 
 body.cliente-body {
@@ -24,6 +32,7 @@ body.cliente-body {
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
 }
 
 /* ===============================
@@ -42,6 +51,7 @@ body.cliente-body {
     flex-direction: column;
     justify-content: space-between;
     z-index: 1000;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
 }
 
     .cliente-sidebar .logo {
@@ -69,13 +79,14 @@ body.cliente-body {
                 display: block;
                 padding: 0.5rem 1rem;
                 border-radius: 8px;
-                transition: background-color 0.3s ease;
+                transition: all 0.3s ease;
             }
 
                 .cliente-sidebar nav ul li a:hover,
                 .cliente-sidebar nav ul li a.active {
                     background-color: var(--primary);
                     color: #fff;
+                    transform: scale(1.05);
                 }
 
 /* ===============================
@@ -149,7 +160,9 @@ body.cliente-body {
     background-color: var(--main-bg);
 }
 
-/* 🔍 Barra de Búsqueda */
+/* ===============================
+   🔍 Barra de Búsqueda
+================================ */
 .top-bar {
     margin-bottom: 2rem;
     display: flex;
@@ -189,13 +202,46 @@ body.cliente-body {
 }
 
 /* ===============================
-   🟩 Botones generales
+   📊 Tablas Modernas
 ================================ */
-.buttons, .buscar-botones {
-    display: flex;
-    gap: 10px;
+table.table {
+    width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
+    table.table thead {
+        background-color: var(--sidebar-bg);
+        color: var(--text-color);
+        font-weight: bold;
+    }
+
+        table.table thead th {
+            border-bottom: 1px solid var(--table-border);
+            padding: 0.75rem 1rem;
+        }
+
+    table.table tbody td {
+        padding: 0.75rem 1rem;
+        border-top: none;
+        border-bottom: 1px solid var(--table-border);
+        transition: background-color 0.3s;
+    }
+
+    table.table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+[data-theme="light"] table.table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* ===============================
+   🔘 Botones
+================================ */
 .btn {
     padding: 10px 20px;
     border: none;
@@ -203,7 +249,14 @@ body.cliente-body {
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
+    background-color: var(--primary);
+    color: #fff;
 }
+
+    .btn:hover {
+        filter: brightness(1.1);
+        transform: scale(1.05);
+    }
 
     .btn.eliminar {
         background-color: transparent;
@@ -216,179 +269,8 @@ body.cliente-body {
             color: white;
         }
 
-    .btn.comenzar {
-        background-color: var(--primary);
-        color: black;
-    }
-
-        .btn.comenzar:hover {
-            background-color: #17b94b;
-            color: white;
-        }
-
-/* 🏆 Tarjetas TOP 50 pro */
-.top50 .cards {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.top50 .card {
-    position: relative;
-    width: 250px;
-    height: 250px;
-    border-radius: 10px;
-    padding: 15px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 14px;
-    color: white;
-    transition: transform 0.3s ease;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-
-    .top50 .card:hover {
-        transform: scale(1.05);
-    }
-
-    .top50 .card p {
-        z-index: 1;
-        margin: 0;
-        text-align: center;
-        text-shadow: 0 0 5px rgba(0,0,0,0.7);
-    }
-
-/* Degradados por país */
-.top50 .chile {
-    background: linear-gradient(to bottom, #c33764, #1d2671);
-}
-
-.top50 .peru {
-    background: linear-gradient(to bottom, #ff6a00, #ee0979);
-}
-
-.top50 .global {
-    background: linear-gradient(to bottom, #0f2027, #2c5364);
-}
-
-.top50 .usa {
-    background: linear-gradient(to bottom, #fc466b, #3f5efb);
-}
-
-.top50 .pr {
-    background: linear-gradient(to bottom, #ff416c, #ff4b2b);
-}
-
-.play-btn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: white;
-    color: black;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-    z-index: 2;
-}
-
-    .play-btn:hover {
-        background: #ddd;
-    }
-
-
 /* ===============================
-   🎼 Información y Controles
-================================ */
-.player-song-meta {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 0;
-}
-
-    .player-song-meta .title,
-    .player-song-meta .artist {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 180px;
-        position: relative;
-    }
-
-        .player-song-meta .title.marquee,
-        .player-song-meta .artist.marquee {
-            animation: marquee 10s linear infinite;
-            position: relative;
-            left: 0;
-        }
-
-@keyframes marquee {
-    0% {
-        left: 0;
-    }
-
-    100% {
-        left: -100%;
-    }
-}
-
-.player-controls {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-}
-
-    .player-controls button {
-        background: none;
-        border: none;
-        color: var(--text-color);
-        font-size: 28px;
-        cursor: pointer;
-        transition: color 0.3s ease;
-    }
-
-        .player-controls button:hover {
-            color: var(--primary);
-        }
-
-.player-volume {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-    .player-volume input[type="range"] {
-        width: 100px;
-    }
-
-/* ===============================
-   📱 Responsive
-================================ */
-@media (max-width: 768px) {
-    .cliente-sidebar {
-        display: none;
-    }
-
-    .cliente-content {
-        margin-left: 0;
-        padding: 1rem;
-    }
-
-    .cliente-reproductor {
-        left: 0;
-        border-radius: 0;
-    }
-}
-/* ===============================
-   🎵 Mejoras al Reproductor
+   🎵 Reproductor
 ================================ */
 .cliente-reproductor {
     position: fixed;
@@ -469,23 +351,105 @@ body.cliente-body {
     font-size: 20px;
     cursor: pointer;
     transition: color 0.3s ease;
-    /* ===============================
-   📊 Tablas oscuras y claras
-================================ */
-    table .table {
-    background-color: var(--table-bg);
-    color: var(--text-color);
-    border-color: var(--table-border);
 }
 
-    table.table th,
-    table.table td {
-        background-color: transparent;
-        color: inherit;
-        border-top: 1px solid var(--table-border);
+    .btn-toggle-player:hover {
+        color: var(--primary);
     }
 
-[data-theme="light"] table.table {
-    background-color: #fff;
-    color: #000;
+/* ===============================
+   🏆 Tarjetas Top 50
+================================ */
+.top50 .cards {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.top50 .card {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: white;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+    .top50 .card:hover {
+        transform: scale(1.05);
+    }
+
+    .top50 .card p {
+        z-index: 1;
+        margin: 0;
+        text-align: center;
+        text-shadow: 0 0 5px rgba(0,0,0,0.7);
+    }
+
+/* Degradados por país */
+.top50 .chile {
+    background: linear-gradient(to bottom, #c33764, #1d2671);
+}
+
+.top50 .peru {
+    background: linear-gradient(to bottom, #ff6a00, #ee0979);
+}
+
+.top50 .global {
+    background: linear-gradient(to bottom, #0f2027, #2c5364);
+}
+
+.top50 .usa {
+    background: linear-gradient(to bottom, #fc466b, #3f5efb);
+}
+
+.top50 .pr {
+    background: linear-gradient(to bottom, #ff416c, #ff4b2b);
+}
+
+.play-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    z-index: 2;
+}
+
+    .play-btn:hover {
+        background: #ddd;
+    }
+
+/* ===============================
+   📱 Responsive
+================================ */
+@media (max-width: 768px) {
+    .cliente-sidebar {
+        display: none;
+    }
+
+    .cliente-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .cliente-reproductor {
+        left: 0;
+        border-radius: 0;
+    }
 }

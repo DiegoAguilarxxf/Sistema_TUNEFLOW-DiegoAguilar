@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+
+<!DOCTYPE html>
 <html lang="es" data-theme="dark">
 <head>
     <meta charset="utf-8" />
@@ -8,8 +12,23 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/cliente.css" />
+    
+
 </head>
 <body class="cliente-body d-flex flex-column">
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div style="position: fixed; top: 10px; right: 20px; z-index: 1100;">
+            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-outline-light" title="Cerrar sesión">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </form>
+        </div>
+    }
+
+
     <!-- 📌 Sidebar -->
     <div class="cliente-sidebar d-flex flex-column justify-content-between">
         <div>
@@ -43,9 +62,12 @@
     <!-- 🎵 Reproductor fijo -->
     <div class="cliente-reproductor" id="reproductor">
         <div class="d-flex align-items-center w-100">
+            <!-- Portada pequeña (normal) -->
             <div class="reproductor-portada me-3">
                 <img id="portadaActual" src="~/img/placeholder.png" alt="Portada" style="height: 60px; width: 60px; object-fit: cover;" />
             </div>
+
+            <!-- Info canción -->
             <div class="reproductor-info flex-grow-1">
                 <strong id="cancionActual">Ninguna canción en reproducción</strong>
                 <div class="d-flex align-items-center mt-1">
@@ -54,33 +76,61 @@
                     <span id="duracionTotal" style="min-width: 40px;">0:00</span>
                 </div>
             </div>
-            <div class="reproductor-controles ms-3">
+
+            <!-- Controles -->
+            <div class="reproductor-controles ms-3 d-flex align-items-center gap-1">
                 <button class="btn btn-outline-light btn-sm" onclick="anteriorCancion()">⏮</button>
                 <button class="btn btn-light btn-sm" onclick="togglePlay()">▶️</button>
                 <button class="btn btn-outline-light btn-sm" onclick="siguienteCancion()">⏭</button>
                 <input type="range" id="volumenControl" min="0" max="1" step="0.01" value="0.5" style="width: 100px;" />
                 <button class="btn btn-outline-warning btn-sm" onclick="añadirFavorito()">❤️</button>
+                <!-- Nuevo botón para mostrar letra -->
+                <button class="btn btn-outline-info btn-sm" id="btnLetra">🎤 Letra</button>
             </div>
         </div>
-        <div id="letraCancion" class="mt-3" style="display: none; max-height: 200px; overflow-y: auto; font-size: 0.9rem; white-space: pre-wrap;"></div>
+
+        <!-- Contenedor expandido -->
+        <div id="reproductorExpandido" style="display: none; margin-top: 1rem; text-align: center;">
+            <!-- Portada grande -->
+            <img id="portadaGrande" src="~/img/placeholder.png" alt="Portada Grande" style="height: 200px; width: 200px; object-fit: cover; margin-bottom: 1rem;" />
+
+            <!-- Letra grande, inicialmente oculta -->
+            <div id="letraGrande"
+                 style="
+                    display: none;
+                    max-height: 300px;
+                    overflow-y: auto;
+                    font-family: 'Oswald', sans-serif;
+                    font-size: 1.8rem;
+                    line-height: 1.3;
+                    color: var(--text-color);
+                    white-space: pre-wrap;
+                    padding: 0 1rem;
+                    text-align: center;
+                    user-select: text;
+                ">
+            </div>
+        </div>
+
         <audio id="audioPlayer" src="" preload="auto"></audio>
-        <button class="btn-toggle-player" id="togglePlayerBtn" title="Maximizar/Minimizar reproductor">⬆</button>
+
+        <!-- Botón para expandir/minimizar reproductor -->
+        <button class="btn-toggle-player" id="togglePlayerBtn" title="Maximizar/Minimizar reproductor" style="margin-top: 0.5rem;">⬆</button>
     </div>
 
     <script>
-        const toggle = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        const switchLabel = document.querySelector('.switch-label');
-        const audioPlayer = document.getElementById('audioPlayer');
-        const cancionActual = document.getElementById('cancionActual');
+        const togglePlayerBtn = document.getElementById('togglePlayerBtn');
+        const reproductorExpandido = document.getElementById('reproductorExpandido');
         const portadaActual = document.getElementById('portadaActual');
-        const volumenControl = document.getElementById('volumenControl');
+        const portadaGrande = document.getElementById('portadaGrande');
+        const letraGrande = document.getElementById('letraGrande');
+        const btnLetra = document.getElementById('btnLetra');
+        const cancionActual = document.getElementById('cancionActual');
+        const audioPlayer = document.getElementById('audioPlayer');
         const barraProgreso = document.getElementById('barraProgreso');
         const tiempoActual = document.getElementById('tiempoActual');
         const duracionTotal = document.getElementById('duracionTotal');
-        const reproductor = document.getElementById('reproductor');
-        const togglePlayerBtn = document.getElementById('togglePlayerBtn');
-        const letraCancion = document.getElementById('letraCancion');
+        const volumenControl = document.getElementById('volumenControl');
 
         let estaReproduciendo = false;
         let cancionEnReproduccion = {
@@ -89,39 +139,81 @@
             portada: '',
             tiempo: 0
         };
+        let letraVisible = false;
 
-        function setTheme(theme) {
-            html.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            toggle.checked = (theme === 'dark');
-            switchLabel.textContent = theme === 'dark' ? 'Modo Oscuro' : 'Modo Claro';
-        }
-
-        function loadTheme() {
-            const saved = localStorage.getItem('theme');
-            setTheme(saved === 'light' ? 'light' : 'dark');
-        }
-
-        toggle.addEventListener('change', () => setTheme(toggle.checked ? 'dark' : 'light'));
-        loadTheme();
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const data = sessionStorage.getItem('ultimaCancion');
-            if (data) {
-                const c = JSON.parse(data);
-                reproducirCancion(c.titulo, c.url, c.portada, c.tiempo, false);
+        // Alternar reproductor expandido (mostrar portada o letra)
+        togglePlayerBtn.addEventListener('click', () => {
+            const expandido = reproductorExpandido.style.display === 'block';
+            if (expandido) {
+                reproductorExpandido.style.display = 'none';
+                togglePlayerBtn.textContent = '⬆';
+                // Si letra estaba visible, ocultar también al minimizar
+                letraGrande.style.display = 'none';
+                portadaGrande.style.display = 'block';
+                letraVisible = false;
+            } else {
+                reproductorExpandido.style.display = 'block';
+                togglePlayerBtn.textContent = '⬇';
+                // Mostrar portada grande por defecto
+                portadaGrande.style.display = 'block';
+                letraGrande.style.display = 'none';
+                letraVisible = false;
             }
         });
 
+        // Botón mostrar/ocultar letra
+        btnLetra.addEventListener('click', () => {
+            letraVisible = !letraVisible;
+            if (letraVisible) {
+                // Mostrar letra, ocultar portada grande
+                letraGrande.style.display = 'block';
+                portadaGrande.style.display = 'none';
+                btnLetra.classList.add('active');
+            } else {
+                // Mostrar portada grande, ocultar letra
+                letraGrande.style.display = 'none';
+                portadaGrande.style.display = 'block';
+                btnLetra.classList.remove('active');
+            }
+        });
+
+        // Función para reproducir canción
+        function reproducirCancion(titulo, url, portada, tiempo = 0, autoPlay = true) {
+            cancionEnReproduccion = { titulo, url, portada, tiempo };
+            cancionActual.textContent = titulo;
+            portadaActual.src = portada;
+            portadaGrande.src = portada; // actualizar portada grande también
+            audioPlayer.src = url;
+            audioPlayer.currentTime = tiempo || 0;
+            obtenerLetra(titulo, 'Artista'); // Cambia 'Artista' si tienes la variable artista
+            if (autoPlay) audioPlayer.play().then(() => estaReproduciendo = true);
+            sessionStorage.setItem('ultimaCancion', JSON.stringify(cancionEnReproduccion));
+        }
+
+        // Función para obtener letra (API externa)
+        function obtenerLetra(titulo, artista) {
+            fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(artista)}/${encodeURIComponent(titulo)}`)
+                .then(resp => resp.json())
+                .then(data => {
+                    letraGrande.textContent = data.lyrics || 'Letra no disponible.';
+                    // Si letra está visible, actualizar contenido
+                    if (letraVisible) letraGrande.style.display = 'block';
+                })
+                .catch(() => letraGrande.textContent = 'Error al obtener la letra.');
+        }
+
+        // Control volumen
         volumenControl.addEventListener('input', () => {
             audioPlayer.volume = volumenControl.value;
         });
 
+        // Barra progreso control
         barraProgreso.addEventListener('input', () => {
             const nuevoTiempo = (barraProgreso.value / 100) * audioPlayer.duration;
             audioPlayer.currentTime = nuevoTiempo;
         });
 
+        // Actualizar barra progreso y tiempos
         audioPlayer.addEventListener('timeupdate', () => {
             const progreso = (audioPlayer.currentTime / audioPlayer.duration) * 100;
             barraProgreso.value = progreso || 0;
@@ -138,17 +230,7 @@
             return `${m}:${s}`;
         }
 
-        function reproducirCancion(titulo, url, portada, tiempo = 0, autoPlay = true) {
-            cancionEnReproduccion = { titulo, url, portada, tiempo };
-            cancionActual.textContent = titulo;
-            portadaActual.src = portada;
-            audioPlayer.src = url;
-            audioPlayer.currentTime = tiempo || 0;
-            obtenerLetra(titulo, 'Artista');
-            if (autoPlay) audioPlayer.play().then(() => estaReproduciendo = true);
-            sessionStorage.setItem('ultimaCancion', JSON.stringify(cancionEnReproduccion));
-        }
-
+        // Otros controles (implementa tus funciones reales)
         function togglePlay() {
             if (!audioPlayer.src) return;
             if (audioPlayer.paused) audioPlayer.play().then(() => estaReproduciendo = true);
@@ -174,26 +256,13 @@
             .catch(err => console.error(err));
         }
 
-        togglePlayerBtn.addEventListener('click', () => {
-            reproductor.classList.toggle('expanded');
-            togglePlayerBtn.textContent = reproductor.classList.contains('expanded') ? '⬇' : '⬆';
-            if (reproductor.classList.contains('expanded')) {
-                portadaActual.style.height = '200px';
-                portadaActual.style.width = '200px';
-                letraCancion.style.display = 'block';
-            } else {
-                portadaActual.style.height = '60px';
-                portadaActual.style.width = '60px';
-                letraCancion.style.display = 'none';
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = sessionStorage.getItem('ultimaCancion');
+            if (data) {
+                const c = JSON.parse(data);
+                reproducirCancion(c.titulo, c.url, c.portada, c.tiempo, false);
             }
         });
-
-        function obtenerLetra(titulo, artista) {
-            fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(artista)}/${encodeURIComponent(titulo)}`)
-                .then(resp => resp.json())
-                .then(data => letraCancion.innerText = data.lyrics || 'Letra no disponible.')
-                .catch(() => letraCancion.innerText = 'Error al obtener la letra.');
-        }
 
         window.reproducirCancion = reproducirCancion;
     </script>
