@@ -1,48 +1,30 @@
-﻿@model Modelos.Tuneflow.Usuario.Perfiles.Perfil
+﻿@model Modelos.Tuneflow.Usuario.Perfiles.Perfil;
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
-    ViewData["Title"] = "Mi perfil";
+    ViewData["Title"] = "Perfil"; 
 }
 
 <div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center; justify-content: space-between;">
     <div style="display: flex; align-items: center; gap: 1.5rem;">
-        <img src="@Model.ImagenPerfil" alt="Foto de perfil"
+        <img src="@Model.ImagenPerfil" alt="Foto perfil"
              style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid white;" />
         <div>
-            <h4 style="color: white; margin: 0;">Mi perfil</h4>
+            <h4 style="color: white; margin: 0;">Perfil</h4>
             <h2 style="color: white; margin: 0; font-size: 2rem; font-weight: bold;">
-                @Model.Cliente?.Nombre @Model.Cliente?.Apellido
+                @(
+                    Model.Cliente != null
+                    ? $"{Model.Cliente.Nombre} {Model.Cliente.Apellido}"
+                    : Model.Artista?.NombreArtistico
+                    )
             </h2>
+          
         </div>
     </div>
 
     <nav>
-        @Html.ActionLink("Editar Perfil", "Edit", new { id = Model.Id }, new { @class = "btn btn-light" })
+        <a class="btn btn-primary">
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+        </a>
     </nav>
-</div>
-
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-6">
-            <h5>Información personal</h5>
-            <ul class="list-group">
-                <li class="list-group-item"><strong>Correo electrónico:</strong> @Model.Cliente?.Email</li>
-                <li class="list-group-item"><strong>Teléfono:</strong> @Model.Cliente.Telefono</li>
-                <li class="list-group-item"><strong>Fecha de nacimiento:</strong> @Model.Cliente.FechaNacimiento.ToString("dd/MM/yyyy")</li>
-                <li class="list-group-item"><strong>Tipo de cuenta:</strong> @Model.Cliente.TipoCuenta</li>
-                <li class="list-group-item"><strong>Estado:</strong> @(Model.Cliente.Activo == true ? "Activo" : "Inactivo")</li>
-                <li class="list-group-item"><strong>Fecha de registro:</strong> @Model.Cliente.FechaRegistro.ToString("dd/MM/yyyy")</li>
-            </ul>
-        </div>
-        <div class="col-md-6">
-            <h5>Detalles adicionales</h5>
-            <ul class="list-group">
-                <li class="list-group-item"><strong>País:</strong> @Model.Cliente.Pais.Name</li>
-                <li class="list-group-item"><strong>Suscripción:</strong> @Model.Cliente.Suscripcion.TipoSuscripcion.Nombre</li>
-                <li class="list-group-item"><strong>Fecha de creación del perfil:</strong> @Model.FechaCreacion.ToString("dd/MM/yyyy")</li>
-                <li class="list-group-item"><strong>Biografía:</strong> @Model.Biografia</li>
-            </ul>
-        </div>
-    </div>
 </div>

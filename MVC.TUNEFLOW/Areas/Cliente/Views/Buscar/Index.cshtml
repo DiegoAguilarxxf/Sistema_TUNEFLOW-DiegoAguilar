@@ -5,30 +5,23 @@
     ViewData["Title"] = "Buscar Canciones";
 }
 
-<h2>🎧 Buscar canciones</h2>
+<h1 class="page-title">Buscar Canciones</h1>
 
-<form method="get" action="/Cliente/Buscar/Buscar" class="mb-3">
-    <input type="text" name="nameCancion" placeholder="Busca tu canción" class="form-control d-inline-block w-50" />
-    <button type="submit" class="btn btn-primary ms-2">Buscar</button>
+<form asp-action="Index" method="get">
+    <div class="input-group mb-3 search-bar">
+        <input type="text" name="query" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Buscar por título, artista o álbum..." />
+        <button class="btn btn-primary" type="submit">Buscar</button>
+    </div>
 </form>
 
-
-
-
-@if (Model == null || !Model.Any())
+@if (Model != null && Model.Any())
 {
-    <div class="alert alert-warning">No se encontraron canciones con ese título.</div>
-}
-else
-{
-    <table class="table">
+    <table class="table table-hover table-dark results-table">
         <thead>
             <tr>
-                <th></th>
                 <th>Título</th>
-                <th>Género</th>
                 <th>Artista</th>
-                <th>Contenido Explícito</th>
+                <th>Álbum</th>
                 <th>Duración</th>
                 <th></th>
             </tr>
@@ -37,48 +30,64 @@ else
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>
-                        <img src="@item.RutaImagen" alt="Imagen de @item.Titulo" style="max-height: 100px;" />
-                    </td>
                     <td>@item.Titulo</td>
-                    <td>@item.Genero</td>
-                    <td>@(item.Artista?.NombreArtistico ?? "Desconocido")</td>
-                    <td>@(item.ContenidoExplicito ? "Sí" : "No")</td>
-                    <td>@item.TiempoEnMinutos(item.Duracion)</td>
+                    <td>@item.Artista</td>
+                    <td>@item.Album</td>
                     <td>
-                        <button class="btn btn-sm btn-success" type="button"
-                                onclick="reproducirCancion('@item.Titulo', '@item.RutaArchivo', '@item.RutaImagen')">
-                            ▶ Reproducir
-                        </button>
-
-
+                        @item.TiempoEnMinutos(item.Duracion)
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="playSongFromSearch(@item.Id)">Reproducir</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+else
+{
+    <p class="no-results">No se encontraron resultados. Intenta otra búsqueda.</p>
+}
 
-<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" id="modalContent">
-            <!-- Aquí se carga el contenido del modal desde el controlador -->
-        </div>
-    </div>
-</div>
-
-<script>
-    function cargarDetalle(id) {
-        fetch(`/Reproductor/Reproducir?id=${id}`)
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('modalContent').innerHTML = html;
-                const modal = new bootstrap.Modal(document.getElementById('detalleModal'));
-                modal.show();
-            })
-            .catch(err => {
-                console.error("Error al cargar detalle:", err);
-                alert("No se pudo cargar el reproductor.");
-            });
-    }
-</script>
+@section Scripts {
+    <script>
+        // Esta función necesita ser accesible globalmente y es llamada desde los botones "Reproducir"
+        // `window.loadSong` es la función global expuesta en reproductor.js
+        function playSongFromSearch(songId) {
+            // Hacemos una llamada AJAX para obtener los detalles de la canción desde el controlador
+            fetch(`/Reproductor/GetCancionData?id=${songId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        // Si la respuesta no es OK (ej. 404, 500), lanzamos un error
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); // Esperamos una respuesta JSON con los datos de la canción
+                })
+                .then(songData => {
+                    // Verificamos que window.loadSong esté disponible antes de llamarla
+                    if (typeof window.loadSong === 'function') {
+                        // Llamamos a la función global loadSong de reproductor.js
+                        // Asegúrate de que los nombres de propiedades de 'songData' (en camelCase)
+                        // coincidan con los esperados por `loadSong` en reproductor.js.
+                        // Tu modelo Cancion tiene Propiedades como 'Titulo', 'Artista', 'RutaArchivo', 'RutaImagen', 'Letra'.
+                        // ASP.NET Core MVC serializa estos a 'titulo', 'artista', 'rutaArchivo', 'rutaImagen', 'letra' por defecto.
+                        window.loadSong({
+                            id: songData.id,
+                            title: songData.titulo,
+                            artist: songData.artista,
+                            src: songData.rutaArchivo,
+                            cover: songData.rutaImagen,
+                            lyrics: songData.letra // Si tu modelo Cancion tiene una propiedad Letra
+                        });
+                    } else {
+                        console.error("Error: La función window.loadSong no está definida. Asegúrate de que reproductor.js se cargue correctamente.");
+                        alert("No se pudo iniciar el reproductor. Recarga la página.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al cargar la canción:", error);
+                    alert("No se pudo cargar la canción para reproducción. Mensaje: " + error.message);
+                });
+        }
+    </script>
+}

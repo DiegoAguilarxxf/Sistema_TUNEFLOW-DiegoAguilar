@@ -1,119 +1,699 @@
-﻿/* ===============================
-    🎨 Variables de Tema y Base
-================================ */
+﻿/* =====================================================================
+    VARIABLES CSS PERSONALIZADAS
+    (Asegúrate de que estas variables estén definidas en algún lugar,
+    por ejemplo, en :root{} o en un archivo de variables separado)
+    ===================================================================== */
 :root {
-    --sidebar-bg: #1e1e1e; /* Tono más oscuro y profundo */
-    --main-bg: #121212;
-    --text-color: #e0e0e0; /* Texto ligeramente más suave */
-    --primary: #644fff; /* Púrpura vibrante */
-    --primary-rgb: 100, 79, 255; /* RGB para rgba() */
-    --primary-hover: #7b68ee; /* Un poco más claro para hover */
-    --reproductor-bg: #282828; /* Fondo del reproductor un poco más claro que el main */
-    --table-bg: #222222; /* Fondo de tabla ligeramente diferente */
-    --table-border: #444444; /* Borde de tabla más definido */
-    --btn-color: #ffffff;
-    --progress-bg: #555555; /* Gris más oscuro para el fondo de la barra de progreso */
-    --card-border: rgba(255, 255, 255, 0.1); /* Borde sutil para tarjetas */
+    --primary: #5275e3; /* Color principal de acento */
+    --secondary: #90a3ea; /* Color secundario */
+    --text-color: #333; /* Color de texto general para modo claro */
+    --text-color-light: #666; /* Color de texto más claro para modo claro */
+    --bg-color: #f0f2f5; /* Color de fondo general para modo claro */
+    --card-bg: #ffffff; /* Fondo de tarjetas para modo claro */
+    --border-color: #e0e0e0; /* Color de borde para modo claro */
+    --shadow-color: rgba(0, 0, 0, 0.1); /* Sombra para modo claro */
+    --sidebar-bg: #ffffff; /* Fondo del sidebar para modo claro */
+    --sidebar-text: #333; /* Texto del sidebar para modo claro */
+    --sidebar-hover-bg: #e0e7ff; /* Hover del sidebar para modo claro */
+    --search-bg: #f8f9fa; /* Fondo de la barra de búsqueda para modo claro */
+    --input-border: #ccc; /* Borde de inputs para modo claro */
+    /* Variables del Reproductor */
+    --player-height: 80px; /* Altura del reproductor minimizado */
+    --player-height-mobile: 70px; /* Altura del reproductor minimizado en móvil */
+    --player-bg: #ffffff; /* Fondo del reproductor para modo claro */
+    --player-text: #333; /* Texto del reproductor para modo claro */
+    --player-shadow: rgba(0, 0, 0, 0.2); /* Sombra del reproductor */
+    --btn-player-bg: #f0f2f5; /* Fondo de botones del reproductor */
+    --btn-player-hover-bg: #e0e7ff; /* Hover de botones del reproductor */
+    --btn-player-active-bg: #c8d7ff; /* Active de botones del reproductor */
+    --btn-player-icon-filter: none; /* Filtro de icono (ninguno para claro) */
+    --range-track-bg: #e0e0e0; /* Fondo de la barra de progreso/volumen */
+    --range-thumb-bg: var(--primary); /* Pulgar de la barra de progreso/volumen */
+    /* Variables del Switch de Tema */
+    --switch-bg-off: #ccc; /* Fondo del switch (OFF - claro) */
+    --switch-bg-on: var(--primary); /* Fondo del switch (ON - oscuro) */
+    --switch-thumb: #ffffff; /* Color del pulgar del switch */
+    /* Transiciones */
+    --transition: 0.3s ease; /* Transición estándar */
+    --transition-long: 0.6s ease-in-out; /* Transición para aparecer/desaparecer elementos grandes */
+    /* Otros */
+    --radius: 8px; /* Radio de borde general */
 }
 
-[data-theme="light"] {
-    --sidebar-bg: #f5f5f5;
-    --main-bg: #ffffff;
-    --text-color: #333333;
-    --primary: #644fff;
-    --primary-rgb: 100, 79, 255;
-    --primary-hover: #7b68ee;
-    --reproductor-bg: #e0e0e0;
-    --table-bg: #f8f8f8;
-    --table-border: #cccccc;
-    --btn-color: #333333;
-    --progress-bg: #dddddd;
-    --card-border: rgba(0, 0, 0, 0.1);
+/* Modo Oscuro (dark-mode class en el body o html) */
+body.dark-mode {
+    --text-color: #f0f2f5;
+    --text-color-light: #aaa;
+    --bg-color: #1a1a2e;
+    --card-bg: #2d2d44;
+    --border-color: #3e3e5c;
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --sidebar-bg: #1c1c3a;
+    --sidebar-text: #f0f2f5;
+    --sidebar-hover-bg: #3f3f6e;
+    --search-bg: #2d2d44;
+    --input-border: #4a4a6e;
+    /* Variables del Reproductor (Oscuro) */
+    --player-bg: #1c1c3a;
+    --player-text: #f0f2f5;
+    --player-shadow: rgba(0, 0, 0, 0.6);
+    --btn-player-bg: #3e3e5c;
+    --btn-player-hover-bg: #5f5f9e;
+    --btn-player-active-bg: #7a7ac0;
+    --btn-player-icon-filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(180deg) brightness(120%) contrast(100%); /* Hace los iconos blancos */
+    --range-track-bg: #4a4a6e;
+    --range-thumb-bg: var(--secondary);
+    /* Variables del Switch de Tema (Oscuro) */
+    --switch-bg-off: #4a4a6e;
+    --switch-bg-on: var(--primary);
+    --switch-thumb: #ffffff;
 }
 
-body.cliente-body {
+/* =====================================================================
+    1. GENERALES Y LAYOUT
+    ===================================================================== */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    background: var(--main-bg);
+    padding: 0;
+    background-color: var(--bg-color);
     color: var(--text-color);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    transition: background 0.4s ease, color 0.4s ease;
-    display: flex; /* Añadido para facilitar el layout principal */
+    transition: background-color var(--transition), color var(--transition);
+    min-height: 100vh; /* Asegura que el body ocupe toda la altura */
+    display: flex; /* Añadido para ayudar al layout completo */
+    flex-direction: column; /* Añadido para ayudar al layout completo */
 }
 
-/* ===============================
-    📌 Sidebar
-================================ */
-.cliente-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 220px;
-    height: 100vh;
-    background-color: var(--sidebar-bg);
-    color: var(--text-color);
-    padding: 1.5rem 1rem;
+/* Contenedor principal del layout (sidebar + contenido) */
+.cliente-layout {
+    display: flex;
+    flex-grow: 1; /* Permite que ocupe el espacio disponible */
+}
+
+/* Contenido principal (excluyendo el sidebar y el reproductor) */
+.main-wrapper {
+    flex-grow: 1; /* Ocupa el espacio restante */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    z-index: 1000;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4); /* Sombra más pronunciada */
-    transition: transform 0.3s ease, background-color 0.4s ease;
+    min-height: calc(100vh - var(--player-height)); /* Ajusta la altura para el reproductor */
+    transition: min-height var(--transition-long); /* Transición para cuando el reproductor aparece */
+    position: relative; /* Para el posicionamiento del cliente-content */
+    padding-bottom: var(--player-height); /* Añade padding para el reproductor fijo */
+    box-sizing: border-box; /* Incluye padding en el tamaño total */
 }
 
-    .cliente-sidebar .text-center img { /* Asegura que la imagen del logo esté bien centrada */
-        display: block;
-        margin: 0 auto;
-    }
+body.dark-mode .main-wrapper {
+    background-color: var(--bg-color); /* Asegura que el fondo del main-wrapper cambie */
+}
 
-    .cliente-sidebar nav .nav-link { /* Estilos de los enlaces/botones del sidebar */
-        color: var(--text-color); /* Color de texto predeterminado */
-        text-decoration: none;
-        font-weight: 600;
-        display: block;
-        padding: 0.8rem 1rem; /* Relleno ajustado para más área de clic */
-        margin-bottom: 0.5rem; /* Espacio entre los botones */
-        border-radius: 8px;
-        transition: all 0.2s ease; /* Transición más rápida para feedback inmediato */
+.cliente-content {
+    flex-grow: 1; /* Permite que ocupe todo el espacio vertical disponible */
+    padding: 25px;
+    background-color: var(--bg-color);
+    transition: background-color var(--transition);
+}
+
+/* =====================================================================
+    2. SIDEBAR (cliente-sidebar)
+    ===================================================================== */
+.cliente-sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    padding: 20px;
+    box-shadow: 2px 0 10px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Empuja el switch abajo */
+    align-items: center;
+    color: var(--sidebar-text);
+    transition: background-color var(--transition), color var(--transition), box-shadow var(--transition);
+    flex-shrink: 0; /* Evita que el sidebar se encoja */
+}
+
+    .cliente-sidebar .logo {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 30px;
         text-align: center;
-        background-color: transparent; /* Fondo transparente por defecto */
-        border: 1px solid transparent; /* Borde transparente por defecto */
     }
 
-        .cliente-sidebar nav .nav-link:hover {
-            background-color: rgba(var(--primary-rgb), 0.1); /* Ligero fondo con color primario */
-            color: var(--primary-hover); /* Texto cambia a un tono de primary al pasar el mouse */
-            transform: translateY(-2px); /* Pequeño levantamiento al pasar el mouse */
-            border-color: rgba(var(--primary-rgb), 0.3); /* Borde sutil al pasar el mouse */
+    .cliente-sidebar nav {
+        width: 100%;
+        flex-grow: 1; /* Ocupa el espacio disponible */
+    }
+
+    .cliente-sidebar .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        margin-bottom: 8px;
+        color: var(--sidebar-text);
+        text-decoration: none;
+        border-radius: var(--radius);
+        transition: background-color var(--transition), color var(--transition);
+    }
+
+        .cliente-sidebar .nav-link:hover,
+        .cliente-sidebar .nav-link.active {
+            background-color: var(--sidebar-hover-bg);
+            color: var(--primary);
         }
 
-        .cliente-sidebar nav .nav-link.active,
-        .cliente-sidebar nav .nav-link.active:hover { /* Estilo para el enlace activo */
-            background-color: var(--primary); /* Fondo sólido con el color primario */
-            color: var(--btn-color); /* Texto blanco para el botón activo */
-            transform: scale(1.02); /* Ligeramente más grande y levantado */
-            box-shadow: 0 4px 10px rgba(var(--primary-rgb), 0.4); /* Sombra para el activo */
-            border-color: var(--primary); /* Borde sólido del color primario */
+        .cliente-sidebar .nav-link img {
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
+            filter: var(--btn-player-icon-filter); /* Reutilizamos el filtro para iconos del sidebar */
+            transition: filter var(--transition);
         }
 
+/* =====================================================================
+    3. TABLAS DE RESULTADOS
+    ===================================================================== */
+.results-table {
+    width: 100%;
+    border-collapse: separate; /* Para que border-radius funcione */
+    border-spacing: 0; /* Elimina espacio entre celdas */
+    margin-top: 20px;
+    border-radius: var(--radius);
+    overflow: hidden; /* Importante para que el border-radius se vea bien */
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
 
-/* ===============================
-    🌗 Switch de Tema
-================================ */
-.theme-switch-wrapper {
+    .results-table thead tr {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .results-table th,
+    .results-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .results-table tbody tr {
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        transition: background-color var(--transition);
+    }
+
+        .results-table tbody tr:hover {
+            background-color: var(--sidebar-hover-bg); /* Color de hover similar al sidebar */
+            cursor: pointer;
+        }
+
+        .results-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+/* =====================================================================
+    4. BÚSQUEDA
+    ===================================================================== */
+.search-bar .form-control {
+    background-color: var(--search-bg);
+    border-color: var(--input-border);
+    color: var(--text-color);
+    transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+}
+
+    .search-bar .form-control::placeholder {
+        color: var(--text-color-light);
+    }
+
+.search-bar .btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    transition: background-color var(--transition), border-color var(--transition);
+}
+
+    .search-bar .btn-primary:hover {
+        background-color: var(--secondary);
+        border-color: var(--secondary);
+    }
+
+/* =====================================================================
+    5. MENSAJES Y ERRORES
+    ===================================================================== */
+.no-results {
+    text-align: center;
+    color: var(--text-color-light);
+    font-style: italic;
+    margin-top: 50px;
+}
+
+/* =====================================================================
+    6. TÍTULOS DE PÁGINA
+    ===================================================================== */
+.page-title {
+    color: var(--text-color);
+    margin-bottom: 25px;
+    font-size: 2em;
+    font-weight: 600;
+    transition: color var(--transition);
+}
+
+/* =====================================================================
+    7. MODALES (Bootstrap Overrides)
+    ===================================================================== */
+.modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: 0 5px 20px var(--shadow-color);
+    transition: background-color var(--transition), color var(--transition);
+}
+
+.modal-header {
+    border-bottom-color: var(--border-color);
+    transition: border-bottom-color var(--transition);
+}
+
+.modal-title {
+    color: var(--text-color);
+}
+
+.modal-body {
+    color: var(--text-color-light);
+}
+
+.modal-footer {
+    border-top-color: var(--border-color);
+    transition: border-top-color var(--transition);
+}
+
+.btn-close {
+    filter: var(--btn-player-icon-filter); /* Ajusta el color del icono de cerrar */
+    transition: filter var(--transition);
+}
+
+/* =====================================================================
+    8. BOTONES GENERALES (Bootstrap Overrides)
+    ===================================================================== */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    transition: background-color var(--transition), border-color var(--transition);
+}
+
+    .btn-primary:hover {
+        background-color: var(--secondary);
+        border-color: var(--secondary);
+    }
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+    transition: background-color var(--transition), border-color var(--transition);
+}
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+/* =====================================================================
+    9. REPRODUCTOR DE MÚSICA (cliente-reproductor)
+    ===================================================================== */
+.cliente-reproductor {
+    position: fixed;
+    bottom: 0;
+    left: 260px; /* Asegura que el reproductor comience después de la sidebar */
+    width: calc(100% - 260px); /* Ajusta el ancho para ocupar el espacio restante */
+    background-color: var(--player-bg);
+    color: var(--player-text);
+    box-shadow: 0 -5px 15px var(--player-shadow);
+    padding: 0 20px; /* Padding horizontal */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050; /* Alto z-index para que esté por encima de otros elementos */
+    transition: all var(--transition-long) ease-in-out; /* Transición suave para aparecer/desaparecer */
+    box-sizing: border-box;
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+    /* INICIALMENTE OCULTO */
+    opacity: 0;
+    pointer-events: none; /* Impide interacción cuando está oculto */
+    transform: translateY(100%); /* Lo desliza completamente fuera de la vista inferior */
+    height: 0; /* Ocupa 0 altura, esencial para que no afecte el layout */
+    overflow: hidden; /* Asegura que nada se desborde mientras está oculto */
+}
+
+    /* Cuando el reproductor está activo y visible */
+    .cliente-reproductor.active {
+        opacity: 1;
+        pointer-events: all; /* Permite interacción */
+        transform: translateY(0); /* Lo desliza a su posición visible */
+        height: var(--player-height); /* Le da su altura normal */
+    }
+
+    /* Cuando el reproductor está expandido (maximizado) */
+    .cliente-reproductor.expanded {
+        left: 0; /* Ocupa toda la pantalla horizontalmente */
+        width: 100%; /* Ocupa todo el ancho */
+        height: 100vh; /* Ocupa toda la altura de la ventana */
+        padding-top: 60px; /* Espacio para el botón de cerrar */
+        justify-content: flex-start; /* Alinea contenido al inicio */
+        overflow-y: auto; /* Permite scroll si la letra es muy larga */
+        border-radius: 0; /* Sin bordes redondeados al expandirse */
+        /* Estas propiedades ya están en .active, pero las repetimos para asegurar */
+        opacity: 1;
+        pointer-events: all;
+        transform: translateY(0);
+    }
+
+/* Fila superior del reproductor (portada + info de la canción) */
+.reproductor-top-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    /* transition: opacity var(--transition); /* No es necesario aquí si la fila se oculta completa */
+}
+
+/* Oculta la fila superior cuando el reproductor está expandido */
+.cliente-reproductor.expanded .reproductor-top-row {
+    display: none;
+}
+
+.reproductor-portada {
+    flex-shrink: 0;
+    margin-right: 15px;
+}
+
+    .reproductor-portada img {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius);
+        transition: transform var(--transition);
+        object-fit: cover;
+    }
+
+        .reproductor-portada img:hover {
+            transform: scale(1.05);
+        }
+
+.reproductor-info {
+    flex-grow: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-right: 15px;
+    padding-top: 5px;
+}
+
+    .reproductor-info strong {
+        font-size: 1.1em;
+        display: block;
+        color: var(--player-text);
+    }
+
+    .reproductor-info span {
+        font-size: 0.9em;
+        color: var(--player-text);
+        opacity: 0.7;
+    }
+
+/* Contenido expandido (portada grande y letra) */
+#reproductorExpandidoContenido {
+    flex-grow: 1;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    display: none; /* Oculto por defecto, JS lo muestra */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity var(--transition-long); /* Transición para el contenido expandido */
+}
+
+/* Fuerza la visibilidad del contenido expandido cuando el reproductor está expandido */
+.cliente-reproductor.expanded #reproductorExpandidoContenido {
+    display: flex !important; /* !important puede ser necesario si Bootstrap o algo lo sobrescribe */
+}
+
+.reproductor-grande-portada {
+    max-width: 80%;
+    max-height: 50vh;
+    object-fit: contain;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px var(--player-shadow);
+    transition: all var(--transition);
+}
+
+.letra-display {
+    width: 80%;
+    max-width: 700px;
+    max-height: 40vh;
+    overflow-y: auto;
+    font-size: 1.1em;
+    line-height: 1.6;
+    text-align: center;
+    white-space: pre-wrap;
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    border-radius: var(--radius);
+    color: var(--text-color);
+    transition: background-color var(--transition), color var(--transition);
+}
+
+/* Controles del reproductor en la parte inferior */
+.reproductor-controles-bottom {
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    margin-top: auto; /* Empuja los controles hacia abajo cuando está expandido */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Estilos de la barra de progreso */
+#barraProgreso {
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--range-track-bg);
+    border-radius: 5px;
+    outline: none;
+    transition: background var(--transition);
+    width: 100%;
+    flex-grow: 1;
+    margin: 0 10px;
+}
+
+    #barraProgreso::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        background: var(--range-thumb-bg);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+        margin-top: -5px;
+        transition: background var(--transition), box-shadow var(--transition);
+    }
+
+    #barraProgreso::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        background: var(--range-thumb-bg);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+        transition: background var(--transition), box-shadow var(--transition);
+    }
+
+    #barraProgreso::-ms-thumb {
+        width: 18px;
+        height: 18px;
+        background: var(--range-thumb-bg);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+        transition: background var(--transition), box-shadow var(--transition);
+    }
+
+/* Controles de volumen */
+#volumenControl {
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--range-track-bg);
+    border-radius: 3px;
+    outline: none;
+    transition: background var(--transition);
+    width: 100px;
+    flex-shrink: 0;
+}
+
+    #volumenControl::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        background: var(--range-thumb-bg);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        margin-top: -4px;
+        transition: background var(--transition), box-shadow var(--transition);
+    }
+
+    #volumenControl::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        background: var(--range-thumb-bg);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        transition: background var(--transition), box-shadow var(--transition);
+    }
+
+    #volumenControl::-ms-thumb {
+        width: 14px;
+        height: 14px;
+        background: var(--range-thumb-bg);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        transition: background var(--transition), box-shadow var(--transition);
+    }
+
+/* Estilos para los botones del reproductor */
+.btn-player-control {
+    background-color: var(--btn-player-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--table-border); /* Separador visual */
+    transition: background-color var(--transition), border-color var(--transition), transform 0.1s ease;
+    padding: 0;
+    cursor: pointer;
 }
+
+    .btn-player-control:hover {
+        background-color: var(--btn-player-hover-bg);
+        border-color: var(--primary);
+        transform: scale(1.05);
+    }
+
+    .btn-player-control:active {
+        background-color: var(--btn-player-active-bg);
+        transform: scale(0.95);
+    }
+
+    .btn-player-control img {
+        width: 20px;
+        height: 20px;
+        filter: var(--btn-player-icon-filter);
+        transition: filter var(--transition);
+    }
+
+/* Botón de reproducción/pausa - ligeramente más grande */
+.btn-primary.btn-play-pause {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .btn-primary.btn-play-pause img {
+        width: 24px;
+        height: 24px;
+    }
+
+/* Botón de toggle (expandir/minimizar reproductor) */
+.btn-toggle-player {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%); /* Posiciona verticalmente centrado */
+    background-color: var(--btn-player-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color var(--transition), border-color var(--transition), transform 0.1s ease;
+    color: var(--player-text); /* Color del texto del icono (⬆⬇) */
+    font-size: 1.2em; /* Tamaño del icono (⬆⬇) */
+    line-height: 1; /* Ajuste de línea */
+}
+
+    .btn-toggle-player:hover {
+        background-color: var(--btn-player-hover-bg);
+        border-color: var(--primary);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+.cliente-reproductor.expanded .btn-toggle-player {
+    top: 20px; /* Posición cuando está expandido */
+    right: 20px;
+    transform: none; /* Eliminar translateY para que top y right funcionen directamente */
+}
+
+/* =====================================================================
+    10. SWITCH DE TEMA (Sidebar)
+    ===================================================================== */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centra los elementos (etiquetas y switch) */
+    gap: 10px; /* Espacio entre el texto y el switch */
+    margin-top: auto; /* Empuja el wrapper hacia abajo en la sidebar */
+    padding: 15px 0; /* Padding vertical */
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+    width: 100%;
+    font-size: 0.9em;
+    color: var(--text-color-light); /* Color del texto por defecto */
+    /* Asegúrate de que el z-index de la sidebar permita ver el switch si es necesario */
+    z-index: 10;
+    position: relative; /* Para asegurar que el z-index funcione */
+}
+
+    .theme-switch-wrapper .switch-label {
+        transition: color var(--transition); /* Transición suave del color del texto */
+        min-width: 60px; /* Para asegurar que el texto no salte */
+        text-align: center;
+        opacity: 0.6; /* Un poco menos visible por defecto */
+        color: var(--sidebar-text); /* Asegura que tome el color del sidebar */
+    }
+
+        .theme-switch-wrapper .switch-label.active-mode {
+            opacity: 1; /* Más visible cuando es el modo activo */
+            font-weight: 600; /* Resaltar el texto activo */
+            color: var(--primary); /* O un color que indique el modo activo */
+        }
 
 .theme-switch {
     position: relative;
     display: inline-block;
-    width: 52px;
+    width: 50px;
     height: 28px;
 }
 
@@ -123,662 +703,192 @@ body.cliente-body {
         height: 0;
     }
 
-    .theme-switch .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #777; /* Gris más oscuro para el slider apagado */
-        border-radius: 34px;
-        transition: 0.4s;
-    }
-
-        .theme-switch .slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            border-radius: 50%;
-            transition: 0.4s;
-        }
-
-    .theme-switch input:checked + .slider {
-        background-color: var(--primary); /* Cambia a primary cuando está encendido */
-    }
-
-        .theme-switch input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-.switch-label {
-    margin-left: 10px;
-    font-size: 0.95rem; /* Fuente un poco más grande */
-    color: var(--text-color);
-}
-
-/* ===============================
-    🧱 Contenido Principal
-================================ */
-.cliente-content {
-    margin-left: 220px; /* Offset por el sidebar */
-    padding: 2rem 2.5rem 120px 2.5rem; /* Más padding horizontal */
-    min-height: 100vh;
-    background-color: var(--main-bg);
-    flex-grow: 1; /* Permite que el contenido ocupe el espacio restante */
-    transition: margin-left 0.3s ease, background-color 0.4s ease;
-}
-
-/* ===============================
-    🔍 Barra de Búsqueda
-================================ */
-.top-bar {
-    margin-bottom: 2.5rem; /* Más espacio debajo de la barra */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-    .top-bar input[type="text"],
-    .buscar-input {
-        width: 60%; /* Un poco más ancho */
-        max-width: 500px; /* Ancho máximo para no ocupar todo el espacio en pantallas grandes */
-        padding: 14px 22px; /* Más padding para una mejor sensación */
-        border-radius: 30px; /* Más redondeado */
-        border: 1px solid var(--table-border); /* Borde sutil */
-        background: var(--table-bg); /* Utiliza un color de fondo más neutral del tema */
-        color: var(--text-color);
-        box-shadow: inset 1px 1px 4px rgba(0,0,0,0.5); /* Sombra interior sutil */
-        font-size: 1.1rem; /* Fuente más grande */
-        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-        .top-bar input::placeholder,
-        .buscar-input::placeholder {
-            color: #a0a0a0; /* Placeholder más claro */
-            font-style: normal; /* No cursiva por defecto */
-        }
-
-        .top-bar input:focus,
-        .buscar-input:focus {
-            outline: none;
-            background-color: var(--sidebar-bg); /* Fondo más oscuro al enfocar */
-            border-color: var(--primary); /* Borde del color primario */
-            box-shadow: inset 1px 1px 6px rgba(0,0,0,0.6), 0 0 0 3px rgba(var(--primary-rgb), 0.2); /* Sombra de enfoque */
-        }
-
-[data-theme="light"] .buscar-input {
-    background-color: #f0f0f0;
-    color: #333;
-    border-color: #c0c0c0;
-    box-shadow: inset 1px 1px 4px rgba(0,0,0,0.1);
-}
-
-    [data-theme="light"] .buscar-input:focus {
-        background-color: #ffffff;
-        border-color: var(--primary);
-        box-shadow: inset 1px 1px 6px rgba(0,0,0,0.15), 0 0 0 3px rgba(var(--primary-rgb), 0.2);
-    }
-
-/* ===============================
-    📊 Tablas Modernas
-================================ */
-table.table {
-    width: 100%;
-    background-color: var(--table-bg); /* Usa el color de fondo de tabla */
-    border-collapse: separate; /* Permite border-radius */
-    border-spacing: 0; /* Elimina espacio entre celdas */
-    margin-bottom: 2rem; /* Más margen abajo */
-    border-radius: 12px;
-    overflow: hidden; /* Asegura que el border-radius se aplique */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil para la tabla */
-}
-
-    table.table thead {
-        background-color: var(--sidebar-bg); /* Usa el color del sidebar para el encabezado */
-        color: var(--text-color);
-        font-weight: bold;
-    }
-
-        table.table thead th {
-            border-bottom: 1px solid var(--table-border);
-            padding: 1rem 1.2rem; /* Más padding en el encabezado */
-            text-align: left; /* Alinea el texto a la izquierda */
-        }
-
-    table.table tbody td {
-        padding: 0.9rem 1.2rem; /* Más padding en las celdas */
-        border-top: none;
-        border-bottom: 1px solid var(--table-border);
-        transition: background-color 0.3s ease;
-    }
-
-    table.table tbody tr:last-child td { /* Elimina el borde inferior de la última fila */
-        border-bottom: none;
-    }
-
-    table.table tbody tr:hover {
-        background-color: rgba(var(--primary-rgb), 0.08); /* Fondo con un toque del color primario al pasar el mouse */
-    }
-
-[data-theme="light"] table.table tbody tr:hover {
-    background-color: rgba(var(--primary-rgb), 0.05);
-}
-
-/* ===============================
-    🔘 Botones Generales
-================================ */
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    font-weight: 700;
+.slider {
+    position: absolute;
     cursor: pointer;
-    transition: all 0.3s ease;
-    background-color: var(--primary);
-    color: var(--btn-color);
-    box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3); /* Sombra para los botones */
-    text-decoration: none; /* Asegura que no haya subrayado en enlaces con clase btn */
-}
-
-    .btn:hover {
-        background-color: var(--primary-hover); /* Cambia al color de hover definido */
-        transform: translateY(-2px) scale(1.02); /* Ligero levantamiento y escala */
-        box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.4); /* Sombra más grande al pasar el mouse */
-    }
-
-    .btn.eliminar {
-        background-color: transparent;
-        border: 1px solid #dc3545; /* Rojo de Bootstrap para eliminar */
-        color: #dc3545;
-        box-shadow: none; /* Sin sombra por defecto */
-    }
-
-        .btn.eliminar:hover {
-            background-color: #dc3545;
-            color: white;
-            transform: translateY(-1px) scale(1.01);
-            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.4);
-        }
-
-/* ===============================
-    🎵 Reproductor Fijo
-================================ */
-.cliente-reproductor {
-    position: fixed;
-    bottom: 0;
-    left: 220px;
+    top: 0;
+    left: 0;
     right: 0;
-    height: 90px; /* Un poco más alto */
-    background: linear-gradient(to right, var(--reproductor-bg), var(--sidebar-bg)); /* Degradado más sutil */
-    color: var(--text-color);
-    display: flex;
-    align-items: center;
-    padding: 0 2rem; /* Más padding horizontal */
-    z-index: 1050; /* Z-index más alto que el sidebar para que esté por encima */
-    border-top-left-radius: 1.5rem; /* Esquinas más redondeadas */
-    border-top-right-radius: 1.5rem;
-    box-shadow: 0 -6px 25px rgba(0, 0, 0, 0.4); /* Sombra más fuerte */
-    transition: height 0.4s ease-in-out, background 0.4s ease-in-out, left 0.3s ease;
-    overflow: hidden;
+    bottom: 0;
+    background-color: var(--switch-bg-off);
+    transition: background-color var(--transition);
+    border-radius: 28px;
 }
 
-    .cliente-reproductor.expanded {
-        height: 100vh;
-        left: 0; /* Ocupa todo el ancho cuando está expandido */
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: var(--switch-thumb);
+        transition: transform var(--transition), background-color var(--transition);
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+input:checked + .slider {
+    background-color: var(--switch-bg-on);
+}
+
+    input:checked + .slider:before {
+        transform: translateX(22px);
+    }
+
+/* =====================================================================
+    11. MEDIA QUERIES (RESPONSIVE DESIGN)
+    ===================================================================== */
+@media (max-width: 768px) {
+    /* Ajustes generales para pantallas pequeñas */
+    .cliente-layout {
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-        background: linear-gradient(to bottom right, var(--main-bg), var(--sidebar-bg)); /* Fondo más oscuro y cohesivo */
-        border-radius: 0; /* Elimina radios al expandir */
-    }
-
-.reproductor-portada img {
-    border-radius: 8px; /* Pequeño radio para las portadas */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Sombra para la portada */
-}
-
-.reproductor-info {
-    flex-grow: 1;
-    font-weight: bold;
-    text-align: left; /* Alineado a la izquierda para mejor lectura */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 1.05rem; /* Un poco más grande */
-    margin-right: 1.5rem; /* Espacio entre info y controles */
-}
-
-    .reproductor-info strong {
-        display: block; /* Título en su propia línea */
-        font-size: 1.15rem;
-        color: var(--text-color);
-    }
-
-    .reproductor-info .d-flex { /* Controles de tiempo y barra de progreso */
-        align-items: center;
-        margin-top: 0.5rem;
-    }
-
-.reproductor-controles {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem; /* Espacio ajustado entre controles */
-}
-
-    .reproductor-controles .btn { /* Estilos para los botones de control del reproductor */
-        background-color: rgba(var(--primary-rgb), 0.1); /* Fondo sutil para los botones de control */
-        border: 1px solid rgba(var(--primary-rgb), 0.3);
-        color: var(--text-color);
-        width: 40px; /* Ancho y alto fijos para botones pequeños */
-        height: 40px;
-        border-radius: 50%; /* Redondos */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        box-shadow: none; /* Sin sombra para estos botones */
-    }
-
-        .reproductor-controles .btn:hover {
-            background-color: var(--primary); /* Fondo sólido al pasar el mouse */
-            color: white;
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3);
-        }
-
-    .reproductor-controles .btn-light { /* Botón de Play/Pause */
-        background-color: var(--primary); /* Play/Pause con color primario */
-        color: white;
-        width: 45px; /* Un poco más grande */
-        height: 45px;
-        font-size: 1.5rem;
-        box-shadow: 0 3px 10px rgba(var(--primary-rgb), 0.4);
-    }
-
-        .reproductor-controles .btn-light:hover {
-            background-color: var(--primary-hover);
-        }
-
-
-#barraProgreso {
-    width: 200px; /* Ancho ajustado */
-    height: 6px; /* Más grueso */
-    accent-color: var(--primary); /* Color primario para el relleno */
-    background-color: var(--progress-bg);
-    border-radius: 3px;
-    cursor: grab;
-    outline: none; /* Elimina el borde de enfoque por defecto */
-}
-
-    #barraProgreso::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 16px; /* Tamaño del thumb */
-        height: 16px;
-        border-radius: 50%;
-        background: var(--primary);
-        cursor: pointer;
-        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.4); /* Anillo al thumb */
-    }
-
-    #barraProgreso::-moz-range-thumb {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: var(--primary);
-        cursor: pointer;
-        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.4);
-    }
-
-
-#tiempoActual,
-#duracionTotal {
-    font-size: 0.95rem; /* Un poco más grande */
-    color: var(--text-color);
-    min-width: 45px; /* Para que no se mueva */
-    text-align: center;
-}
-
-#volumenControl {
-    width: 120px; /* Ancho ajustado */
-    height: 5px; /* Más grueso */
-    accent-color: var(--primary); /* Color primario para el volumen */
-    background-color: var(--progress-bg);
-    border-radius: 3px;
-    cursor: grab;
-    outline: none;
-}
-
-    #volumenControl::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: var(--primary);
-        cursor: pointer;
-        box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.3);
-    }
-
-    #volumenControl::-moz-range-thumb {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: var(--primary);
-        cursor: pointer;
-        box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.3);
-    }
-
-
-.btn-toggle-player {
-    position: absolute;
-    top: 8px; /* Ajuste de posición */
-    right: 15px; /* Ajuste de posición */
-    background: none;
-    color: var(--text-color); /* Color del texto del botón */
-    border: none;
-    font-size: 24px; /* Un poco más grande */
-    cursor: pointer;
-    transition: color 0.3s ease, transform 0.2s ease;
-    padding: 5px; /* Relleno para que sea más fácil de clickear */
-}
-
-    .btn-toggle-player:hover {
-        color: var(--primary-hover); /* Cambia al color de hover definido */
-        transform: scale(1.1);
-    }
-
-/* ===============================
-    🏆 Tarjetas Top 50
-================================ */
-.top50 .cards {
-    display: grid; /* Usar Grid para mejor control de layout */
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Columnas responsivas */
-    gap: 20px; /* Espacio entre tarjetas */
-    padding-bottom: 2rem; /* Espacio inferior */
-}
-
-.top50 .card {
-    position: relative;
-    height: 220px; /* Altura fija para consistencia */
-    border-radius: 12px; /* Más redondeado */
-    padding: 20px; /* Más padding */
-    display: flex;
-    flex-direction: column; /* Para alinear contenido */
-    align-items: center;
-    justify-content: flex-end; /* Texto abajo */
-    font-weight: bold;
-    font-size: 1.1rem; /* Texto un poco más grande */
-    color: white;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    border: 1px solid var(--card-border); /* Borde sutil basado en el tema */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra para las tarjetas */
-    text-align: center; /* Centrar texto */
-    cursor: pointer; /* Indica que es clickeable */
-}
-
-    .top50 .card:hover {
-        transform: translateY(-5px) scale(1.03); /* Levantamiento y escala */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35); /* Sombra más grande al pasar el mouse */
-    }
-
-    .top50 .card p {
-        z-index: 1;
-        margin: 0;
-        text-shadow: 0 0 8px rgba(0,0,0,0.8); /* Sombra de texto más fuerte */
-    }
-
-/* Degradados por país (mantienen los colores que tenías) */
-.top50 .chile {
-    background: linear-gradient(to bottom, #c33764, #1d2671);
-}
-
-.top50 .peru {
-    background: linear-gradient(to bottom, #ff6a00, #ee0979);
-}
-
-.top50 .global {
-    background: linear-gradient(to bottom, #0f2027, #2c5364);
-}
-
-.top50 .usa {
-    background: linear-gradient(to bottom, #fc466b, #3f5efb);
-}
-
-.top50 .pr { /* Puerto Rico */
-    background: linear-gradient(to bottom, #ff416c, #ff4b2b);
-}
-
-.top50 .card .play-icon { /* Usaremos un icono de reproducción dentro de la tarjeta */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.8); /* Centrado y ligeramente más pequeño */
-    background: white;
-    color: black;
-    border-radius: 50%;
-    width: 60px; /* Tamaño del icono */
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.2rem; /* Tamaño del símbolo de play */
-    opacity: 0; /* Oculto por defecto */
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    z-index: 2; /* Para que esté sobre el fondo */
-}
-
-.top50 .card:hover .play-icon {
-    opacity: 1; /* Visible al pasar el mouse */
-    transform: translate(-50%, -50%) scale(1); /* Crece un poco */
-}
-
-/* Puedes usar un icono de Bootstrap, por ejemplo:
-   <i class="bi bi-play-fill"></i> dentro de un div con clase "play-icon"
-*/
-
-
-/* ===============================
-    📱 Responsive
-================================ */
-@media (max-width: 992px) { /* Ajustes para tabletas y pantallas medianas */
-    .cliente-sidebar {
-        width: 180px; /* Sidebar un poco más estrecho */
-        padding: 1rem 0.8rem;
-    }
-
-        .cliente-sidebar nav .nav-link {
-            padding: 0.6rem 0.8rem;
-        }
-
-    .cliente-content {
-        margin-left: 180px;
-        padding: 1.5rem 1.8rem 100px 1.8rem;
-    }
-
-    .cliente-reproductor {
-        left: 180px;
-        height: 80px;
-        padding: 0 1rem;
-    }
-
-    .top50 .cards {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-    }
-
-    .top50 .card {
-        height: 200px;
-        font-size: 1rem;
-        padding: 15px;
-    }
-}
-
-
-@media (max-width: 768px) { /* Ajustes para móviles */
-    .cliente-body {
-        flex-direction: column; /* Contenido y reproductor se apilan */
     }
 
     .cliente-sidebar {
-        position: relative; /* Ya no es fijo, se integra en el flujo */
         width: 100%;
         height: auto;
-        padding: 1rem;
-        box-shadow: none;
-        border-bottom: 1px solid var(--table-border);
-        transform: none; /* Elimina transformaciones si las hubiera de esconder/mostrar */
+        border-bottom: 1px solid var(--border-color);
+        flex-direction: row; /* Sidebar en fila para móvil */
+        justify-content: space-around;
+        padding: 10px 0;
+        position: relative;
     }
+
+        .cliente-sidebar .logo {
+            display: none; /* Oculta el logo en móvil */
+        }
 
         .cliente-sidebar nav {
-            flex-direction: row; /* Enlaces en fila para móvil */
-            flex-wrap: wrap; /* Permite que los enlaces se envuelvan */
-            justify-content: center;
+            flex-direction: row;
+            justify-content: space-around;
+            width: 100%;
+            gap: 0;
         }
 
-            .cliente-sidebar nav .nav-link {
-                flex: 1 1 auto; /* Permite que ocupen el espacio disponible */
-                max-width: 150px; /* Limita el ancho de cada botón en fila */
-                margin: 0.3rem; /* Espacio reducido entre botones */
-                font-size: 0.9rem;
+        .cliente-sidebar .nav-link {
+            padding: 8px 5px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-direction: column; /* Icono encima del texto */
+            text-align: center;
+        }
+
+            .cliente-sidebar .nav-link img {
+                margin-right: 0;
+                margin-bottom: 4px; /* Espacio entre icono y texto */
             }
 
-        .cliente-sidebar .text-center,
-        .theme-switch-wrapper {
-            margin-bottom: 1rem;
+
+    .theme-switch-wrapper {
+        position: absolute; /* Posiciona el switch en la esquina del sidebar móvil */
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        padding: 0;
+        border-top: none; /* Sin borde superior en móvil */
+        width: auto;
+        gap: 5px;
+        background-color: var(--sidebar-bg); /* Asegura el fondo para el z-index */
+        z-index: 20; /* Mayor z-index para el switch en móvil */
+    }
+
+        .theme-switch-wrapper .switch-label {
+            display: none; /* Oculta las etiquetas de texto en móvil para ahorrar espacio */
         }
+
+    .main-wrapper {
+        min-height: calc(100vh - var(--player-height-mobile) - var(--player-height-mobile)); /* Ajuste doble para sidebar y reproductor en móvil */
+        padding-bottom: var(--player-height-mobile); /* Ajuste de padding inferior para reproductor móvil */
+    }
 
     .cliente-content {
-        margin-left: 0; /* Sin offset del sidebar */
-        padding: 1rem; /* Relleno reducido */
-        padding-bottom: 120px; /* Espacio para el reproductor fijo */
+        padding: 15px;
+        width: 100%;
     }
 
+    /* Reproductor en móvil */
     .cliente-reproductor {
-        left: 0; /* Ocupa todo el ancho */
-        right: 0;
-        border-radius: 0; /* Sin bordes redondeados en móvil */
-        height: 100px; /* Un poco más alto para móvil */
-        padding: 0.8rem 1rem;
-        flex-wrap: wrap; /* Permite que los elementos se envuelvan */
-        justify-content: center;
+        left: 0;
+        width: 100%;
+        height: 0; /* Oculto inicialmente */
+        padding: 0 15px;
+        border-radius: 0;
+        /* La transición y active/expanded manejarán la visibilidad */
     }
+
+        .cliente-reproductor.active {
+            height: var(--player-height-mobile); /* Altura específica para móvil cuando está activo */
+        }
 
         .cliente-reproductor.expanded {
-            height: 100vh;
-            width: 100%;
-            border-radius: 0;
+            padding-top: 50px; /* Ajuste de padding para botón de cerrar en móvil */
         }
 
-    .reproductor-portada {
-        flex-shrink: 0; /* Evita que la portada se encoja */
-        margin-right: 0.8rem !important;
+    .reproductor-portada img {
+        width: 50px;
+        height: 50px;
     }
 
-    .reproductor-info {
-        text-align: center; /* Centra info de canción en móvil */
-        margin-right: 0 !important;
-        width: 100%;
-        order: 1; /* Mueve la info de canción arriba en el orden flex */
-        margin-bottom: 0.5rem;
+    .reproductor-info strong {
+        font-size: 1em;
     }
 
-        .reproductor-info strong {
-            font-size: 1rem;
-        }
-
-        .reproductor-info .d-flex {
-            justify-content: center; /* Centra el tiempo y la barra */
-        }
-
-    .reproductor-controles {
-        width: 100%; /* Ocupa todo el ancho disponible */
-        justify-content: center; /* Centra los controles */
-        margin-top: 0.8rem;
-        order: 2; /* Mueve los controles abajo en el orden flex */
-        flex-wrap: wrap; /* Envuelve los botones si no hay espacio */
+    .reproductor-info span {
+        font-size: 0.8em;
     }
 
-        .reproductor-controles .btn {
-            width: 38px;
-            height: 38px;
-            font-size: 1.1rem;
-            gap: 0.5rem;
-        }
-
-        .reproductor-controles .btn-light {
-            width: 42px;
-            height: 42px;
-            font-size: 1.3rem;
-        }
-
-    #barraProgreso, #volumenControl {
-        width: 100px; /* Ancho más pequeño para móviles */
+    .btn-player-control {
+        width: 40px;
+        height: 40px;
     }
+
+        .btn-player-control img {
+            width: 18px;
+            height: 18px;
+        }
+
+    .btn-primary.btn-play-pause {
+        width: 50px;
+        height: 50px;
+    }
+
+        .btn-primary.btn-play-pause img {
+            width: 22px;
+            height: 22px;
+        }
 
     .btn-toggle-player {
-        top: 10px;
-        right: 10px;
-        font-size: 20px;
+        top: 15px; /* Posición en la parte superior cuando está minimizado en móvil */
+        right: 15px;
+        transform: none; /* Eliminar transform en móvil */
     }
 
-    .top-bar {
-        flex-direction: column;
-        align-items: flex-start;
+    .cliente-reproductor.expanded .btn-toggle-player {
+        top: 15px;
+        right: 15px;
     }
 
-        .top-bar input[type="text"],
-        .buscar-input {
-            width: 100%; /* Ocupa todo el ancho */
-            margin-bottom: 1rem;
+    #barraProgreso, #volumenControl {
+        height: 6px;
+    }
+
+        #barraProgreso::-webkit-slider-thumb, #barraProgreso::-moz-range-thumb, #barraProgreso::-ms-thumb,
+        #volumenControl::-webkit-slider-thumb, #volumenControl::-moz-range-thumb, #volumenControl::-ms-thumb {
+            width: 16px;
+            height: 16px;
         }
 
-    .top50 .cards {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Más pequeñas en móvil */
-        gap: 10px;
+    .reproductor-grande-portada {
+        max-width: 90%;
+        max-height: 40vh;
     }
 
-    .top50 .card {
-        height: 180px;
+    .letra-display {
+        width: 90%;
+        font-size: 1em;
         padding: 10px;
-        font-size: 0.95rem;
-    }
-
-        .top50 .card .play-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 1.8rem;
-        }
-}
-
-/* Extra small devices (less than 576px) */
-@media (max-width: 575.98px) {
-    .cliente-sidebar nav .nav-link {
-        max-width: 100%; /* Cada botón ocupa una línea completa */
-        margin: 0.3rem 0;
-    }
-
-    .reproductor-controles {
-        flex-wrap: wrap;
-        gap: 0.4rem;
-    }
-
-        .reproductor-controles .btn,
-        .reproductor-controles .btn-light {
-            width: 34px;
-            height: 34px;
-            font-size: 1rem;
-        }
-
-    .top50 .cards {
-        grid-template-columns: 1fr; /* Una columna en pantallas muy pequeñas */
     }
 }

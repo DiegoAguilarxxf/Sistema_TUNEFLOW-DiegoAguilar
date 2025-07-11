@@ -1,62 +1,41 @@
-﻿@*
-    
-*@
-@{
-}
-<div class="cliente-reproductor" id="reproductor">
+﻿<div class="cliente-reproductor" id="reproductor">
     <div class="d-flex align-items-center w-100">
-        <!-- Portada pequeña (normal) -->
         <div class="reproductor-portada me-3">
             <img id="portadaActual" src="~/img/placeholder.png" alt="Portada" style="height: 60px; width: 60px; object-fit: cover;" />
         </div>
-
-        <!-- Info canción -->
         <div class="reproductor-info flex-grow-1">
             <strong id="cancionActual">Ninguna canción en reproducción</strong>
-            <div class="d-flex align-items-center mt-1">
+            <span id="artistaActual" class="text-muted d-block small"></span> <div class="d-flex align-items-center mt-1">
                 <span id="tiempoActual" style="min-width: 40px;">0:00</span>
                 <input type="range" id="barraProgreso" min="0" max="100" value="0" class="form-range mx-2" style="flex-grow: 1;" />
                 <span id="duracionTotal" style="min-width: 40px;">0:00</span>
             </div>
         </div>
-
-        <!-- Controles -->
-        <div class="reproductor-controles ms-3 d-flex align-items-center gap-1">
-            <button class="btn btn-outline-light btn-sm" onclick="anteriorCancion()">⏮</button>
-            <button class="btn btn-light btn-sm" onclick="togglePlay()">▶️</button>
-            <button class="btn btn-outline-light btn-sm" onclick="siguienteCancion()">⏭</button>
-            <input type="range" id="volumenControl" min="0" max="1" step="0.01" value="0.5" style="width: 100px;" />
-            <button class="btn btn-outline-warning btn-sm" onclick="añadirFavorito()">❤️</button>
-            <!-- Nuevo botón para mostrar letra -->
-            <button class="btn btn-outline-info btn-sm" id="btnLetra">🎤 Letra</button>
+        <div class="reproductor-controles ms-3 d-flex align-items-center">
+            <button class="btn btn-outline-light btn-sm mx-1" id="prevBtn">
+                <img src="~/img/anterior.png" alt="Anterior" style="width: 20px; height: 20px;" />
+            </button>
+            <button class="btn btn-light btn-sm mx-1" id="playPauseBtn">
+                <img id="playPauseIcon" src="~/img/play.png" alt="Play/Pause" style="width: 20px; height: 20px;" />
+            </button>
+            <button class="btn btn-outline-light btn-sm mx-1" id="nextBtn">
+                <img src="~/img/siguiente.png" alt="Siguiente" style="width: 20px; height: 20px;" />
+            </button>
+            <input type="range" id="volumenControl" min="0" max="1" step="0.01" value="0.5" style="width: 100px; margin-left: 10px;" />
+            <button class="btn btn-outline-warning btn-sm mx-1" id="favBtn">
+                <img src="~/img/corazon.png" alt="Favorito" style="width: 20px; height: 20px;" />
+            </button>
+            <button class="btn btn-outline-info btn-sm mx-1" id="lyricsBtn" style="display:none;">
+                <img src="~/img/letras.png" alt="Letras" style="width: 20px; height: 20px;" />
+            </button>
         </div>
     </div>
-
-    <!-- Contenedor expandido -->
-    <div id="reproductorExpandido" style="display: none; margin-top: 1rem; text-align: center;">
-        <!-- Portada grande -->
-        <img id="portadaGrande" src="~/img/placeholder.png" alt="Portada Grande" style="height: 200px; width: 200px; object-fit: cover; margin-bottom: 1rem;" />
-
-        <!-- Letra grande, inicialmente oculta -->
-        <div id="letraGrande"
-             style="
-                    display: none;
-                    max-height: 300px;
-                    overflow-y: auto;
-                    font-family: 'Oswald', sans-serif;
-                    font-size: 1.8rem;
-                    line-height: 1.3;
-                    color: var(--text-color);
-                    white-space: pre-wrap;
-                    padding: 0 1rem;
-                    text-align: center;
-                    user-select: text;
-                ">
-        </div>
-    </div>
-
     <audio id="audioPlayer" src="" preload="auto"></audio>
 
-    <!-- Botón para expandir/minimizar reproductor -->
-    <button class="btn-toggle-player" id="togglePlayerBtn" title="Maximizar/Minimizar reproductor" style="margin-top: 0.5rem;">⬆</button>
+    <div id="reproductorExpandidoContenido" style="display:none; flex-direction: column; align-items: center; padding: 20px;">
+        <img id="portadaGrande" src="~/img/placeholder.png" alt="Portada Grande" style="width: 250px; height: 250px; object-fit: cover; margin-bottom: 20px;" />
+        <p id="letraGrande" style="white-space: pre-wrap; text-align: center; max-height: 200px; overflow-y: auto;"></p>
+    </div>
+
+    <button class="btn-toggle-player" id="togglePlayerBtn" title="Maximizar/Minimizar reproductor">⬆</button>
 </div>

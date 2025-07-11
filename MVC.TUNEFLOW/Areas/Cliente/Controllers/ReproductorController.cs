@@ -8,7 +8,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
     public class ReproductorController : Controller
     {
         [HttpGet]
-        public async Task<IActionResult> Reproducir(int id)
+        public async Task<IActionResult> GetCancionData(int id)
         {
             try
             {
