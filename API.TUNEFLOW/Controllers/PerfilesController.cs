@@ -7,6 +7,7 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Modelos.Tuneflow.Modelos;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
 using Modelos.Tuneflow.Usuario.Produccion;
@@ -66,11 +67,38 @@ namespace API.TUNEFLOW.Controllers
             if (perfil == null)
                 return NotFound();
 
-            // Si tiene ClienteId, obtener Cliente
+            // Si tiene ClienteId, obtener Cliente con sus relaciones
             if (perfil.ClienteId != null && perfil.ClienteId != 0)
             {
-                var clienteSql = @"SELECT ""Id"", ""Nombre"", ""Apellido"" FROM ""Clientes"" WHERE ""Id"" = @Id";
-                perfil.Cliente = connection.QueryFirstOrDefault<Cliente>(clienteSql, new { Id = perfil.ClienteId });
+                var clienteSql = @"
+            SELECT * FROM ""Clientes"" WHERE ""Id"" = @Id;
+            SELECT * FROM ""Paises"" WHERE ""Id"" = (SELECT ""PaisId"" FROM ""Clientes"" WHERE ""Id"" = @Id);
+            SELECT * FROM ""Suscripciones"" WHERE ""Id"" = (SELECT ""SuscripcionId"" FROM ""Clientes"" WHERE ""Id"" = @Id);
+            SELECT ts.* FROM ""TipoSuscripciones"" ts 
+                JOIN ""Suscripciones"" s ON ts.""Id"" = s.""TipoSuscripcionId"" 
+                WHERE s.""Id"" = (SELECT ""SuscripcionId"" FROM ""Clientes"" WHERE ""Id"" = @Id);
+        ";
+
+                using (var multi = connection.QueryMultiple(clienteSql, new { Id = perfil.ClienteId }))
+                {
+                    var cliente = multi.ReadFirstOrDefault<Cliente>();
+                    var pais = multi.ReadFirstOrDefault<Pais>();
+                    var suscripcion = multi.ReadFirstOrDefault<Suscripcion>();
+                    var tipoSuscripcion = multi.ReadFirstOrDefault<TipoSuscripcion>();
+
+                    if (cliente != null)
+                    {
+                        cliente.Pais = pais;
+                        cliente.Suscripcion = suscripcion;
+
+                        if (cliente.Suscripcion != null)
+                        {
+                            cliente.Suscripcion.TipoSuscripcion = tipoSuscripcion;
+                        }
+
+                        perfil.Cliente = cliente;
+                    }
+                }
             }
 
             // Si tiene ArtistaId, obtener Artista
@@ -82,6 +110,7 @@ namespace API.TUNEFLOW.Controllers
 
             return perfil;
         }
+
 
         // PUT: api/Perfiles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

@@ -8,6 +8,11 @@
     --primary-dark: #5851db;
     --radius: 12px;
     --transition: 0.3s ease;
+    /* Nuevas variables para la animación de estrellas */
+    --star-color: rgba(255, 255, 255, 0.7); /* Blanco suave */
+    --star-size-min: 1px;
+    --star-size-max: 3px;
+    --star-duration: 20s;
 }
 
     /* Variables para tema claro */
@@ -18,7 +23,7 @@
         --input-bg: transparent;
         --border-color: #ccc;
         --input-focus: rgba(108, 99, 255, 0.3);
-        --footer-bg: #dedff3; /* Color más profesional para footer claro */
+        --footer-bg: #dedff3;
     }
 
     /* Variables para tema oscuro */
@@ -29,37 +34,119 @@
         --input-bg: transparent;
         --border-color: #444;
         --input-focus: rgba(108, 99, 255, 0.2);
-        --footer-bg: #252540; /* Color oscuro profesional para footer */
+        --footer-bg: #252540;
+        --star-color: rgba(255, 255, 255, 0.3); /* Estrellas más sutiles en oscuro */
     }
 
-/* ========== ESTILOS GENERALES DEL BODY Y CONTENEDORES ========== */
+/*
+--------------------------------------------
+REGLAS GLOBALES Y CORRECCIÓN DE SCROLL HORIZONTAL
+--------------------------------------------
+*/
+html {
+    height: 100% !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important; /* Asegura que NO haya scroll horizontal en el HTML */
+}
 
-.auth-body {
-    background-color: var(--bg);
+body {
+    height: 100% !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important; /* Asegura que NO haya scroll horizontal en el BODY */
+    position: relative; /* Necesario para posicionar las estrellas */
+    background-color: var(--bg); /* Asegura que el color de fondo del body se aplique */
     font-family: 'Inter', sans-serif;
     color: var(--text-color);
-    min-height: 100vh;
-    margin: 0;
     display: flex;
     flex-direction: column;
     transition: background-color var(--transition), color var(--transition);
-    overflow-x: hidden; /* Evita scroll horizontal */
 }
 
-/* Wrapper principal que contiene sidebar y contenido */
+
+/*
+--------------------------------------------
+ESTILOS DEL PRELOADER (FORZANDO PANTALLA COMPLETA AL MÁXIMO)
+--------------------------------------------
+*/
+#preloader {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: #000000 !important; /* Fondo negro */
+    z-index: 2147483647 !important; /* El z-index MÁXIMO posible */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    pointer-events: all !important;
+    transition: opacity 0.5s ease-out;
+}
+
+.p {
+    font-family: 'Inter', sans-serif; /* Mantenemos Inter */
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 0.7;
+    color: #ffffff;
+    margin: 5px 0;
+}
+
+    .p img {
+        height: 40px;
+        margin-bottom: 10px;
+    }
+
+/*
+--------------------------------------------
+ESTILOS PARA LAS ANIMACIONES POST-CARGA
+--------------------------------------------
+*/
+.text, .img, .fade-in, .opacity-contact, .fade-up, .scale, .new-release, .music-indicator, .menu-bar-line {
+    opacity: 0;
+}
+
+.fade-up {
+    transform: translateY(20px);
+}
+
+.scale {
+    transform: scale(0.8);
+}
+
+.reveal {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+
+/* ========== ESTILOS GENERALES DEL BODY Y CONTENEDORES ========== */
+
+/* auth-body ya está definido arriba para evitar redundancia */
+
 .auth-wrapper {
     display: flex;
     min-height: 100vh;
-    width: 100vw;
+    width: 100vw; /* Asegura que no se desborde */
     margin: 0;
     padding: 0;
+    overflow-x: hidden; /* ¡Importante! Evitar el scroll horizontal aquí también */
 }
 
 /* Barra lateral ancha para navegación o branding */
 .auth-sidebar {
-    width: 140px; /* Ancho ampliado para mejor visibilidad */
+    width: 140px;
     background-color: var(--primary);
     box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0; /* Evita que se encoja cuando el espacio es limitado */
 }
 
 /* Contenido principal al lado derecho de la sidebar */
@@ -72,10 +159,11 @@
     position: relative;
     background-color: var(--bg);
     transition: background-color var(--transition);
+    min-width: 0; /* Permite que el flex item se encoja */
+    box-sizing: border-box; /* Asegura que padding no aumente el ancho */
 }
 
 /* ========== CONTENIDO DE BIENVENIDA ========== */
-
 .welcome-content {
     display: flex;
     flex-direction: column;
@@ -84,38 +172,37 @@
     width: 100%;
     max-width: 500px;
     padding-top: 2rem;
+    box-sizing: border-box; /* Asegura que padding no aumente el ancho */
 }
 
 /* ========== FORMULARIO MEJORADO Y MODERNO ========== */
-
 .auth-content {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: 480px;
+    width: 100%; /* Ocupa todo el ancho disponible en su contenedor */
+    max-width: 480px; /* Limita el ancho máximo del formulario */
     background: var(--card-bg);
-    backdrop-filter: blur(10px); /* Efecto vidrio esmerilado */
+    backdrop-filter: blur(10px);
     border-radius: var(--radius);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     padding: 3.5rem 2.5rem;
     animation: fadeIn 0.4s ease;
-    margin: 2.5rem 0; /* Margen superior e inferior para separación clara */
+    margin: 2.5rem auto; /* Centra el formulario horizontalmente */
+    box-sizing: border-box; /* Crucial para evitar desbordamiento con padding */
 }
 
 .form-title {
     font-size: 2rem;
     font-weight: 700;
     text-align: center;
-    margin-bottom: 3rem; /* Espacio amplio debajo del título */
+    margin-bottom: 3rem;
 }
 
-/* Cada grupo de input + label */
 .form-group {
     position: relative;
-    margin-bottom: 2.4rem; /* Espacio cómodo entre inputs */
+    margin-bottom: 2.4rem;
 }
 
-    /* Inputs sin bordes laterales, solo borde inferior */
     .form-group input {
         width: 100%;
         padding: 1.2rem 0.5rem 0.5rem 0.5rem;
@@ -127,14 +214,12 @@
         transition: all var(--transition);
     }
 
-        /* Efecto foco y sombra para inputs */
         .form-group input:focus {
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 2px 0 var(--primary);
         }
 
-    /* Labels flotantes */
     .form-group label {
         position: absolute;
         left: 0.5rem;
@@ -147,7 +232,6 @@
         border-radius: 4px;
     }
 
-    /* Labels se mueven arriba cuando el input está enfocado o tiene texto */
     .form-group input:focus + label,
     .form-group input:not(:placeholder-shown) + label {
         top: -0.8rem;
@@ -155,22 +239,25 @@
         color: var(--primary);
     }
 
-/* Placeholder invisible para dar efecto limpio */
 input::placeholder {
     color: transparent;
 }
 
 /* ========== BOTONES ========== */
 
+/* Botón de inicio genérico, pero también aplicable al botón de submit */
 .btn-inicio {
     padding: 0.5rem 1.2rem;
     font-size: 1rem;
     min-width: 160px;
 }
 
+/* Botón de submit y btn-primary: ¡Ahora con width: auto y important! */
 button[type="submit"],
 .btn-primary {
-    width: 100%;
+    width: auto !important; /* Ajusta el ancho al contenido */
+    min-width: 180px !important; /* Ancho mínimo para que no sea diminuto */
+    max-width: 100% !important; /* Asegura que no se desborde en pantallas pequeñas */
     background: var(--primary);
     color: white;
     padding: 0.75rem 1.1rem;
@@ -181,7 +268,11 @@ button[type="submit"],
     cursor: pointer;
     transition: background-color var(--transition), box-shadow var(--transition);
     box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
-    margin-top: 1.5rem; /* Margen superior para separar del último input */
+    margin-top: 1.5rem;
+    /* Para centrar el botón si su ancho es menor que el contenedor */
+    display: block; /* Necesario para que margin: auto funcione para el centrado */
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
     button[type="submit"]:hover,
@@ -190,9 +281,8 @@ button[type="submit"],
         box-shadow: 0 4px 16px rgba(108, 99, 255, 0.6);
     }
 
-/* ========== FOOTER PROFESIONAL Y FUNCIONAL ========== */
+/* ========== FOOTER PROFESIONAL Y FUNCIONAL (Responsive Mejorado) ========== */
 
-/* === 📌 FOOTER === */
 footer.auth-footer {
     background-color: var(--bg);
     color: var(--text-color);
@@ -200,30 +290,41 @@ footer.auth-footer {
     padding: 2rem 1rem;
     margin-top: auto;
     border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    box-sizing: border-box; /* Asegura que el padding no cause desbordamiento */
+    width: 100%; /* Ocupa todo el ancho disponible */
 }
 
-/* Footer logo */
 .footer-logo {
     width: 130px;
     height: 130px;
     object-fit: contain;
-
+    flex-shrink: 0;
+    margin-right: 1rem;
 }
+
 .auth-footer .footer-description {
     font-size: 0.95rem;
     line-height: 1.6;
     max-width: 500px;
     margin: 0 auto;
     padding: 0.5rem;
+    flex-grow: 1;
+    text-align: center;
+    box-sizing: border-box; /* Asegura que el padding no cause desbordamiento */
 }
 
-/* === 🌗 SWITCH DARK MODE === */
 .theme-switch-container {
     margin-top: 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
+    flex-shrink: 0;
 }
 
 .switch {
@@ -276,22 +377,23 @@ input:checked + .slider {
 }
 
 
-/* ========== IMÁGENES DINÁMICAS ========== */
+/* ========== IMÁGENES DINÁMICAS (Asegurando responsive) ========== */
 
 .dynamic-logo,
 .dynamic-hero {
-    max-width: 100%;
+    max-width: 100%; /* Asegura que no se desborden */
+    height: auto; /* Mantiene la proporción */
     transition: opacity 0.3s ease;
 }
 
 .logo-img {
-    width: 280px;
-    max-width: 90%;
+    width: 680px;
+    max-width: 90%; /* Limita el ancho máximo relativo al contenedor */
 }
 
 .hero-img {
     width: 400px;
-    max-width: 90%;
+    max-width: 90%; /* Limita el ancho máximo relativo al contenedor */
 }
 
 /* ========== ANIMACIÓN SUAVE ========== */
@@ -308,41 +410,160 @@ input:checked + .slider {
     }
 }
 
-/* ========== ESTILOS RESPONSIVOS ========== */
+/*
+--------------------------------------------
+ANIMACIÓN DE ESTRELLAS SUAVES EN EL FONDO
+--------------------------------------------
+*/
+.stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Crucial para que no bloquee interacciones */
+    z-index: -1; /* Para que esté detrás de todo el contenido */
+    overflow: hidden; /* Evita que las estrellas individuales causen scroll */
+}
+
+/* Estrellas individuales (generadas con JavaScript) */
+.star {
+    position: absolute;
+    background-color: var(--star-color);
+    border-radius: 50%;
+    opacity: 0; /* Inicia ocultas */
+    animation: twinkle var(--star-duration) infinite alternate ease-in-out;
+}
+
+@keyframes twinkle {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* ========== ESTILOS RESPONSIVOS MEJORADOS ========== */
 
 @media (max-width: 768px) {
-    /* Oculta sidebar en pantallas pequeñas */
     .auth-sidebar {
         display: none;
     }
 
-    /* Ajusta tamaño de logos para móviles */
     .logo-img {
-        width: 200px;
+        width: 180px; /* Ligeramente más pequeñas en móviles */
     }
 
     .hero-img {
-        width: 280px;
+        width: 250px; /* Ligeramente más pequeñas en móviles */
     }
 
-    /* Reduce padding del contenido principal para móviles */
     .auth-main-content {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem 1rem; /* Más reducido para pantallas muy pequeñas */
     }
 
-    /* Ajusta padding y margen de formulario para dispositivos móviles */
     .auth-content {
-        padding: 2.5rem 1.5rem;
-        margin: 1.5rem 0;
+        padding: 2rem 1rem; /* Ajusta padding del formulario */
+        margin: 1rem auto; /* Reduce el margen, centra */
+    }
+
+    .form-title {
+        font-size: 1.8rem; /* Título un poco más pequeño */
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.8rem; /* Menos espacio entre inputs */
+    }
+
+    button[type="submit"],
+    .btn-primary {
+        min-width: 100% !important; /* Que el botón ocupe todo el ancho disponible */
+        font-size: 0.95rem; /* Fuente ligeramente más pequeña */
+        padding: 0.6rem 1rem;
+    }
+
+    /* Footer responsive para pantallas pequeñas */
+    footer.auth-footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .footer-left, .theme-switch-container {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .footer-logo {
+        margin-right: 0;
+        margin-bottom: 0.5rem; /* Espacio debajo del logo cuando está apilado */
+    }
+
+    .auth-footer .footer-description {
+        order: 1;
+        flex-grow: 0;
+        font-size: 0.85rem; /* Descripción más pequeña en móviles */
+    }
+
+    .footer-left {
+        order: 2;
+    }
+
+    .theme-switch-container {
+        order: 3;
     }
 }
+
+/* Media query adicional para tabletas (horizontal) y pantallas medianas */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .auth-main-content {
+        padding: 3rem 2rem;
+    }
+
+    .auth-content {
+        padding: 3rem 2rem;
+        max-width: 450px;
+    }
+
+    .auth-sidebar {
+        width: 100px; /* Sidebar un poco más pequeña */
+    }
+
+    .logo-img {
+        width: 450px;
+    }
+
+    .hero-img {
+        width: 320px;
+    }
+
+    /* Footer */
+    footer.auth-footer {
+        padding: 1.5rem 1rem;
+    }
+
+    .footer-logo {
+        width: 100px;
+        height: 100px;
+    }
+
+    .auth-footer .footer-description {
+        font-size: 0.9rem;
+    }
+}
+
 /* ========== ESTILOS PERSONALIZADOS PARA BOOTSTRAP CONTAINERS ========== */
 
-/* Márgenes verticales amplios para containers con .mt-5 */
 .container.mt-5 {
-    margin-top: 6rem !important; /* Reemplaza Bootstrap mt-5 para asegurar visibilidad */
-    margin-bottom: 6rem !important; /* Agregado para evitar que el footer se sobreponga */
+    margin-top: 4rem !important; /* Ligeramente menos margen para mejor ajuste */
+    margin-bottom: 4rem !important;
     padding-left: 1rem;
     padding-right: 1rem;
+    box-sizing: border-box; /* Asegura que padding no aumente el ancho */
 }
-

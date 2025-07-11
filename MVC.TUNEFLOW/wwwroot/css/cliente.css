@@ -1,97 +1,543 @@
-﻿/* ===============================
-   🎨 Variables de Tema y Base
-================================ */
+﻿/* =====================================================================
+    VARIABLES CSS PERSONALIZADAS
+    (Asegúrate de que estas variables estén definidas en algún lugar,
+    por ejemplo, en :root{} o en un archivo de variables separado)
+    ===================================================================== */
 :root {
-    --sidebar-bg: #181818;
-    --main-bg: #121212;
-    --text-color: #fff;
-    --primary: #1db954;
-    --reproductor-bg: #222;
+    --primary: #5275e3; /* Color principal de acento */
+    --secondary: #90a3ea; /* Color secundario */
+    --text-color: #333; /* Color de texto general para modo claro */
+    --text-color-light: #666; /* Color de texto más claro para modo claro */
+    --bg-color: #f0f2f5; /* Color de fondo general para modo claro */
+    --card-bg: #ffffff; /* Fondo de tarjetas para modo claro */
+    --border-color: #e0e0e0; /* Color de borde para modo claro */
+    --shadow-color: rgba(0, 0, 0, 0.1); /* Sombra para modo claro */
+    --sidebar-bg: #ffffff; /* Fondo del sidebar para modo claro */
+    --sidebar-text: #333; /* Texto del sidebar para modo claro */
+    --sidebar-hover-bg: #e0e7ff; /* Hover del sidebar para modo claro */
+    --search-bg: #f8f9fa; /* Fondo de la barra de búsqueda para modo claro */
+    --input-border: #ccc; /* Borde de inputs para modo claro */
+    /* Variables del Reproductor */
+    --player-height: 80px; /* Altura del reproductor minimizado */
+    --player-height-mobile: 70px; /* Altura del reproductor minimizado en móvil */
+    --player-bg: #ffffff; /* Fondo del reproductor para modo claro */
+    --player-text: #333; /* Texto del reproductor para modo claro */
+    --player-shadow: rgba(0, 0, 0, 0.2); /* Sombra del reproductor */
+    --btn-player-bg: #f0f2f5; /* Fondo de botones del reproductor */
+    --btn-player-hover-bg: #e0e7ff; /* Hover de botones del reproductor */
+    --btn-player-active-bg: #c8d7ff; /* Active de botones del reproductor */
+    --btn-player-icon-filter: none; /* Filtro de icono (ninguno para claro) */
+    --range-track-bg: #e0e0e0; /* Fondo de la barra de progreso/volumen */
+    --range-thumb-bg: var(--primary); /* Pulgar de la barra de progreso/volumen */
+    /* Variables del Switch de Tema */
+    --switch-bg-off: #ccc; /* Fondo del switch (OFF - claro) */
+    --switch-bg-on: var(--primary); /* Fondo del switch (ON - oscuro) */
+    --switch-thumb: #ffffff; /* Color del pulgar del switch */
+    /* Transiciones */
+    --transition: 0.3s ease; /* Transición estándar */
+    --transition-long: 0.6s ease-in-out; /* Transición para aparecer/desaparecer elementos grandes */
+    /* Otros */
+    --radius: 8px; /* Radio de borde general */
 }
 
-[data-theme="light"] {
-    --sidebar-bg: #f2f2f2;
-    --main-bg: #ffffff;
-    --text-color: #222;
-    --primary: #644fff;
-    --reproductor-bg: #dee2e6;
+/* Modo Oscuro (dark-mode class en el body o html) */
+body.dark-mode {
+    --text-color: #f0f2f5;
+    --text-color-light: #aaa;
+    --bg-color: #1a1a2e;
+    --card-bg: #2d2d44;
+    --border-color: #3e3e5c;
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --sidebar-bg: #1c1c3a;
+    --sidebar-text: #f0f2f5;
+    --sidebar-hover-bg: #3f3f6e;
+    --search-bg: #2d2d44;
+    --input-border: #4a4a6e;
+    /* Variables del Reproductor (Oscuro) */
+    --player-bg: #1c1c3a;
+    --player-text: #f0f2f5;
+    --player-shadow: rgba(0, 0, 0, 0.6);
+    --btn-player-bg: #3e3e5c;
+    --btn-player-hover-bg: #5f5f9e;
+    --btn-player-active-bg: #7a7ac0;
+    --btn-player-icon-filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(180deg) brightness(120%) contrast(100%); /* Hace los iconos blancos */
+    --range-track-bg: #4a4a6e;
+    --range-thumb-bg: var(--secondary);
+    /* Variables del Switch de Tema (Oscuro) */
+    --switch-bg-off: #4a4a6e;
+    --switch-bg-on: var(--primary);
+    --switch-thumb: #ffffff;
 }
 
-body.cliente-body {
+/* =====================================================================
+    1. GENERALES Y LAYOUT
+    ===================================================================== */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    background: var(--main-bg);
+    padding: 0;
+    background-color: var(--bg-color);
     color: var(--text-color);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
+    transition: background-color var(--transition), color var(--transition);
+    min-height: 100vh; /* Asegura que el body ocupe toda la altura */
+    display: flex; /* Añadido para ayudar al layout completo */
+    flex-direction: column; /* Añadido para ayudar al layout completo */
 }
 
-/* ===============================
-   📌 Sidebar
-================================ */
-.cliente-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 220px;
-    height: 100vh;
-    background-color: var(--sidebar-bg);
-    color: var(--text-color);
-    padding: 1.5rem 1rem;
+/* Contenedor principal del layout (sidebar + contenido) */
+.cliente-layout {
+    display: flex;
+    flex-grow: 1; /* Permite que ocupe el espacio disponible */
+}
+
+/* Contenido principal (excluyendo el sidebar y el reproductor) */
+.main-wrapper {
+    flex-grow: 1; /* Ocupa el espacio restante */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    z-index: 1000;
+    min-height: calc(100vh - var(--player-height)); /* Ajusta la altura para el reproductor */
+    transition: min-height var(--transition-long); /* Transición para cuando el reproductor aparece */
+    position: relative; /* Para el posicionamiento del cliente-content */
+    padding-bottom: var(--player-height); /* Añade padding para el reproductor fijo */
+    box-sizing: border-box; /* Incluye padding en el tamaño total */
+}
+
+body.dark-mode .main-wrapper {
+    background-color: var(--bg-color); /* Asegura que el fondo del main-wrapper cambie */
+}
+
+.cliente-content {
+    flex-grow: 1; /* Permite que ocupe todo el espacio vertical disponible */
+    padding: 25px;
+    background-color: var(--bg-color);
+    transition: background-color var(--transition);
+}
+
+/* =====================================================================
+    2. SIDEBAR (cliente-sidebar)
+    ===================================================================== */
+.cliente-sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    padding: 20px;
+    box-shadow: 2px 0 10px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Empuja el switch abajo */
+    align-items: center;
+    color: var(--sidebar-text);
+    transition: background-color var(--transition), color var(--transition), box-shadow var(--transition);
+    flex-shrink: 0; /* Evita que el sidebar se encoja */
 }
 
     .cliente-sidebar .logo {
-        font-size: 24px;
-        font-weight: 900;
-        margin-bottom: 1.5rem;
+        font-size: 1.8em;
+        font-weight: bold;
         color: var(--primary);
+        margin-bottom: 30px;
         text-align: center;
     }
 
-    .cliente-sidebar nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
+    .cliente-sidebar nav {
+        width: 100%;
+        flex-grow: 1; /* Ocupa el espacio disponible */
     }
 
-        .cliente-sidebar nav ul li {
-            margin-bottom: 1rem;
+    .cliente-sidebar .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        margin-bottom: 8px;
+        color: var(--sidebar-text);
+        text-decoration: none;
+        border-radius: var(--radius);
+        transition: background-color var(--transition), color var(--transition);
+    }
+
+        .cliente-sidebar .nav-link:hover,
+        .cliente-sidebar .nav-link.active {
+            background-color: var(--sidebar-hover-bg);
+            color: var(--primary);
         }
 
-            .cliente-sidebar nav ul li a {
-                color: var(--text-color);
-                text-decoration: none;
-                font-weight: 600;
-                display: block;
-                padding: 0.5rem 1rem;
-                border-radius: 8px;
-                transition: background-color 0.3s ease;
-            }
+        .cliente-sidebar .nav-link img {
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
+            filter: var(--btn-player-icon-filter); /* Reutilizamos el filtro para iconos del sidebar */
+            transition: filter var(--transition);
+        }
 
-                .cliente-sidebar nav ul li a:hover,
-                .cliente-sidebar nav ul li a.active {
-                    background-color: var(--primary);
-                    color: #fff;
-                }
+/* =====================================================================
+    3. TABLAS DE RESULTADOS
+    ===================================================================== */
+.results-table {
+    width: 100%;
+    border-collapse: separate; /* Para que border-radius funcione */
+    border-spacing: 0; /* Elimina espacio entre celdas */
+    margin-top: 20px;
+    border-radius: var(--radius);
+    overflow: hidden; /* Importante para que el border-radius se vea bien */
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
 
-/* ===============================
-   🌗 Switch de Tema
-================================ */
+    .results-table thead tr {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .results-table th,
+    .results-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .results-table tbody tr {
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        transition: background-color var(--transition);
+    }
+
+        .results-table tbody tr:hover {
+            background-color: var(--sidebar-hover-bg); /* Color de hover similar al sidebar */
+            cursor: pointer;
+        }
+
+        .results-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+/* =====================================================================
+    4. BÚSQUEDA
+    ===================================================================== */
+.search-bar .form-control {
+    background-color: var(--search-bg);
+    border-color: var(--input-border);
+    color: var(--text-color);
+    transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+}
+
+    .search-bar .form-control::placeholder {
+        color: var(--text-color-light);
+    }
+
+.search-bar .btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    transition: background-color var(--transition), border-color var(--transition);
+}
+
+    .search-bar .btn-primary:hover {
+        background-color: var(--secondary);
+        border-color: var(--secondary);
+    }
+
+/* =====================================================================
+    5. MENSAJES Y ERRORES
+    ===================================================================== */
+.no-results {
+    text-align: center;
+    color: var(--text-color-light);
+    font-style: italic;
+    margin-top: 50px;
+}
+
+/* =====================================================================
+    6. TÍTULOS DE PÁGINA
+    ===================================================================== */
+.page-title {
+    color: var(--text-color);
+    margin-bottom: 25px;
+    font-size: 2em;
+    font-weight: 600;
+    transition: color var(--transition);
+}
+
+/* =====================================================================
+    7. MODALES (Bootstrap Overrides)
+    ===================================================================== */
+.modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: 0 5px 20px var(--shadow-color);
+    transition: background-color var(--transition), color var(--transition);
+}
+
+.modal-header {
+    border-bottom-color: var(--border-color);
+    transition: border-bottom-color var(--transition);
+}
+
+.modal-title {
+    color: var(--text-color);
+}
+
+.modal-body {
+    color: var(--text-color-light);
+}
+
+.modal-footer {
+    border-top-color: var(--border-color);
+    transition: border-top-color var(--transition);
+}
+
+.btn-close {
+    filter: var(--btn-player-icon-filter); /* Ajusta el color del icono de cerrar */
+    transition: filter var(--transition);
+}
+
+/* =====================================================================
+    8. BOTONES GENERALES (Bootstrap Overrides)
+    ===================================================================== */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    transition: background-color var(--transition), border-color var(--transition);
+}
+
+    .btn-primary:hover {
+        background-color: var(--secondary);
+        border-color: var(--secondary);
+    }
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+    transition: background-color var(--transition), border-color var(--transition);
+}
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+/* =====================================================================
+    9. REPRODUCTOR DE MÚSICA (cliente-reproductor)
+    ===================================================================== */
+.cliente-reproductor {
+    position: fixed;
+    bottom: 0;
+    left: 260px; /* Asegura que el reproductor comience después de la sidebar */
+    width: calc(100% - 260px); /* Ajusta el ancho para ocupar el espacio restante */
+    background-color: var(--player-bg); /* Variable de color de fondo (definir en _Layout o theme.css) */
+    color: var(--player-text); /* Variable de color de texto */
+    box-shadow: 0 -5px 15px var(--player-shadow); /* Sombra superior */
+    padding: 10px 20px; /* Padding vertical y horizontal */
+    display: flex;
+    align-items: center; /* Alinea los ítems verticalmente al centro */
+    justify-content: space-between; /* Espacio entre los bloques principales */
+    z-index: 1050; /* Alto z-index para que esté por encima de otros elementos */
+    box-sizing: border-box;
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+    height: 90px; /* Altura fija para el reproductor */
+    transition: background-color var(--transition), color var(--transition), box-shadow var(--transition); /* Transiciones suaves para cambios de tema */
+}
+
+/* Estilos de la portada */
+.reproductor-portada img {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius);
+    object-fit: cover;
+    flex-shrink: 0; /* Evita que la imagen se encoja */
+}
+
+/* Información de la canción (título, artista, progreso) */
+.reproductor-info {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    overflow: hidden; /* Oculta el texto que se desborda */
+    white-space: nowrap; /* Mantiene el texto en una sola línea */
+    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto se desborda */
+    margin: 0 15px; /* Margen a los lados */
+}
+
+    .reproductor-info strong {
+        font-size: 1.1em;
+        display: block; /* Para que el artista aparezca debajo */
+        color: var(--player-text);
+    }
+
+    .reproductor-info span.text-muted {
+        font-size: 0.9em;
+        color: var(--player-text) !important; /* Asegura que el color se aplique, si text-muted de Bootstrap lo anula */
+        opacity: 0.7;
+    }
+
+    .reproductor-info .d-flex {
+        align-items: center;
+        margin-top: 5px; /* Espacio entre título y barra de progreso */
+    }
+
+/* Controles del reproductor (botones y volumen) */
+.reproductor-controles {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* Evita que los controles se encojan */
+}
+
+    .reproductor-controles .btn {
+        border-radius: 50%; /* Botones circulares */
+        width: 40px; /* Ancho fijo para botones */
+        height: 40px; /* Alto fijo para botones */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0; /* Quita padding interno */
+    }
+
+        .reproductor-controles .btn img {
+            filter: var(--player-icon-filter, none); /* Filtro para iconos si cambian con el tema */
+        }
+
+/* Ajustes específicos para el botón de Play/Pause si quieres que sea diferente */
+#playPauseBtn {
+    background-color: var(--primary); /* Color de realce para play/pause */
+    border-color: var(--primary);
+    transform: scale(1.1); /* Un poco más grande */
+    margin: 0 5px; /* Margen extra */
+}
+
+    #playPauseBtn img {
+        filter: invert(100%); /* Ícono blanco sobre fondo de color */
+    }
+
+    #playPauseBtn:hover {
+        background-color: var(--primary-hover) !important;
+        border-color: var(--primary-hover) !important;
+    }
+
+/* Barra de progreso */
+#barraProgreso {
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--range-track-bg);
+    border-radius: 5px;
+    outline: none;
+    transition: background var(--transition);
+    width: 150px; /* Ancho fijo o ajusta según tu diseño */
+}
+
+    #barraProgreso::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        background: var(--range-thumb-bg);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+        margin-top: -5px; /* Centra el thumb verticalmente */
+        transition: background var(--transition), box-shadow var(--transition);
+    }
+
+/* Estilos de Volumen */
+#volumenControl {
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--range-track-bg);
+    border-radius: 3px;
+    outline: none;
+    transition: background var(--transition);
+    width: 80px; /* Ancho del control de volumen */
+}
+
+    #volumenControl::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 12px;
+        height: 12px;
+        background: var(--range-thumb-bg);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        margin-top: -4px; /* Centra el thumb verticalmente */
+        transition: background var(--transition), box-shadow var(--transition);
+    }
+
+/* Ajustes para el contenedor principal de la aplicación para dejar espacio al reproductor */
+/* Asume que tu contenido principal tiene una clase como .main-wrapper o similar */
+body {
+    padding-bottom: 90px; /* Altura del reproductor */
+}
+
+/* Si tienes una sidebar, asegúrate de que el main-wrapper tenga el padding-left correcto */
+/* Si tu sidebar tiene un ancho fijo de 260px */
+.main-wrapper {
+    padding-left: 260px; /* Asegura que el contenido no se solape con la sidebar */
+}
+
+
+/* Variables de tema (ejemplo, ajustar según tu tema.css o _Layout) */
+/* :root {
+    --player-bg: #333;
+    --player-text: #eee;
+    --player-shadow: rgba(0, 0, 0, 0.4);
+    --range-track-bg: #555;
+    --range-thumb-bg: #007bff;
+    --primary: #007bff;
+    --primary-hover: #0056b3;
+    --transition: 0.3s ease;
+    --radius: 8px;
+    --player-height: 90px;
+    --player-icon-filter: invert(100%); Ajusta si tus iconos son negros y necesitas hacerlos blancos
+}
+
+[data-theme='light'] {
+    --player-bg: #f8f9fa;
+    --player-text: #212529;
+    --player-shadow: rgba(0, 0, 0, 0.1);
+    --range-track-bg: #ccc;
+    --range-thumb-bg: #007bff;
+    --player-icon-filter: none;
+}
+*/
+
+/* =====================================================================
+    10. SWITCH DE TEMA (Sidebar)
+    ===================================================================== */
 .theme-switch-wrapper {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-top: 1rem;
+    justify-content: center; /* Centra los elementos (etiquetas y switch) */
+    gap: 10px; /* Espacio entre el texto y el switch */
+    margin-top: auto; /* Empuja el wrapper hacia abajo en la sidebar */
+    padding: 15px 0; /* Padding vertical */
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+    width: 100%;
+    font-size: 0.9em;
+    color: var(--text-color-light); /* Color del texto por defecto */
+    /* Asegúrate de que el z-index de la sidebar permita ver el switch si es necesario */
+    z-index: 10;
+    position: relative; /* Para asegurar que el z-index funcione */
 }
+
+    .theme-switch-wrapper .switch-label {
+        transition: color var(--transition); /* Transición suave del color del texto */
+        min-width: 60px; /* Para asegurar que el texto no salte */
+        text-align: center;
+        opacity: 0.6; /* Un poco menos visible por defecto */
+        color: var(--sidebar-text); /* Asegura que tome el color del sidebar */
+    }
+
+        .theme-switch-wrapper .switch-label.active-mode {
+            opacity: 1; /* Más visible cuando es el modo activo */
+            font-weight: 600; /* Resaltar el texto activo */
+            color: var(--primary); /* O un color que indique el modo activo */
+        }
 
 .theme-switch {
     position: relative;
     display: inline-block;
-    width: 52px;
+    width: 50px;
     height: 28px;
 }
 
@@ -101,393 +547,192 @@ body.cliente-body {
         height: 0;
     }
 
-    .theme-switch .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #999;
-        border-radius: 34px;
-        transition: 0.4s;
-    }
-
-        .theme-switch .slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            border-radius: 50%;
-            transition: 0.4s;
-        }
-
-    .theme-switch input:checked + .slider {
-        background-color: var(--primary);
-    }
-
-        .theme-switch input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-.switch-label {
-    margin-left: 10px;
-    font-size: 0.9rem;
-    color: var(--text-color);
-}
-
-/* ===============================
-   🧱 Contenido Principal
-================================ */
-.cliente-content {
-    margin-left: 220px;
-    padding: 2rem 2rem 120px 2rem;
-    min-height: 100vh;
-    background-color: var(--main-bg);
-}
-
-/* 🔍 Barra de Búsqueda */
-.top-bar {
-    margin-bottom: 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-    .top-bar input[type="text"],
-    .buscar-input {
-        width: 50%;
-        padding: 12px 20px;
-        border-radius: 25px;
-        border: none;
-        background: #222;
-        color: white;
-        box-shadow: inset 2px 2px 6px rgba(0,0,0,0.7);
-        font-size: 16px;
-        transition: background-color 0.3s ease;
-    }
-
-        .top-bar input::placeholder,
-        .buscar-input::placeholder {
-            color: #888;
-            font-style: italic;
-        }
-
-        .top-bar input:focus,
-        .buscar-input:focus {
-            outline: none;
-            background-color: #333;
-            box-shadow: inset 3px 3px 8px rgba(100,79,255,0.8);
-        }
-
-[data-theme="light"] .buscar-input {
-    background-color: #f0f0f0;
-    color: #000;
-}
-
-/* ===============================
-   🟩 Botones generales
-================================ */
-.buttons, .buscar-botones {
-    display: flex;
-    gap: 10px;
-}
-
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-    .btn.eliminar {
-        background-color: transparent;
-        border: 1px solid var(--primary);
-        color: var(--primary);
-    }
-
-        .btn.eliminar:hover {
-            background-color: var(--primary);
-            color: white;
-        }
-
-    .btn.comenzar {
-        background-color: var(--primary);
-        color: black;
-    }
-
-        .btn.comenzar:hover {
-            background-color: #17b94b;
-            color: white;
-        }
-
-/* 🏆 Tarjetas TOP 50 pro */
-.top50 .cards {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.top50 .card {
-    position: relative;
-    width: 250px;
-    height: 250px;
-    border-radius: 10px;
-    padding: 15px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 14px;
-    color: white;
-    transition: transform 0.3s ease;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-
-    .top50 .card:hover {
-        transform: scale(1.05);
-    }
-
-    .top50 .card p {
-        z-index: 1;
-        margin: 0;
-        text-align: center;
-        text-shadow: 0 0 5px rgba(0,0,0,0.7);
-    }
-
-/* Degradados por país */
-.top50 .chile {
-    background: linear-gradient(to bottom, #c33764, #1d2671);
-}
-
-.top50 .peru {
-    background: linear-gradient(to bottom, #ff6a00, #ee0979);
-}
-
-.top50 .global {
-    background: linear-gradient(to bottom, #0f2027, #2c5364);
-}
-
-.top50 .usa {
-    background: linear-gradient(to bottom, #fc466b, #3f5efb);
-}
-
-.top50 .pr {
-    background: linear-gradient(to bottom, #ff416c, #ff4b2b);
-}
-
-.play-btn {
+.slider {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    background: white;
-    color: black;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-weight: bold;
     cursor: pointer;
-    transition: background 0.2s;
-    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--switch-bg-off);
+    transition: background-color var(--transition);
+    border-radius: 28px;
 }
 
-    .play-btn:hover {
-        background: #ddd;
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: var(--switch-thumb);
+        transition: transform var(--transition), background-color var(--transition);
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-
-/* ===============================
-   🎼 Información y Controles
-================================ */
-.player-song-meta {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 0;
+input:checked + .slider {
+    background-color: var(--switch-bg-on);
 }
 
-    .player-song-meta .title,
-    .player-song-meta .artist {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 180px;
+    input:checked + .slider:before {
+        transform: translateX(22px);
+    }
+
+/* =====================================================================
+    11. MEDIA QUERIES (RESPONSIVE DESIGN)
+    ===================================================================== */
+@media (max-width: 768px) {
+    /* Ajustes generales para pantallas pequeñas */
+    .cliente-layout {
+        flex-direction: column;
+    }
+
+    .cliente-sidebar {
+        width: 100%;
+        height: auto;
+        border-bottom: 1px solid var(--border-color);
+        flex-direction: row; /* Sidebar en fila para móvil */
+        justify-content: space-around;
+        padding: 10px 0;
         position: relative;
     }
 
-        .player-song-meta .title.marquee,
-        .player-song-meta .artist.marquee {
-            animation: marquee 10s linear infinite;
-            position: relative;
-            left: 0;
+        .cliente-sidebar .logo {
+            display: none; /* Oculta el logo en móvil */
         }
 
-@keyframes marquee {
-    0% {
-        left: 0;
-    }
-
-    100% {
-        left: -100%;
-    }
-}
-
-.player-controls {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-}
-
-    .player-controls button {
-        background: none;
-        border: none;
-        color: var(--text-color);
-        font-size: 28px;
-        cursor: pointer;
-        transition: color 0.3s ease;
-    }
-
-        .player-controls button:hover {
-            color: var(--primary);
+        .cliente-sidebar nav {
+            flex-direction: row;
+            justify-content: space-around;
+            width: 100%;
+            gap: 0;
         }
 
-.player-volume {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+        .cliente-sidebar .nav-link {
+            padding: 8px 5px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-direction: column; /* Icono encima del texto */
+            text-align: center;
+        }
 
-    .player-volume input[type="range"] {
-        width: 100px;
+            .cliente-sidebar .nav-link img {
+                margin-right: 0;
+                margin-bottom: 4px; /* Espacio entre icono y texto */
+            }
+
+
+    .theme-switch-wrapper {
+        position: absolute; /* Posiciona el switch en la esquina del sidebar móvil */
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        padding: 0;
+        border-top: none; /* Sin borde superior en móvil */
+        width: auto;
+        gap: 5px;
+        background-color: var(--sidebar-bg); /* Asegura el fondo para el z-index */
+        z-index: 20; /* Mayor z-index para el switch en móvil */
     }
 
-/* ===============================
-   📱 Responsive
-================================ */
-@media (max-width: 768px) {
-    .cliente-sidebar {
-        display: none;
+        .theme-switch-wrapper .switch-label {
+            display: none; /* Oculta las etiquetas de texto en móvil para ahorrar espacio */
+        }
+
+    .main-wrapper {
+        min-height: calc(100vh - var(--player-height-mobile) - var(--player-height-mobile)); /* Ajuste doble para sidebar y reproductor en móvil */
+        padding-bottom: var(--player-height-mobile); /* Ajuste de padding inferior para reproductor móvil */
     }
 
     .cliente-content {
-        margin-left: 0;
-        padding: 1rem;
+        padding: 15px;
+        width: 100%;
     }
 
+    /* Reproductor en móvil */
     .cliente-reproductor {
         left: 0;
+        width: 100%;
+        height: 0; /* Oculto inicialmente */
+        padding: 0 15px;
         border-radius: 0;
-    }
-}
-/* ===============================
-   🎵 Mejoras al Reproductor
-================================ */
-.cliente-reproductor {
-    position: fixed;
-    bottom: 0;
-    left: 220px;
-    right: 0;
-    height: 80px;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    display: flex;
-    align-items: center;
-    padding: 0 1.5rem;
-    z-index: 1000;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    box-shadow: none; /* sin sombra */
-    transition: height 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-    overflow: hidden;
-}
-
-    .cliente-reproductor.expanded {
-        height: 100vh;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-        background-color: var(--background-expanded);
+        /* La transición y active/expanded manejarán la visibilidad */
     }
 
-.reproductor-info {
-    flex-grow: 1;
-    font-weight: bold;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 1rem;
-}
+        .cliente-reproductor.active {
+            height: var(--player-height-mobile); /* Altura específica para móvil cuando está activo */
+        }
 
-.reproductor-controles {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
+        .cliente-reproductor.expanded {
+            padding-top: 50px; /* Ajuste de padding para botón de cerrar en móvil */
+        }
 
-.reproductor-progreso {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-left: 1rem;
-    min-width: 200px;
-}
-
-#barraProgreso {
-    width: 150px;
-    accent-color: var(--primary);
-    cursor: pointer;
-    height: 4px;
-    border-radius: 2px;
-    background-color: var(--progress-bg);
-}
-
-#tiempoActual,
-#duracionTotal {
-    font-size: 0.85rem;
-    color: var(--text-color);
-    min-width: 32px;
-    text-align: center;
-}
-
-.btn-toggle-player {
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    background: none;
-    color: var(--btn-color);
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-/* ===============================
-   📊 Tablas oscuras y claras
-================================ */
-table.table {
-    background-color: var(--table-bg);
-    color: var(--text-color);
-    border-color: var(--table-border);
-}
-
-    table.table th,
-    table.table td {
-        background-color: transparent;
-        color: inherit;
-        border-top: 1px solid var(--table-border);
+    .reproductor-portada img {
+        width: 50px;
+        height: 50px;
     }
 
-[data-theme="light"] table.table {
-    background-color: #fff;
-    color: #000;
+    .reproductor-info strong {
+        font-size: 1em;
+    }
+
+    .reproductor-info span {
+        font-size: 0.8em;
+    }
+
+    .btn-player-control {
+        width: 40px;
+        height: 40px;
+    }
+
+        .btn-player-control img {
+            width: 18px;
+            height: 18px;
+        }
+
+    .btn-primary.btn-play-pause {
+        width: 50px;
+        height: 50px;
+    }
+
+        .btn-primary.btn-play-pause img {
+            width: 22px;
+            height: 22px;
+        }
+
+    .btn-toggle-player {
+        top: 15px; /* Posición en la parte superior cuando está minimizado en móvil */
+        right: 15px;
+        transform: none; /* Eliminar transform en móvil */
+    }
+
+    .cliente-reproductor.expanded .btn-toggle-player {
+        top: 15px;
+        right: 15px;
+    }
+
+    #barraProgreso, #volumenControl {
+        height: 6px;
+    }
+
+        #barraProgreso::-webkit-slider-thumb, #barraProgreso::-moz-range-thumb, #barraProgreso::-ms-thumb,
+        #volumenControl::-webkit-slider-thumb, #volumenControl::-moz-range-thumb, #volumenControl::-ms-thumb {
+            width: 16px;
+            height: 16px;
+        }
+
+    .reproductor-grande-portada {
+        max-width: 90%;
+        max-height: 40vh;
+    }
+
+    .letra-display {
+        width: 90%;
+        font-size: 1em;
+        padding: 10px;
+    }
 }

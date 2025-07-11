@@ -2,7 +2,7 @@
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
-    ViewData["Title"] = "Perfil";
+    ViewData["Title"] = "Perfil"; 
 }
 
 <div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center; justify-content: space-between;">
@@ -16,12 +16,15 @@
                     Model.Cliente != null
                     ? $"{Model.Cliente.Nombre} {Model.Cliente.Apellido}"
                     : Model.Artista?.NombreArtistico
-                )
+                    )
             </h2>
+          
         </div>
     </div>
 
     <nav>
-        @Html.ActionLink("Editar Perfil", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary" })
+        <a class="btn btn-primary">
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+        </a>
     </nav>
 </div>
