@@ -70,41 +70,15 @@ namespace API.TUNEFLOW.Controllers
             // Si tiene ClienteId, obtener Cliente con sus relaciones
             if (perfil.ClienteId != null && perfil.ClienteId != 0)
             {
-                var clienteSql = @"
-            SELECT * FROM ""Clientes"" WHERE ""Id"" = @Id;
-            SELECT * FROM ""Paises"" WHERE ""Id"" = (SELECT ""PaisId"" FROM ""Clientes"" WHERE ""Id"" = @Id);
-            SELECT * FROM ""Suscripciones"" WHERE ""Id"" = (SELECT ""SuscripcionId"" FROM ""Clientes"" WHERE ""Id"" = @Id);
-            SELECT ts.* FROM ""TipoSuscripciones"" ts 
-                JOIN ""Suscripciones"" s ON ts.""Id"" = s.""TipoSuscripcionId"" 
-                WHERE s.""Id"" = (SELECT ""SuscripcionId"" FROM ""Clientes"" WHERE ""Id"" = @Id);
-        ";
-
-                using (var multi = connection.QueryMultiple(clienteSql, new { Id = perfil.ClienteId }))
-                {
-                    var cliente = multi.ReadFirstOrDefault<Cliente>();
-                    var pais = multi.ReadFirstOrDefault<Pais>();
-                    var suscripcion = multi.ReadFirstOrDefault<Suscripcion>();
-                    var tipoSuscripcion = multi.ReadFirstOrDefault<TipoSuscripcion>();
-
-                    if (cliente != null)
-                    {
-                        cliente.Pais = pais;
-                        cliente.Suscripcion = suscripcion;
-
-                        if (cliente.Suscripcion != null)
-                        {
-                            cliente.Suscripcion.TipoSuscripcion = tipoSuscripcion;
-                        }
-
-                        perfil.Cliente = cliente;
-                    }
-                }
+                var clienteSql = @"SELECT ""Nombre"", ""Apellido"" FROM ""Clientes"" WHERE ""Id"" = @Id";
+                perfil.Cliente = connection.QueryFirstOrDefault<Cliente>(clienteSql, new { Id = perfil.ClienteId });
             }
+                
 
             // Si tiene ArtistaId, obtener Artista
             if (perfil.ArtistaId != null && perfil.ArtistaId != 0)
             {
-                var artistaSql = @"SELECT ""Id"", ""NombreArtistico"" FROM ""Artistas"" WHERE ""Id"" = @Id";
+                var artistaSql = @"SELECT ""NombreArtistico"" FROM ""Artistas"" WHERE ""Id"" = @Id";
                 perfil.Artista = connection.QueryFirstOrDefault<Artista>(artistaSql, new { Id = perfil.ArtistaId });
             }
 
