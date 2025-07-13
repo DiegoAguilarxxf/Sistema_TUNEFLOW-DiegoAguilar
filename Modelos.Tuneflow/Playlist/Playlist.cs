@@ -17,6 +17,7 @@ namespace Modelos.Tuneflow.Playlist
         public string Descripcion { get; set; } // Descripción de la playlist
         public DateTime FechaCreacion { get; set; } // Fecha de creación de la playlist
         [ForeignKey(nameof(Cliente))] public int ClienteId { get; set; }
+        public string PortadaPlaylist { get; set; }
         public Cliente? Cliente { get; set; }
         public List<Cancion>? Canciones { get; set; } // Lista de canciones que pertenecen a esta playlist
 

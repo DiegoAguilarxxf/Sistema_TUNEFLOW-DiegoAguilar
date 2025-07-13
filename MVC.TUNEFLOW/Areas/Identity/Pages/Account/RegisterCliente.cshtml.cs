@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Modelos.Tuneflow.Modelos;
+using Modelos.Tuneflow.Playlist;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
 
@@ -151,6 +152,17 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
             };
 
             var perfilNuevo = await Crud<Perfil>.CreateAsync(perfil);
+
+            var playlistFavorito = new Playlist
+            {
+                Titulo = "Tus Me Gusta",
+                Descripcion = "Esta es una playlist que contiene tus canciones favoritas",
+                FechaCreacion = DateTime.UtcNow,
+                ClienteId = clienteNuevo.Id,
+                PortadaPlaylist = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/PortadaFavoritos.png"
+            };
+
+            var playlistNueva = await Crud<Playlist>.CreateAsync(playlistFavorito);
 
             await _userManager.AddToRoleAsync(user, "cliente");
 

@@ -1,0 +1,32 @@
+﻿@model  Modelos.Tuneflow.Playlist.Playlist
+
+@{
+    ViewData["Title"] = "Crear Playlist";
+}
+
+<h2>Crear Playlist</h2>
+
+<form asp-area="Cliente" asp-controller="Playlist" asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label for="Titulo" class="form-label">Título</label>
+        <input type="text" name="Titulo" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="Descripcion" class="form-label">Descripción</label>
+        <textarea name="Descripcion" class="form-control" rows="3" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="ImagenPortada" class="form-label">Portada (imagen)</label>
+        <input type="file" name="ImagenPortada" class="form-control" accept="image/*" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Crear Playlist</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

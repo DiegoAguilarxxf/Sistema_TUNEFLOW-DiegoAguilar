@@ -2,6 +2,7 @@
 using Modelos.Tuneflow.Usuario.Administracion;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
+using Modelos.Tuneflow.Playlist;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Globalization;
@@ -212,6 +213,31 @@ namespace API.Consumer
                 else
                 {
                     return new Perfil();
+                }
+            }
+        }
+
+        public static async Task<List<Playlist>> GetPlaylistPorClienteId(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/Cliente/Playlist/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var playlists = JsonConvert.DeserializeObject<List<Playlist>>(json);
+                    return playlists;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron playlist");
+                    return new List<Playlist>();
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return new List<Playlist>();
                 }
             }
         }

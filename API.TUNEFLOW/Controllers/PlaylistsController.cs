@@ -7,7 +7,9 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Usuario.Consumidor;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -38,9 +40,9 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Playlists/5
         [HttpGet("{id}")]
-        public ActionResult<Playlist> GetPlaylist(int id)
+        public ActionResult<Playlist> GetPlaylistById(int id)
         {
-            var playlist = connection.QuerySingle<Playlist>(@"SELECT * FROM ""Playlists"" WHERE ""Id"" = @Id", new { Id = id });
+            var playlist = connection.QuerySingleOrDefault<Playlist>(@"SELECT * FROM ""Playlists"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (playlist == null)
             {
@@ -50,17 +52,30 @@ namespace API.TUNEFLOW.Controllers
             return playlist;
         }
 
+        [HttpGet("Cliente/Playlist/{id}")]
+        public ActionResult<IEnumerable<Playlist>> GetPlaylistForClienteId(int id)
+        {
+            var sql = @"SELECT * FROM ""Playlists"" WHERE ""ClienteId"" = @Id";
+
+            var playlists = connection.Query<Playlist>(sql, new {Id = id});
+
+            if (!playlists.Any())
+                return NotFound("No se encontraron playlist para ese cliente");
+
+            return Ok(playlists);
+        }
+
         // PUT: api/Playlists/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public void  PutPlaylist(int id,[FromBody] Playlist playlist)
         {
             connection.Execute(@"UPDATE ""Playlists"" SET
-""Titulo"" = @Titulo,
-""Descripcion"" = @Descripcion,
-""FechaCreacion"" = @FechaCreacion,
-""FechaCreacion"" = @FechaCreacion,
-""ClienteId"" = @ClienteId", new
+            ""Titulo"" = @Titulo,
+            ""Descripcion"" = @Descripcion,
+            ""FechaCreacion"" = @FechaCreacion,
+            ""FechaCreacion"" = @FechaCreacion,
+            ""ClienteId"" = @ClienteId", new
             {
                 Titulo = playlist.Titulo,
                 Descripcion = playlist.Descripcion,
@@ -73,17 +88,22 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Playlists
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Playlist PostPlaylist([FromBody] Playlist playlist)
+        public ActionResult<Playlist> PostPlaylist([FromBody] Playlist playlist)
         {
-            connection.Execute(@"INSERT INTO ""Playlists"" (""Titulo"", ""Descripcion"", ""FechaCreacion"", ""ClienteId"")
-VALUES (@Titulo, @Descripcion, @FechaCreacion, @ClienteId)", new
+            var sql = @"INSERT INTO ""Playlists"" (""Titulo"", ""Descripcion"", ""FechaCreacion"", ""ClienteId"",""PortadaPlaylist"")
+            VALUES (@Titulo, @Descripcion, @FechaCreacion, @ClienteId, @PortadaPlaylist) RETURNING ""Id"";";
+            
+            var idDevuelto = connection.ExecuteScalar<int>(sql, new
             {
                 Titulo = playlist.Titulo,
                 Descripcion = playlist.Descripcion,
                 FechaCreacion = playlist.FechaCreacion,
-                ClienteId = playlist.ClienteId
+                ClienteId = playlist.ClienteId,
+                PortadaPlaylist = playlist.PortadaPlaylist
             });
-            return playlist;
+            playlist.Id = idDevuelto;
+            
+            return CreatedAtAction(nameof(GetPlaylistById), new { id = idDevuelto }, playlist);
 
         }
           
