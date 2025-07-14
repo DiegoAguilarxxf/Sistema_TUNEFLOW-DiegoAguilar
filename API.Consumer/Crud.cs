@@ -242,5 +242,30 @@ namespace API.Consumer
             }
         }
 
+        public static async Task<List<Cancion>> GetCancionesPorPlaylist(int idPlaylist)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/CancionesPorPlaylist/{idPlaylist}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var canciones = JsonConvert.DeserializeObject<List<Cancion>>(json);
+                    return canciones;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron canciones");
+                    return new List<Cancion>();
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return new List<Cancion>();
+                }
+            }
+        }
+
     }
 }

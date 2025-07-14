@@ -36,10 +36,11 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         }
 
         // GET: PlaylistController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Canciones(int id)
         {
-            
-            return View();
+            Playlist playlist = await Crud<Playlist>.GetByIdAsync(id);
+            playlist.Canciones = await Crud<MusicaPlaylist>.GetCancionesPorPlaylist(id);
+            return View(playlist);
         }
 
         // GET: PlaylistController/Create

@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Media;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Modelos.Tuneflow.Usuario.Produccion;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -63,6 +66,45 @@ namespace API.TUNEFLOW.Controllers
                 return NotFound();  // O puedes devolver algo distinto si no existe
 
 
+        }
+
+        [HttpGet("CancionesPorPlaylist/{idPlaylist}")]
+        public ActionResult<IEnumerable<Cancion>> ObtenerCancionesPorPlaylist(int idPlaylist)
+        {
+            var sql = @"
+                            SELECT 
+                                c.""Id"", c.""Titulo"", c.""Duracion"", c.""Genero"", c.""ArtistaId"", c.""AlbumId"",
+                                c.""RutaArchivo"", c.""ContenidoExplicito"", c.""RutaImagen"",
+
+                                a.""Id"", a.""NombreArtistico"", a.""GeneroMusical"", a.""Biografia"",
+                                a.""PaisId"", a.""verificado"", a.""UsuarioId"",
+
+                                al.""Id"", al.""Titulo"", al.""FechaLanzamiento"", al.""Genero"",
+                                al.""FechaCreacion"", al.""Descripcion"", al.""RutaPortada""
+                            FROM ""MusicasPlaylists"" mp
+                            INNER JOIN ""Canciones"" c ON mp.""CancionId"" = c.""Id""
+                            INNER JOIN ""Artistas"" a ON c.""ArtistaId"" = a.""Id""
+                            LEFT JOIN ""Albums"" al ON c.""AlbumId"" = al.""Id""
+                            WHERE mp.""PlaylistId"" = @IdPlaylist";
+
+            var canciones = connection.Query<Cancion, Artista, Album, Cancion>(
+                sql,
+                (cancion, artista, album) =>
+                {
+                    cancion.Artista = artista;
+                    cancion.Album = album;
+                    return cancion;
+                },
+                new { IdPlaylist = idPlaylist },
+                splitOn: "Id,Id" // importante para Dapper
+            ).ToList();
+
+            if (!canciones.Any())
+            {
+                return NotFound($"No se encontraron canciones para la playlist con ID {idPlaylist}.");
+            }
+
+            return Ok(canciones);
         }
 
         // PUT: api/MusicasPlaylists/5
