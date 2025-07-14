@@ -43,6 +43,17 @@ namespace API.TUNEFLOW
 
             // Configurar los controladores y añadir soporte para Newtonsoft.Json
             // Esto es útil para manejar bucles de referencia en la serialización JSON.
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("PermitirMVC", policy =>
+                {
+                    policy.WithOrigins("https://localhost:7015") // ← URL del proyecto MVC
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
+
             builder.Services
                 .AddControllers()
                 .AddNewtonsoftJson(options =>
@@ -65,6 +76,7 @@ namespace API.TUNEFLOW
                 app.UseSwaggerUI(); // Habilita el middleware para servir la UI de Swagger (Swagger-UI)
             }
 
+            app.UseCors("PermitirMVC");
             // Redireccionar solicitudes HTTP a HTTPS
             app.UseHttpsRedirection();
 

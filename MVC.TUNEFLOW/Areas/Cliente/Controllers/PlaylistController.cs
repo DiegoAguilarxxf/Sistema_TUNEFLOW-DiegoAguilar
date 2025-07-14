@@ -38,6 +38,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         // GET: PlaylistController/Details/5
         public ActionResult Details(int id)
         {
+            
             return View();
         }
 

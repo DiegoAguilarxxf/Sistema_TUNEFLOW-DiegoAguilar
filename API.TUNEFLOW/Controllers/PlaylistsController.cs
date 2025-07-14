@@ -65,6 +65,19 @@ namespace API.TUNEFLOW.Controllers
             return Ok(playlists);
         }
 
+        [HttpGet("PlaylistFavoritos/{id}")]
+        public ActionResult<int> GetPlaylistFavoritosBiClienteId(int id)
+        {
+            var sql = @"SELECT ""Id"" FROM ""Playlists"" WHERE ""ClienteId"" = @Id AND ""Titulo"" = @Titulo";
+
+            var iddevuelto = connection.QueryFirstOrDefault<int?>(sql, new { Id = id, Titulo = "Tus Me Gusta" });
+
+            if (!iddevuelto.HasValue)
+                return NotFound("No se encontró la playlist 'Tus Me Gusta' para este cliente.");
+
+            return Ok(iddevuelto.Value);
+        }
+
         // PUT: api/Playlists/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

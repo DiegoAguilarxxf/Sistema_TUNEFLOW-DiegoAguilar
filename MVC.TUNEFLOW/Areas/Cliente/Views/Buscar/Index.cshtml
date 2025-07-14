@@ -47,7 +47,13 @@ else
                     <td>@item.TiempoEnMinutos(item.Duracion)</td>
                     <td>
                         <button class="btn btn-sm btn-success" type="button"
-                                onclick="reproducirCancion('@item.Titulo', '@item.RutaArchivo', '@item.RutaImagen')">
+                                onclick="reproducirCancion(
+                            @item.Id,
+                            '@item.Titulo',
+                            '@item.RutaArchivo',
+                            '@item.RutaImagen',
+                            @ViewBag.IdCliente
+                        )">
                             ▶ Reproducir
                         </button>
 
@@ -82,3 +88,4 @@ else
             });
     }
 </script>
+

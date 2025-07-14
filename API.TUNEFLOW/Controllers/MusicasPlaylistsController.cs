@@ -38,7 +38,7 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/MusicasPlaylists/5
         [HttpGet("{id}")]
-        public ActionResult<MusicaPlaylist> GetMusicaPlaylist(int id)
+        public ActionResult<MusicaPlaylist> GetMusicaPlaylistById(int id)
         {
             var musicaPlaylist = connection.QuerySingle<MusicaPlaylist>(@"SELECT * FROM ""MusicasPlaylists"" WHERE ""Id"" = @Id", new { Id = id });
 
@@ -69,16 +69,18 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/MusicasPlaylists
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public MusicaPlaylist PostMusicaPlaylist([FromBody]MusicaPlaylist musicaPlaylist)
+        public ActionResult<MusicaPlaylist> PostMusicaPlaylist([FromBody]MusicaPlaylist musicaPlaylist)
         {
-            connection.Execute(@"INSERT INTO ""MusicasPlaylists"" (""PlaylistId"", ""MusicaId"") 
-                VALUES (@PlaylistId, @MusicaId)", new
+            var idDevuelto = connection.ExecuteScalar<int>(@"INSERT INTO ""MusicasPlaylists"" (""CancionId"", ""PlaylistId"") 
+                VALUES (@CancionId, @PlaylistId) RETURNING ""Id"";", new
             {
-                PlaylistId = musicaPlaylist.PlaylistId,
-                CancionId = musicaPlaylist.CancionId
+                CancionId = musicaPlaylist.CancionId,
+                PlaylistId = musicaPlaylist.PlaylistId
             });
 
-            return musicaPlaylist;
+            musicaPlaylist.Id = idDevuelto;
+
+            return CreatedAtAction(nameof(GetMusicaPlaylistById), new { id = idDevuelto }, musicaPlaylist);
         }
 
         // DELETE: api/MusicasPlaylists/5

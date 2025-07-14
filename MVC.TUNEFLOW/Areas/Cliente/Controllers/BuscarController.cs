@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Media;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -10,11 +11,25 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
     [Authorize]
     public class BuscarController : Controller
     {
-        public IActionResult Index()
-        {
-            Debug.WriteLine("Entrando a Index");
-            return View(new List<Cancion>());
-        }
+            public async Task<IActionResult> Index()
+            {
+                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                var cliente = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.GetClientePorUsuarioId(userId);
+
+                if (cliente == null)
+                {
+                    return RedirectToAction("Index", "Buscar");
+                }
+
+                ViewBag.IdCliente = cliente.Id;
+            Console.WriteLine($"ViewBag: {ViewBag.IdCliente}");
+                return View(new List<Cancion>());
+            }
 
         [AllowAnonymous]
         [HttpGet]
@@ -30,6 +45,21 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             var canciones = await Crud<Cancion>.GetCancionesPorPalabrasClave(nameCancion);
 
             Console.WriteLine($"Número de canciones recibidas en controlador: {canciones?.Count ?? 0}");
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var cliente = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.GetClientePorUsuarioId(userId);
+
+            if (cliente == null)
+            {
+                return RedirectToAction("Index", "Buscar");
+            }
+
+            ViewBag.IdCliente = cliente.Id;
+            Console.WriteLine($"ViewBag: {ViewBag.IdCliente}");
 
             return View("Index", canciones);
         }

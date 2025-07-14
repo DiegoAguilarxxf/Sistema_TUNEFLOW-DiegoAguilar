@@ -35,7 +35,8 @@ let cancionEnReproduccion = {
     titulo: '',
     url: '',
     portada: '',
-    tiempo: 0
+    tiempo: 0,
+    idCliente: 0
 };
 
 // 🔄 Restaurar canción al recargar
@@ -74,8 +75,8 @@ function formatearTiempo(segundos) {
     return `${m}:${s}`;
 }
 
-function reproducirCancion(titulo, url, portada, tiempo = 0, autoPlay = true) {
-    cancionEnReproduccion = { titulo, url, portada, tiempo };
+async function reproducirCancion(id, titulo, url, portada, idCliente, tiempo = 0, autoPlay = true) {
+    cancionEnReproduccion = { id, titulo, url, portada, tiempo, idCliente };
     cancionActual.textContent = titulo;
     portadaActual.src = portada;
     audioPlayer.src = url;
@@ -87,6 +88,8 @@ function reproducirCancion(titulo, url, portada, tiempo = 0, autoPlay = true) {
             .catch(err => console.error(err));
     }
 
+    const esFavorita = await ComprobarEsCancionfavorita(id, idCliente);
+    actualizarBotonFavorito(esFavorita);
     sessionStorage.setItem('ultimaCancion', JSON.stringify(cancionEnReproduccion));
 }
 
@@ -108,8 +111,159 @@ function anteriorCancion() {
     alert("Anterior canción no implementada.");
 }
 
-function añadirFavorito() {
-    alert(`Añadido a favoritos: ${cancionEnReproduccion.titulo}`);
+async function añadirFavorito() {
+    if (!cancionEnReproduccion || !cancionEnReproduccion.id) {
+        alert("No hay canción en reproducción.");
+        return;
+    }
+
+    const id = cancionEnReproduccion.id;
+    const idCliente = cancionEnReproduccion.idCliente;
+
+    const esFavorita = await ComprobarEsCancionfavorita(id, idCliente);
+
+    if (esFavorita) {
+        // Quitar de favoritos
+        const quitarUrl = `https://localhost:7031/api/CancionesFavoritas/Quitar/${id}`;
+
+        const res = await fetch(quitarUrl, {
+            method: "POST",
+            credentials: "include"
+        });
+
+        if (res.ok) {
+            cancionEnReproduccion.esFavorita = false;
+            actualizarBotonFavorito(false);
+            alert("Quitado de favoritos.");
+        } else {
+            console.error("Error al quitar de favoritos.");
+        }
+
+    } else {
+
+        const idPlaylistFavoritos = await ExtraerPlaylistDeFavortos(cancionEnReproduccion.idCliente);
+
+        const url3 = "https://localhost:7031/api/MusicasPlaylists";
+
+        const bodyPlaylistFavoritos = {
+            PlaylistId: idPlaylistFavoritos,
+            CancionId: id
+        };
+
+        try {
+            const res = await fetch(url3, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify(bodyPlaylistFavoritos)
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                console.log("✅ Canción añadida a la playlist:", data);
+                alert("🎵 Añadida a la playlist correctamente.");
+            } else {
+                console.error("❌ Error al añadir:", res.status);
+                alert("Error al añadir a la playlist.");
+            }
+        } catch (err) {
+            console.error("❌ Error de red:", err);
+            alert("Error de red.");
+        }
+
+        const urlCancionFavorita = "https://localhost:7031/api/CancionesFavoritas";
+
+        const bodyCancionFavorita = {
+            ClienteId: idCliente,
+            CancionId: id,
+            FechaAgregado: new Date().toISOString()  // fecha actual en ISO
+        };
+
+        try {
+            const res = await fetch(urlCancionFavorita, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify(bodyCancionFavorita)
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                console.log("✅ Canción añadida a favoritos:", data);
+                alert("🎵 Añadida a favoritos correctamente.");
+                actualizarBotonFavorito(true);
+            } else {
+                console.error("❌ Error al añadir:", res.status);
+                alert("Error al añadir a favoritos.");
+            }
+        } catch (err) {
+            console.error("❌ Error de red:", err);
+            alert("Error de red.");
+        }
+    }
+}
+
+async function ExtraerPlaylistDeFavortos(id) {
+    const url = `https://localhost:7031/api/Playlists/PlaylistFavoritos/${id}`;
+
+    try {
+        const res = await fetch(url, {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            return data;
+        } else {
+            return null;
+        }
+    } catch (err) {
+        console.error("Error de red:", err);
+        return null;
+    }
+}
+
+async function ComprobarEsCancionfavorita(idCancion, idCliente) {
+    const url = `https://localhost:7031/api/CancionesFavoritas/IsFavorita/${idCancion}/${idCliente}`;
+
+    try {
+        const res = await fetch(url, {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            return data.esFavorita === true;
+        } else {
+            return false;
+        }
+    } catch (err) {
+        console.error("Error de red:", err);
+        return false;
+    }
+}
+
+function actualizarBotonFavorito(esFavorita) {
+    const btn = document.getElementById('btnfavorito');
+    if (!btn) return;
+
+    if (esFavorita) {
+        btn.classList.remove('btn-outline-warning');
+        btn.classList.add('btn-warning');  // botón activo (por ejemplo color amarillo sólido)
+        btn.textContent = '💖';             // corazón lleno
+        btn.title = 'Quitar de favoritos';
+    } else {
+        btn.classList.remove('btn-warning');
+        btn.classList.add('btn-outline-warning'); // estilo normal (borde)
+        btn.textContent = '❤️';                   // corazón vacío
+        btn.title = 'Añadir a favoritos';
+    }
 }
 
 togglePlayerBtn.addEventListener('click', () => {
@@ -127,3 +281,7 @@ togglePlayerBtn.addEventListener('click', () => {
 
 // 📢 Función global para llamar desde botones
 window.reproducirCancion = reproducirCancion;
+window.añadirFavorito = añadirFavorito;
+window.togglePlay = togglePlay;
+window.siguienteCancion = siguienteCancion;
+window.anteriorCancion = anteriorCancion;

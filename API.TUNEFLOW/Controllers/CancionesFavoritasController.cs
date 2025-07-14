@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Media;
+using Modelos.Tuneflow.Usuario.Perfiles;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -23,6 +24,13 @@ namespace API.TUNEFLOW.Controllers
          }
         */
         private DbConnection connection;
+
+        public CancionesFavoritasController(IConfiguration config)
+        {
+            var connString = config.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
+        }
         // GET: api/CancionesFavoritas
         [HttpGet]
         public IEnumerable<CancionFavorita> GetCancionFavorita()
@@ -32,7 +40,7 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/CancionesFavoritas/5
         [HttpGet("{id}")]
-        public ActionResult<CancionFavorita> GetCancionFavorita(int id)
+        public ActionResult<CancionFavorita> GetCancionFavoritaById(int id)
         {
             var cancionFavorita = connection.QuerySingle<CancionFavorita>(@"SELECT * FROM ""CancionesFavoritas"" WERE ""Id""= @Id", new { Id = id });
 
@@ -42,6 +50,17 @@ namespace API.TUNEFLOW.Controllers
             }
 
             return cancionFavorita;
+        }
+
+        [HttpGet("IsFavorita/{id}/{idCliente}")]
+        public ActionResult<CancionFavorita> GetCancionFavoritaPorIdEIdCliente(int id, int idCliente)
+        {
+            var sql = @"SELECT * FROM ""CancionesFavoritas"" WHERE ""ClienteId"" = @IdCliente AND ""CancionId"" = @Id";
+
+            var existe = connection.ExecuteScalar<int?>(sql, new { IdCliente = idCliente, Id = id });
+
+            return Ok(new { esFavorita = existe.HasValue });
+
         }
 
         // PUT: api/CancionesFavoritas/5
@@ -65,18 +84,20 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/CancionesFavoritas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public CancionFavorita PostCancionFavorita([FromBody]CancionFavorita cancionfavorita)
-        {   connection.Execute(@"INSERT INTO ""CancionesFavoritas"" (""ClienteId"", ""CancionId"", ""FechaAgregado"") " +
-                "VALUES (@ClienteId, @CancionId, @FechaAgregado) RETURNING *",
+        public ActionResult<CancionFavorita> PostCancionFavorita([FromBody]CancionFavorita cancionfavorita)
+        {   
+            
+            var idDevuelto = connection.ExecuteScalar<int>(@"INSERT INTO ""CancionesFavoritas"" (""ClienteId"", ""CancionId"", ""FechaAgregado"") 
+                                                VALUES (@ClienteId, @CancionId, @FechaAgregado) RETURNING ""Id"";",
                 new
                 {
                     ClienteId = cancionfavorita.ClienteId,
                     CancionId = cancionfavorita.CancionId,
                     FechaAgregado = cancionfavorita.FechaAgregado
                 });
+            cancionfavorita.Id = idDevuelto;
 
-
-            return cancionfavorita;
+            return CreatedAtAction(nameof(GetCancionFavoritaById), new { id = idDevuelto }, cancionfavorita);
         }
 
         // DELETE: api/CancionesFavoritas/5
