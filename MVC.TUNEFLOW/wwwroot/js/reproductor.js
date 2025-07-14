@@ -121,27 +121,67 @@ async function añadirFavorito() {
     const idCliente = cancionEnReproduccion.idCliente;
 
     const esFavorita = await ComprobarEsCancionfavorita(id, idCliente);
+    const idPlaylistFavoritos = await ExtraerPlaylistDeFavortos(cancionEnReproduccion.idCliente);
 
     if (esFavorita) {
-        // Quitar de favoritos
-        const quitarUrl = `https://localhost:7031/api/CancionesFavoritas/Quitar/${id}`;
+        const idMusicaPlaylist = await ObtenerIdDeMusicaPlaylist(id, idPlaylistFavoritos);
+        const idCancionesFavoritas = await ObtenerIdDeCancionFavorita(id, idCliente);
 
-        const res = await fetch(quitarUrl, {
-            method: "POST",
-            credentials: "include"
-        });
+        const urlEliminarMusicaPlaylist = `https://localhost:7031/api/MusicasPlaylists/${idMusicaPlaylist}`;
 
-        if (res.ok) {
-            cancionEnReproduccion.esFavorita = false;
-            actualizarBotonFavorito(false);
-            alert("Quitado de favoritos.");
-        } else {
-            console.error("Error al quitar de favoritos.");
+        try {
+            const res = await fetch(urlEliminarMusicaPlaylist, {
+                method: "DELETE",
+                credentials: "include"
+            });
+
+            if (res.ok) {
+                if (res.status === 204) {
+                    console.log("✅ Canción eliminada correctamente.");
+                    actualizarBotonFavorito(false);
+                    alert("🎵 Canción eliminada de la playlist.");
+                } else {
+                    // Solo intentas parsear JSON si esperas contenido
+                    const data = await res.json();
+                    console.log("✅ Respuesta:", data);
+                }
+            } else {
+                console.error("❌ Error al eliminar:", res.status);
+                alert("Error al eliminar de la playlist.");
+            }
+        } catch (err) {
+            console.error("❌ Error de red:", err);
+            alert("Error de red.");
         }
 
-    } else {
+        const urlEliminarCancionesFavoritas = `https://localhost:7031/api/CancionesFavoritas/${idCancionesFavoritas}`;
 
-        const idPlaylistFavoritos = await ExtraerPlaylistDeFavortos(cancionEnReproduccion.idCliente);
+        try {
+            const res = await fetch(urlEliminarCancionesFavoritas, {
+                method: "DELETE",
+                credentials: "include"
+            });
+
+            if (res.ok) {
+                if (res.status === 204) {
+                    console.log("✅ Canción eliminada correctamente.");
+                    alert("🎵 Canción eliminada de tus Favoritos");
+                } else {
+                    // Solo intentas parsear JSON si esperas contenido
+                    const data = await res.json();
+                    console.log("✅ Respuesta:", data);
+                }
+            } else {
+                console.error("❌ Error al eliminar:", res.status);
+                alert("Error al eliminar de la playlist.");
+            }
+        } catch (err) {
+            console.error("❌ Error de red:", err);
+            alert("Error de red.");
+        }
+
+
+    } else {
 
         const url3 = "https://localhost:7031/api/MusicasPlaylists";
 
@@ -239,13 +279,55 @@ async function ComprobarEsCancionfavorita(idCancion, idCliente) {
 
         if (res.ok) {
             const data = await res.json();
-            return data.esFavorita === true;
+            return data.id !== undefined && data.id !== null;
         } else {
             return false;
         }
     } catch (err) {
         console.error("Error de red:", err);
         return false;
+    }
+}
+
+async function ObtenerIdDeCancionFavorita(idCancion, idCliente) {
+    const urlObtenerIdCancionFavorita = `https://localhost:7031/api/CancionesFavoritas/IsFavorita/${idCancion}/${idCliente}`;
+
+    try {
+        const res = await fetch(urlObtenerIdCancionFavorita, {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            return data.id ?? null;
+        } else {
+            return null;
+        }
+    } catch (err) {
+        console.error("Error de red:", err);
+        return null;
+    }
+}
+
+async function ObtenerIdDeMusicaPlaylist(idCancion, idPlaylist) {
+    const url = `https://localhost:7031/api/MusicasPlaylists/ExistMusicaPlaylist/${idCancion}/${idPlaylist}`;
+
+    try {
+        const res = await fetch(url, {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            return data.id ?? null;
+        } else {
+            return null;
+        }
+    } catch (err) {
+        console.error("Error de red:", err);
+        return null;
     }
 }
 

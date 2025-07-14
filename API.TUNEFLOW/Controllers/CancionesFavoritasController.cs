@@ -53,13 +53,17 @@ namespace API.TUNEFLOW.Controllers
         }
 
         [HttpGet("IsFavorita/{id}/{idCliente}")]
-        public ActionResult<CancionFavorita> GetCancionFavoritaPorIdEIdCliente(int id, int idCliente)
+        public ActionResult<int> GetCancionFavoritaPorIdEIdCliente(int id, int idCliente)
         {
-            var sql = @"SELECT * FROM ""CancionesFavoritas"" WHERE ""ClienteId"" = @IdCliente AND ""CancionId"" = @Id";
+            var sql = @"SELECT ""Id"" FROM ""CancionesFavoritas"" WHERE ""ClienteId"" = @IdCliente AND ""CancionId"" = @Id";
 
-            var existe = connection.ExecuteScalar<int?>(sql, new { IdCliente = idCliente, Id = id });
+            var existeId = connection.ExecuteScalar<int?>(sql, new { IdCliente = idCliente, Id = id });
 
-            return Ok(new { esFavorita = existe.HasValue });
+            if (existeId.HasValue)
+                return Ok(new { id = existeId.Value });  // Devuelve el Id encontrado
+            else
+                return NotFound();  // O puedes devolver algo distinto si no existe
+
 
         }
 
@@ -102,9 +106,10 @@ namespace API.TUNEFLOW.Controllers
 
         // DELETE: api/CancionesFavoritas/5
         [HttpDelete("{id}")]
-        public void DeleteCancionFavorita(int id)
+        public ActionResult DeleteCancionFavorita(int id)
         {
            connection.Execute(@"DELETE FROM ""CancionesFavoritas"" WHERE ""Id"" = @Id", new { Id = id });
+            return NoContent(); // Código 204
         }
 
        /* private bool CancionFavoritaExists(int id)

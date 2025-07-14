@@ -50,6 +50,21 @@ namespace API.TUNEFLOW.Controllers
             return musicaPlaylist;
         }
 
+        [HttpGet("ExistMusicaPlaylist/{CancionId}/{PlaylistId}")]
+        public ActionResult<int> GetCancionFavoritaPorIdEIdCliente(int CancionId, int PlaylistId)
+        {
+            var sql = @"SELECT ""Id"" FROM ""MusicasPlaylists"" WHERE ""CancionId"" = @IdCancion AND ""PlaylistId"" = @IdPlaylist";
+
+            var existeId = connection.ExecuteScalar<int?>(sql, new { IdCancion = CancionId, IdPlaylist = PlaylistId });
+
+            if (existeId.HasValue)
+                return Ok(new { id = existeId.Value });  // Devuelve el Id encontrado
+            else
+                return NotFound();  // O puedes devolver algo distinto si no existe
+
+
+        }
+
         // PUT: api/MusicasPlaylists/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -85,14 +100,11 @@ namespace API.TUNEFLOW.Controllers
 
         // DELETE: api/MusicasPlaylists/5
         [HttpDelete("{id}")]
-        public void DeleteMusicaPlaylist(int id)
+        public ActionResult DeleteMusicaPlaylist(int id)
         {
             connection.Execute(@"DELETE FROM ""MusicasPlaylists"" WHERE ""Id"" = @Id", new { Id = id });
+            return NoContent(); // Código 204
         }
-        /*
-        private bool MusicaPlaylistExists(int id)
-        {
-            return _context.MusicasPlaylists.Any(e => e.Id == id);
-        }*/
+
     }
 }
