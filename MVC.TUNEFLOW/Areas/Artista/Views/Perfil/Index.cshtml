@@ -1,0 +1,53 @@
+﻿@model Modelos.Tuneflow.Usuario.Produccion.Artista
+
+@{
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
+    ViewData["Title"] = "Perfil de " + Model.NombreArtistico;
+}
+
+<div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <img src="@Model.Perfil?.ImagenPerfil ?? " /imagenes/perfil-default.jpg"" alt="Foto perfil"
+             style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid white;" />
+        <div>
+            <h4 style="color: white; margin: 0;">Perfil del Artista</h4>
+            <h2 style="color: white; margin: 0; font-size: 2rem; font-weight: bold;">
+                @Model.NombreArtistico
+            </h2>
+            @* Puedes agregar más datos del perfil aquí, por ejemplo biografía *@
+            <p style="color: white;">@Model.Perfil?.Biografia</p>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 2rem; color: white;">
+    <h3>Canciones</h3>
+    @if (Model.Canciones != null && Model.Canciones.Any())
+    {
+        <ul>
+            @foreach (var cancion in Model.Canciones)
+            {
+                <li>@cancion.Titulo</li>  @* Aquí podrías poner un enlace al detalle de la canción *@
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No hay canciones para este artista.</p>
+    }
+
+    <h3>Álbumes</h3>
+    @if (Model.Albumes != null && Model.Albumes.Any())
+    {
+        <ul>
+            @foreach (var album in Model.Albumes)
+            {
+                <li>@album.Titulo</li>  @* Aquí podrías poner un enlace al detalle del álbum *@
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No hay álbumes para este artista.</p>
+    }
+</div>

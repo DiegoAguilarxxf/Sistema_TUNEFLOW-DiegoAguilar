@@ -4,7 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Modelos;
+using Modelos.Tuneflow.Playlist;
 using Modelos.Tuneflow.Usuario.Perfiles;
 
 namespace Modelos.Tuneflow.Usuario.Produccion
@@ -18,6 +20,9 @@ namespace Modelos.Tuneflow.Usuario.Produccion
         public bool verificado { get; set; } // Indica si el artista ha sido verificado por la plataforma.
         public string UsuarioId { get; set; } // Identificador único del usuario artista, puede ser un GUID o un ID de base de datos.
         public Pais? Pais { get; set; }
+        public List<Cancion>? Canciones { get; set; }
+        public List<Album>? Albumes { get; set; }
+        public Perfil? Perfil { get; set; } // Relación con el perfil del artista
 
     }
 }

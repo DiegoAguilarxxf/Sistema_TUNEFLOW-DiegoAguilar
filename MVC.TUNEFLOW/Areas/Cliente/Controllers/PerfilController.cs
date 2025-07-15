@@ -9,6 +9,9 @@ using Modelos.Tuneflow.Usuario.Perfiles;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using Modelos.Tuneflow.Media;
+using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Usuario.Produccion;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -209,5 +212,19 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 return View();
             }
         }
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> Artista(int id)
+        {
+            // Obtener el artista con sus canciones y álbumes
+            var artista = await Crud<Artista>.GetByIdAsync(id);
+
+            if (artista == null)
+                return NotFound();
+
+            return View("PerfilArtista", artista); // Enviamos el modelo Artista a la vista
+        }
+
+
     }
 }
