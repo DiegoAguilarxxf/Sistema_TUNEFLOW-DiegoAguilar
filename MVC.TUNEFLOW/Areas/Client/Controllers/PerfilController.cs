@@ -10,9 +10,9 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using System;
 
-namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
+namespace MVC.TUNEFLOW.Areas.Client.Controllers
 {
-    [Area("Cliente")]
+    [Area("Client")]
     public class PerfilController : Controller
     {
         // GET: PerfilController
@@ -24,14 +24,14 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            var cliente = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.GetClientePorUsuarioId(userId);
+            var cliente = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.GetClientePorUsuarioId(userId);
 
             if (cliente == null)
             {
                 return RedirectToAction("Index", "Buscar");
             }
 
-            var perfil = await Crud<Perfil>.GetPerfilPorClienteId(cliente.Id);
+            var perfil = await Crud<Profile>.GetPerfilPorClienteId(cliente.Id);
 
             return View(perfil);
         }
@@ -66,7 +66,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         // GET: PerfilController/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
-            var perfil = await Crud<Perfil>.GetByIdAsync(id);
+            var perfil = await Crud<Profile>.GetByIdAsync(id);
             return View(perfil);
         }
 
@@ -84,7 +84,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 string carpeta = "Usuarios";   // Carpeta donde quieres guardar la imagen
 
                 // Obtener el perfil desde tu API o base de datos
-                var perfil = await Crud<Perfil>.GetByIdAsync(id);
+                var perfil = await Crud<Profile>.GetByIdAsync(id);
 
                 if (perfil == null)
                 {
@@ -128,9 +128,9 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
                     var urlDefault = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/ImagenDefault.jpeg";
 
-                    if (!string.Equals(urlDefault, perfil.ImagenPerfil, StringComparison.OrdinalIgnoreCase))
+                    if (!string.Equals(urlDefault, perfil.ProfileImage, StringComparison.OrdinalIgnoreCase))
                     {
-                        var UrlimagenAntigua = perfil.ImagenPerfil;
+                        var UrlimagenAntigua = perfil.ProfileImage;
                         var basePath = $"/storage/v1/object/public/{bucket}/";
 
                         if (UrlimagenAntigua.Contains(basePath))
@@ -152,12 +152,12 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                     }
 
                     // Construir URL pública de la imagen
-                    perfil.ImagenPerfil = $"{supabaseUrl}/storage/v1/object/public/{bucket}/{rutaArchivo}";
+                    perfil.ProfileImage = $"{supabaseUrl}/storage/v1/object/public/{bucket}/{rutaArchivo}";
                 }
 
-                perfil.Biografia = Biografia;
+                perfil.Biography = Biografia;
 
-                await Crud<Perfil>.UpdateAsync(id, perfil);
+                await Crud<Profile>.UpdateAsync(id, perfil);
 
                 return RedirectToAction(nameof(Index));
             }

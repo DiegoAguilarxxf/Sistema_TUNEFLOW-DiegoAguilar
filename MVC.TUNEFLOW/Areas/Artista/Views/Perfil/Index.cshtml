@@ -1,4 +1,4 @@
-﻿@model Modelos.Tuneflow.Usuario.Produccion.Artista
+﻿@model Modelos.Tuneflow.Usuario.Produccion.Artist
 
 @{
     Layout = "~/Areas/Artista/Views/Shared/_LayoutCliente.cshtml";
@@ -7,12 +7,12 @@
 
 <div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center; justify-content: space-between;">
     <div style="display: flex; align-items: center; gap: 1.5rem;">
-        <img src="@Model.ImagenPerfil" alt="Foto Perfil Artista"
+        <img src="@Model.ProfileImage" alt="Foto Perfil Artista"
              style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid white;" />
         <div>
             <h4 style="color: white; margin: 0;">Artista</h4>
             <h2 style="color: white; margin: 0; font-size: 2rem; font-weight: bold;">
-                @Model.NombreArtistico
+                @Model.StageName
             </h2>
         </div>
     </div>

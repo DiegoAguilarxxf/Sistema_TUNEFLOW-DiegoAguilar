@@ -9,15 +9,16 @@ using Modelos.Tuneflow.Usuario.Consumidor;
 
 namespace Modelos.Tuneflow.Usuario.Produccion
 {
-    public class Seguimiento
+    public class Follow
     {
         [Key] public int Id { get; set; }
 
-        [ForeignKey(nameof(Cliente))] public int ClienteId { get; set; }
+        [ForeignKey(nameof(Client))] public int ClientId { get; set; }
 
-        [ForeignKey(nameof(Artista))] public int ArtistaId { get; set; }
+        [ForeignKey(nameof(Artist))] public int ArtistId { get; set; }
 
-        public Cliente? Cliente { get; set; }
-        public Artista? Artista { get; set; }
+        public Client? Client { get; set; }
+        public Artist? Artist { get; set; }
     }
+
 }

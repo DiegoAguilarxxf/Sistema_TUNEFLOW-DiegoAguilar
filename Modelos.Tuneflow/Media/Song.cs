@@ -31,4 +31,5 @@ namespace Modelos.Tuneflow.Media
             return $"{minutes}:{seconds:D2}";
         }
     }
+}
 

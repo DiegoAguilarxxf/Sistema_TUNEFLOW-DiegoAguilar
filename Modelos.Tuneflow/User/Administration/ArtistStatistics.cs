@@ -9,16 +9,16 @@ using Modelos.Tuneflow.Usuario.Produccion;
 
 namespace Modelos.Tuneflow.Usuario.Administracion
 {
-    public class EstadisticasArtista
+    public class ArtistStatistics
     {
         [Key] public int Id { get; set; }
-        [ForeignKey(nameof(Artista))] public int ArtistaId { get; set; }
-        public int ReproduccionesTotales { get; set; }
-        public int SeguidoresTotales { get; set; }
-        public int CancionesPublicadas { get; set; }
-        public int AlbumesPublicados { get; set; }
+        [ForeignKey(nameof(Artist))] public int ArtistId { get; set; }
+        public int TotalPlays { get; set; }
+        public int TotalFollowers { get; set; }
+        public int PublishedSongs { get; set; }
+        public int PublishedAlbums { get; set; }
 
-        public Artista? Artista { get; set; }
-
+        public Artist? Artist { get; set; }
     }
+
 }

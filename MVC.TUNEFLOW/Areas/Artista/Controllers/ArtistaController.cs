@@ -33,10 +33,10 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 
             using (var multi = _db.QueryMultiple(sql, new { Id = id }))
             {
-                var artista = multi.Read<Modelos.Tuneflow.Usuario.Produccion.Artista>().FirstOrDefault();
+                var artista = multi.Read<Modelos.Tuneflow.Usuario.Produccion.Artist>().FirstOrDefault();
                 if (artista != null)
                 {
-                    artista.Canciones = multi.Read<Cancion>().ToList();
+                    artista.Songs = multi.Read<Song>().ToList();
                 }
 
                 return View(artista);
@@ -125,14 +125,14 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         [HttpGet("Artista/Perfil/{nombreArtistico}")]
         public async Task<IActionResult> ArtistaPorNombre(string nombreArtistico)
         {
-            var artistas = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artista>.GetAllAsync();
-            var encontrado = artistas.FirstOrDefault(a => a.NombreArtistico == nombreArtistico);
+            var artistas = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artist>.GetAllAsync();
+            var encontrado = artistas.FirstOrDefault(a => a.StageName == nombreArtistico);
 
             if (encontrado == null)
                 return NotFound();
 
-            var canciones = await Crud<Cancion>.GetAllAsync();
-            encontrado.Canciones = canciones.Where(c => c.ArtistaId == encontrado.Id).ToList();
+            var canciones = await Crud<Song>.GetAllAsync();
+            encontrado.Songs = canciones.Where(c => c.ArtistId == encontrado.Id).ToList();
 
             return View("~/Areas/Artista/Views/Perfil/Index.cshtml", encontrado); // devuelve la vista Index con modelo 'Artista'
         }
@@ -147,12 +147,12 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         {
             try
             {
-                var cancion = await Crud<Cancion>.GetByIdAsync(cancionId);
+                var cancion = await Crud<Song>.GetByIdAsync(cancionId);
 
                 if (cancion == null)
                     return NotFound("Canción no encontrada");
 
-                int artistaId = cancion.ArtistaId;
+                int artistaId = cancion.ArtistId;
 
                 return Ok(artistaId); // Devuelve solo el ID
             }
@@ -170,7 +170,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             {
                 var sql = @"SELECT * FROM ""Canciones"" WHERE ""ArtistaId"" = @ArtistaId;";
 
-                var canciones = await _db.QueryAsync<Cancion>(sql, new { ArtistaId = artistaId });
+                var canciones = await _db.QueryAsync<Song>(sql, new { ArtistaId = artistaId });
 
                 if (!canciones.Any())
                     return NotFound("No se encontraron canciones para este artista.");

@@ -15,7 +15,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             Debug.WriteLine("Entrando a Index");
 
             // Obtiene todas las canciones sin filtro
-            var canciones = await Crud<Cancion>.GetAllAsync();
+            var canciones = await Crud<Song>.GetAllAsync();
 
             Console.WriteLine($"Número de canciones recibidas en Index: {canciones?.Count ?? 0}");
 

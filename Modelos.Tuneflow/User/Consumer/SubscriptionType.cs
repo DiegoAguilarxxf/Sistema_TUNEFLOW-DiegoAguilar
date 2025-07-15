@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace Modelos.Tuneflow.Usuario.Consumidor
 {
-    public class TipoSuscripcion
+    public class SubscriptionType
     {
         [Key] public int Id { get; set; }
-        public string Nombre { get; set; }  // Free, Premium, Familiar
-        public double Precio { get; set; }
-        public int LimiteMiembros { get; set; }
+        public string Name { get; set; }  // Free, Premium, Familiar
+        public double Price { get; set; }
+        public int MemberLimit { get; set; }
     }
+
 }

@@ -132,7 +132,7 @@ namespace API.Consumer
             }
         }
 
-        public static async Task<List<Cancion>> GetCancionesPorPalabrasClave(string palabraClave)
+        public static async Task<List<Song>> GetCancionesPorPalabrasClave(string palabraClave)
         {
             try
             {
@@ -146,30 +146,30 @@ namespace API.Consumer
                     {
                         var json = await response.Content.ReadAsStringAsync();
                         Console.WriteLine($"Respuesta JSON: {json.Substring(0, Math.Min(json.Length, 200))}..."); // imprime primeros 200 caracteres
-                        var canciones = JsonConvert.DeserializeObject<List<Cancion>>(json);
+                        var canciones = JsonConvert.DeserializeObject<List<Song>>(json);
                         Console.WriteLine($"Canciones deserializadas: {canciones?.Count ?? 0}");
                         return canciones;
                     }
                     else if (response.StatusCode == HttpStatusCode.NotFound)
                     {
                         Console.WriteLine("No se encontraron canciones.");
-                        return new List<Cancion>();
+                        return new List<Song>();
                     }
                     else
                     {
                         Console.WriteLine($"Error en llamada API: {response.StatusCode}");
-                        return new List<Cancion>();
+                        return new List<Song>();
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Excepción en llamada API: {ex.Message}");
-                return new List<Cancion>();
+                return new List<Song>();
             }
         }
 
-        public static async Task<Cliente> GetClientePorUsuarioId(string idUsuario)
+        public static async Task<Client> GetClientePorUsuarioId(string idUsuario)
         {
             using (var client = new HttpClient())
             {
@@ -183,7 +183,7 @@ namespace API.Consumer
 
                     try
                     {
-                        var cliente = JsonConvert.DeserializeObject<Cliente>(json);
+                        var cliente = JsonConvert.DeserializeObject<Client>(json);
                         return cliente;
                     }
                     catch (Exception ex)
@@ -200,7 +200,7 @@ namespace API.Consumer
             }
         }
 
-        public static async Task<Perfil> GetPerfilPorClienteId(int id)
+        public static async Task<Profile> GetPerfilPorClienteId(int id)
         {
             using (var client = new HttpClient())
             {
