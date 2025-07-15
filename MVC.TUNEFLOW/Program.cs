@@ -11,6 +11,8 @@ using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
 using Modelos.Tuneflow.Usuario.Produccion;
 using MVC.TUNEFLOW.Data; // Tu contexto de base de datos para el proyecto MVC
+using Npgsql;
+using System.Data;
 using System; // Agregado para usar TimeSpan
 
 namespace MVC.TUNEFLOW
@@ -42,6 +44,9 @@ namespace MVC.TUNEFLOW
             Crud<Playlist>.EndPoint = "https://localhost:7031/api/Playlists";
             Crud<Pais>.EndPoint = "https://localhost:7031/api/Paises";
             // Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.EndPoint = "https://localhost:7031/api/Clientes"; // Esta línea estaba duplicada y es redundante. Se eliminó o se consolidó con la anterior.
+
+            builder.Services.AddTransient<IDbConnection>(sp =>
+    new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
             // --- Configuración de DbContext para la Autenticación (Identity) ---

@@ -19,7 +19,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             {
                 var playlists = await Crud<Playlist>.GetAllAsync();
                 var canciones = await Crud<Cancion>.GetAllAsync();
-                var artistas = await Crud<Artista>.GetAllAsync();
+                var artistas = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artista>.GetAllAsync();
                 var estadisticas = await Crud<EstadisticasArtista>.GetAllAsync();
 
                 var topPlaylists = playlists

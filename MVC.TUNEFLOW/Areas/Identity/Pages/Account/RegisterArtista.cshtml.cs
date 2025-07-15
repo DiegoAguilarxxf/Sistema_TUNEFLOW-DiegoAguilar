@@ -109,7 +109,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("Se creó cuenta para artista.");
 
-                    var artista = new Artista
+                    var artista = new Modelos.Tuneflow.Usuario.Produccion.Artista
                     {
                         Nombre = Input.Nombre,
                         Apellido = Input.Apellido,
@@ -128,7 +128,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                         UsuarioId = user.Id // Asignar el ID del usuario recién creado
                     };
 
-                    var artistaNuevo = await Crud<Artista>.CreateAsync(artista);
+                    var artistaNuevo = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artista>.CreateAsync(artista);
 
                     var perfil = new Perfil
                     {
