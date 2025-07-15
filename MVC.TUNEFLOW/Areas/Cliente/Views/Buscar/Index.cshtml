@@ -42,7 +42,22 @@ else
                     </td>
                     <td>@item.Titulo</td>
                     <td>@item.Genero</td>
-                    <td>@(item.Artista?.NombreArtistico ?? "Desconocido")</td>
+                    <td>
+
+                        @if (item.Artista != null)
+                        {
+                            <a href="/Artista/Perfil/@item.Artista.NombreArtistico">
+                                @item.Artista.NombreArtistico
+                            </a>
+
+
+
+                        }
+                        else
+                        {
+                            <span>Desconocido</span>
+                        }
+                    </td>
                     <td>@(item.ContenidoExplicito ? "Sí" : "No")</td>
                     <td>@item.TiempoEnMinutos(item.Duracion)</td>
                     <td>

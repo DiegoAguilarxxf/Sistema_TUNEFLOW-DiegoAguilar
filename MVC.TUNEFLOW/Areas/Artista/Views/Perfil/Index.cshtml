@@ -7,51 +7,83 @@
 
 <div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center; justify-content: space-between;">
     <div style="display: flex; align-items: center; gap: 1.5rem;">
-        <img src="@Model.ImagenPerfil" alt="Foto perfil"
+        <img src="@Model.ImagenPerfil" alt="Foto Perfil Artista"
              style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid white;" />
         <div>
-            <h4 style="color: white; margin: 0;">Perfil</h4>
+            <h4 style="color: white; margin: 0;">Artista</h4>
             <h2 style="color: white; margin: 0; font-size: 2rem; font-weight: bold;">
                 @Model.NombreArtistico
             </h2>
         </div>
     </div>
+</div>
 
-    
+<h3 style="margin-top: 2rem;">Canciones</h3>
 
-@if (Model.Canciones == null || !Model.Canciones.Any())
-{
-    <p>No hay canciones disponibles para este artista.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Imagen</th>
-                <th>Título</th>
-                <th>Género</th>
-                <th>Duración</th>
-                <th>Explícito</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var cancion in Model.Canciones)
-            {
-                <tr>
-                    <td><img src="@cancion.RutaImagen" style="max-height: 80px;" /></td>
-                    <td>@cancion.Titulo</td>
-                    <td>@cancion.Genero</td>
-                    <td>@(cancion.Duracion / 60):@($"{cancion.Duracion % 60:D2}")</td>
-                    <td>@(cancion.ContenidoExplicito ? "Sí" : "No")</td>
-                </tr>
+<div id="cancionesContainer">
+    <p>Cargando canciones...</p>
+</div>
+
+<script>
+    async function cargarCanciones() {
+        const artistaId = @Html.Raw(Model.Id);
+        const idCliente = @Html.Raw(ViewBag.IdCliente ?? 0); // Por si no se define aún
+
+        try {
+            const response = await fetch(`/Artista/ObtenerCancionesPorArtista?artistaId=${artistaId}`);
+            if (!response.ok) throw new Error('No se pudieron cargar las canciones');
+
+            const canciones = await response.json();
+            const contenedor = document.getElementById('cancionesContainer');
+
+            if (canciones.length === 0) {
+                contenedor.innerHTML = "<p>No hay canciones para este artista.</p>";
+                return;
             }
-        </tbody>
-    </table>
-}
-   
 
+            let tabla = `<table class="table">
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Título</th>
+                        <th>Género</th>
+                        <th>Duración</th>
+                        <th>Explícito</th>
+                        <th>Reproducir</th>
+                    </tr>
+                </thead>
+                <tbody>`;
 
+            canciones.forEach(c => {
+                tabla += `<tr>
+                    <td><img src="${c.rutaImagen}" style="max-height: 80px;" /></td>
+                    <td>${c.titulo}</td>
+                    <td>${c.genero}</td>
+                    <td>${Math.floor(c.duracion / 60)}:${(c.duracion % 60).toString().padStart(2, '0')}</td>
+                    <td>${c.contenidoExplicito ? 'Sí' : 'No'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-success" type="button"
+                            onclick="reproducirCancion(
+                                ${c.id},
+                                '${c.titulo.replace(/'/g, "\\'")}',
+                                '${c.rutaArchivo}',
+                                '${c.rutaImagen}',
+                                ${idCliente}
+                            )">
+                            ▶ Reproducir
+                        </button>
+                    </td>
+                </tr>`;
+            });
 
+            tabla += "</tbody></table>";
+            contenedor.innerHTML = tabla;
 
+        } catch (error) {
+            document.getElementById('cancionesContainer').innerHTML = "<p>Error cargando canciones.</p>";
+            console.error(error);
+        }
+    }
 
+    window.onload = cargarCanciones;
+</script>

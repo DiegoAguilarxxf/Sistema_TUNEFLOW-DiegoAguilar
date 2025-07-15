@@ -120,8 +120,9 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                 return View();
             }
         }
+        [Area("Artista")]
         [AllowAnonymous]
-        [HttpGet("Cliente/Perfil/{nombreArtistico}")]
+        [HttpGet("Artista/Perfil/{nombreArtistico}")]
         public async Task<IActionResult> ArtistaPorNombre(string nombreArtistico)
         {
             var artistas = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artista>.GetAllAsync();
@@ -160,6 +161,32 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                 return BadRequest($"Error: {ex.Message}");
             }
         }
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("Artista/ObtenerCancionesPorArtista")]
+        public async Task<IActionResult> ObtenerCancionesPorArtista(int artistaId)
+        {
+            try
+            {
+                var sql = @"SELECT * FROM ""Canciones"" WHERE ""ArtistaId"" = @ArtistaId;";
+
+                var canciones = await _db.QueryAsync<Cancion>(sql, new { ArtistaId = artistaId });
+
+                if (!canciones.Any())
+                    return NotFound("No se encontraron canciones para este artista.");
+
+                return Ok(canciones);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+
+
+
+
+
 
     }
 }
