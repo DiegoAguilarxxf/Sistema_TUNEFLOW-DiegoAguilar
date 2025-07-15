@@ -13,13 +13,13 @@ namespace Modelos.Tuneflow.Playlist
     public class Playlist
     {
         [Key] public int Id { get; set; }
-        public string Titulo { get; set; } // Título de la playlist
-        public string Descripcion { get; set; } // Descripción de la playlist
-        public DateTime FechaCreacion { get; set; } // Fecha de creación de la playlist
-        [ForeignKey(nameof(Cliente))] public int ClienteId { get; set; }
-        public string PortadaPlaylist { get; set; }
-        public Cliente? Cliente { get; set; }
-        public List<Cancion>? Canciones { get; set; } // Lista de canciones que pertenecen a esta playlist
-
+        public string Title { get; set; } // Playlist title
+        public string Description { get; set; } // Playlist description
+        public DateTime CreationDate { get; set; } // Playlist creation date
+        [ForeignKey(nameof(Client))] public int ClientId { get; set; }
+        public string PlaylistCover { get; set; }
+        public Client? Client { get; set; }
+        public List<Song>? Songs { get; set; } // List of songs that belong to this playlist
     }
+
 }

@@ -11,12 +11,13 @@ namespace Modelos.Tuneflow.Playlist
     public class Album
     {
         [Key] public int Id { get; set; }
-        public string Titulo { get; set; }
-        public DateTime FechaLanzamiento { get; set; }
-        public string Genero { get; set; } // Pop, Rock, Hip-Hop, etc.
-        public DateOnly FechaCreacion { get; set; } // Fecha de creación del álbum
-        public string Descripcion { get; set; } // Descripción del álbum
-        public string RutaPortada { get; set; } // Ruta de la imagen de portada del álbum
-        public List<Cancion> Canciones { get; set; } // Lista de canciones que pertenecen a este álbum
+        public string Title { get; set; }
+        public DateTime ReleaseDate { get; set; }
+        public string Genre { get; set; } // Pop, Rock, Hip-Hop, etc.
+        public DateOnly CreationDate { get; set; } // Album creation date
+        public string Description { get; set; } // Album description
+        public string CoverPath { get; set; } // Path to the album cover image
+        public List<Song> Songs { get; set; } // List of songs that belong to this album
     }
+
 }

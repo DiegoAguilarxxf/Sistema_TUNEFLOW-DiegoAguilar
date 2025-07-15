@@ -9,17 +9,18 @@ using Modelos.Tuneflow.Usuario.Consumidor;
 
 namespace Modelos.Tuneflow.Media
 {
-    public class Reproduccion
+    public class Playback
     {
         [Key] public int Id { get; set; }
 
-        [ForeignKey(nameof(Cliente))] public int ClienteId { get; set; }
+        [ForeignKey(nameof(Client))] public int ClientId { get; set; }
 
-        [ForeignKey(nameof(Cancion))] public int CancionId { get; set; }
+        [ForeignKey(nameof(Song))] public int SongId { get; set; }
 
-        public DateTime FechaHora { get; set; }
+        public DateTime DateTime { get; set; }
 
-        public Cliente? Cliente { get; set; }
-        public Cancion? Cancion { get; set; }
+        public Client? Client { get; set; }
+        public Song? Song { get; set; }
     }
+
 }

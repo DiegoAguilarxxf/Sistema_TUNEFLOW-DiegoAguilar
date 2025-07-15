@@ -9,12 +9,13 @@ using Modelos.Tuneflow.Media;
 
 namespace Modelos.Tuneflow.Playlist
 {
-    public class MusicaPlaylist
+    public class MusicPlaylist
     {
         [Key] public int Id { get; set; }
-        [ForeignKey(nameof(Cancion))] public int CancionId { get; set; }
+        [ForeignKey(nameof(Song))] public int SongId { get; set; }
         [ForeignKey(nameof(Playlist))] public int PlaylistId { get; set; }
-        public Cancion? Cancion { get; set; } // Relación con la canción que pertenece a esta playlist
-        public Playlist? Playlist { get; set; } // Relación con la playlist a la que pertenece esta canción 
+        public Song? Song { get; set; } // Relationship with the song that belongs to this playlist
+        public Playlist? Playlist { get; set; } // Relationship with the playlist this song belongs to
     }
+
 }
