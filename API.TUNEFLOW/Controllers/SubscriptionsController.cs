@@ -31,43 +31,43 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Suscripciones
         [HttpGet]
-        public IEnumerable<Suscripcion> GetSuscripcion()
-        { var suscripciones = connection.Query<Suscripcion>("SELECT * FROM \"Suscripciones\"");
+        public IEnumerable<Subscription> GetSuscripcion()
+        { var suscripciones = connection.Query<Subscription>("SELECT * FROM \"Subscriptions\"");
             return suscripciones;
         }
 
         // GET: api/Suscripciones/5
         [HttpGet("{id}")]
-        public ActionResult<Suscripcion> GetSuscripcionById(int id)
+        public ActionResult<Subscription> GetSuscripcionById(int id)
         {
-            var suscripcion = connection.QuerySingleOrDefault<Suscripcion>(@"SELECT * FROM ""Suscripciones"" WHERE ""Id"" = @Id", new { Id = id });
+            var subscription = connection.QuerySingleOrDefault<Subscription>(@"SELECT * FROM ""Subscriptions"" WHERE ""Id"" = @Id", new { Id = id });
 
-            if (suscripcion == null)
+            if (subscription == null)
             {
                 return NotFound();
             }
 
-            return suscripcion;
+            return subscription;
         }
 
         // PUT: api/Suscripciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutSuscripcion(int id, [FromBody] Suscripcion suscripcion)
+        public void PutSuscripcion(int id, [FromBody] Subscription subscription)
         {
-            connection.Execute( @"UPDATE ""Suscripciones"" SET 
-                ""FechaInicio"" = @FechaInicio,
-                ""FechaFin"" = @FechaFin,
-                ""CodigoUnion"" = @CodigoUnion,
-                ""TipoSuscripcion"" = @TipoSuscripcion,
+            connection.Execute(@"UPDATE ""Subscriptions"" SET 
+                ""StartDate"" = @StartDate,
+                ""EndDate"" = @EndDate,
+                ""JoinCode"" = @JoinCode,
+                ""SubscriptionType"" = @SubscriptionType,
             WHERE ""Id"" = @Id",
              new
              {
                  Id = id,
-                 FechaInicio = suscripcion.FechaInicio,
-                 FechaFin = suscripcion.FechaFin,
-                 CodigoUnion = suscripcion.CodigoUnion,
-                 TipoSuscripcion = suscripcion.TipoSuscripcion
+                 StartDate = subscription.StartDate,
+                 EndDate = subscription.EndDate,
+                 JoinCode= subscription.JoinCode,
+                 SubscriptionType = subscription.SubscriptionType
              }
 
   );
@@ -77,27 +77,27 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Suscripciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public ActionResult<Suscripcion> PostSuscripcion([FromBody] Suscripcion suscripcion)
+        public ActionResult<Subscription> PostSuscripcion([FromBody] Subscription subscription)
         {
-            var sql = @"INSERT INTO ""Suscripciones"" (""FechaInicio"", ""TipoSuscripcionId"") 
-                VALUES (@FechaInicio, @TipoSuscripcionId) 
+            var sql = @"INSERT INTO ""Subscriptions"" (""StartDate"", ""SubscriptionTypeId"") 
+                VALUES (@StartDate, @SubscriptionTypeId) 
                 RETURNING ""Id"";";
 
             int idDevuelto = connection.ExecuteScalar<int>(sql, new
             {
-                FechaInicio = suscripcion.FechaInicio,
-                TipoSuscripcionId = suscripcion.TipoSuscripcionId
+                StartDate = subscription.StartDate,
+                SubscriptionTypeId = subscription.SubscriptionTypeId
             });
 
-            suscripcion.Id = idDevuelto;
+            subscription.Id = idDevuelto;
 
-            return CreatedAtAction(nameof(GetSuscripcionById), new { id = idDevuelto }, suscripcion);
+            return CreatedAtAction(nameof(GetSuscripcionById), new { id = idDevuelto }, subscription);
         }
         // DELETE: api/Suscripciones/5
         [HttpDelete("{id}")]
         public void DeleteSuscripcion(int id)
         {
-          connection.Execute(@"DELETE FROM ""Suscripciones"" WHERE ""Id"" = @Id", new { Id = id });
+          connection.Execute(@"DELETE FROM ""Subscriptions"" WHERE ""Id"" = @Id", new { Id = id });
         }
 /*
         private bool SuscripcionExists(int id)

@@ -31,39 +31,39 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Reproducciones
         [HttpGet]
-        public IEnumerable<Reproduccion> GetReproduccion()
-        { var reproducciones = connection.Query<Reproduccion>("SELECT * FROM \"Reproducciones\"");
-            return reproducciones;
+        public IEnumerable<Playback> GetReproduccion()
+        { var playbacks = connection.Query<Playback>("SELECT * FROM \"Playbacks\"");
+            return playbacks;
         }
 
         // GET: api/Reproducciones/5
         [HttpGet("{id}")]
-        public ActionResult<Reproduccion> GetReproduccion(int id)
+        public ActionResult<Playback> GetReproduccion(int id)
         {
-            var reproduccion = connection.QuerySingle<Reproduccion>(@"SELECT * FROM ""Reproducciones"" WHERE ""Id"" = @Id", new { Id = id });
+            var playback = connection.QuerySingle<Playback>(@"SELECT * FROM ""Playbacks"" WHERE ""Id"" = @Id", new { Id = id });
 
-            if (reproduccion == null)
+            if (playback == null)
             {
                 return NotFound();
             }
 
-            return reproduccion;
+            return playback;
         }
 
         // PUT: api/Reproducciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void Reproduccion(int id,[FromBody] Reproduccion reproduccion)
+        public void Reproduccion(int id,[FromBody] Playback playback)
         {
-            connection.Execute(@"UPDATE ""Reproducciones"" SET 
-                ""FechaHora"" = @FechaHora,
-                ""ClienteId"" = @ClienteId,
-                ""CancionId"" = @CancionId
+            connection.Execute(@"UPDATE ""Playbacks"" SET 
+                ""DateTime"" = @DateTime,
+                ""ClientId"" = @ClientId,
+                ""SongId"" = @SongId
             WHERE ""Id"" = @Id", new
             {
-                FechaHora = reproduccion.FechaHora,
-                ClienteId = reproduccion.ClienteId,
-                CancionId = reproduccion.CancionId,
+                DateTime = playback.DateTime,
+                ClientId = playback.ClientId,
+                SongId = playback.SongId,
                 Id = id
             });
         }
@@ -71,23 +71,23 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Reproducciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Reproduccion PostReproduccion([FromBody]Reproduccion reproduccion)
+        public Playback PostReproduccion([FromBody]Playback playback)
         {
-            connection.Execute(@"INSERT INTO ""Reproducciones"" (""FechaHora"", ""ClienteId"", ""CancionId"")
-VALUES (@FechaHora, @ClienteId, @CancionId)", new
+            connection.Execute(@"INSERT INTO ""PLaybacks"" (""DateTime"", ""ClientId"", ""SongId"")
+VALUES (@DateTime, @ClientId, @SongId)", new
             {
-                FechaHora = reproduccion.FechaHora,
-                ClienteId = reproduccion.ClienteId,
-                CancionId = reproduccion.CancionId
+                DateTime = playback.DateTime,
+                ClientId = playback.ClientId,
+                SongId = playback.SongId
             });
-            return reproduccion;
+            return playback;
         }
 
         // DELETE: api/Reproducciones/5
         [HttpDelete("{ id}")]
         public void DeleteReproduccion(int id)
         {
-            connection.Execute( @"DELETE FROM ""Reproducciones"" WHERE ""Id"" = @Id", new { Id = id });
+            connection.Execute( @"DELETE FROM ""Playbacks"" WHERE ""Id"" = @Id", new { Id = id });
         }
 /*
         private bool ReproduccionExists(int id)
