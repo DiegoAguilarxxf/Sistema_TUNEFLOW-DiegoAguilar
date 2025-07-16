@@ -208,11 +208,11 @@ namespace API.Consumer
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<Perfil>(json);
+                    return JsonConvert.DeserializeObject<Profile>(json);
                 }
                 else
                 {
-                    return new Perfil();
+                    return new Profile();
                 }
             }
         }
@@ -242,7 +242,7 @@ namespace API.Consumer
             }
         }
 
-        public static async Task<List<Cancion>> GetCancionesPorPlaylist(int idPlaylist)
+        public static async Task<List<Song>> GetCancionesPorPlaylist(int idPlaylist)
         {
             using (var client = new HttpClient())
             {
@@ -251,18 +251,18 @@ namespace API.Consumer
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    var canciones = JsonConvert.DeserializeObject<List<Cancion>>(json);
+                    var canciones = JsonConvert.DeserializeObject<List<Song>>(json);
                     return canciones;
                 }
                 else if (response.StatusCode == HttpStatusCode.NotFound)
                 {
                     Console.WriteLine("No se encontraron canciones");
-                    return new List<Cancion>();
+                    return new List<Song>();
                 }
                 else
                 {
                     Console.WriteLine($"Error en llamada API: {response.StatusCode}");
-                    return new List<Cancion>();
+                    return new List<Song>();
                 }
             }
         }

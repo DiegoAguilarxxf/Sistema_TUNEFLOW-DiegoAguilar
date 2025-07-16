@@ -13,7 +13,7 @@ namespace API.TUNEFLOW.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SeguimientosController : ControllerBase
+    public class FollowsController : ControllerBase
     {
        /* private readonly TUNEFLOWContext _context;
 
@@ -22,7 +22,7 @@ namespace API.TUNEFLOW.Controllers
             _context = context;
         }*/
        private DbConnection connection;
-        public SeguimientosController(IConfiguration config)
+        public FollowsController(IConfiguration config)
         {
             var connString = config.GetConnectionString("TUNEFLOWContext");
             connection = new Npgsql.NpgsqlConnection(connString);

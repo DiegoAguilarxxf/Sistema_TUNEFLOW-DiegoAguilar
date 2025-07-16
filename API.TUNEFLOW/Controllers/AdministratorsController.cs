@@ -29,23 +29,23 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet]
         public IEnumerable<Administrator> Get()
         {
-            var administradores = connection.Query<Administrator>("SELECT * FROM \"Administradores\"");
-            return administradores;
+            var administrators = connection.Query<Administrator>("SELECT * FROM \"Administrators\"");
+            return administrators;
         }
 
         // GET: api/Administradores/5
         [HttpGet("{id}")]
         public ActionResult <Administrator> Get(int id)
         {
-            var administrador = connection.QuerySingle<Administrator>(@"SELECT * FROM ""Administradores"" WHERE ""Id"" = @Id", new { Id=id });
+            var administrator = connection.QuerySingle<Administrator>(@"SELECT * FROM ""Administrators"" WHERE ""Id"" = @Id", new { Id=id });
           
 
-            if (administrador == null)
+            if (administrator == null)
             {
                 return NotFound();
             }
 
-            return administrador;
+            return administrator;
         }
 
         // PUT: api/Administradores/5
@@ -53,7 +53,7 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public void  Put(int id,[FromBody] Administrator administrator)
         {
-            connection.Execute(@"UPDATE ""Administradores"" SET 
+            connection.Execute(@"UPDATE ""Administrators"" SET 
              ""Description"" = @Description,
             ""FirstName""= @FirstName,
             ""LastName"" = @LastName,
@@ -87,8 +87,8 @@ namespace API.TUNEFLOW.Controllers
         public Administrator Post([FromBody]Administrator administrator)
         {
        
-   connection.Execute(
-    @"INSERT INTO ""Administradores""
+    connection.Execute(
+    @"INSERT INTO ""Administrators""
      (""Description"", ""FirstName"", ""LastName"", ""Email"", ""Password"", ""Phone"", ""BirthDate"", ""AccountType"", ""IsActive"", ""RegistrationDate"")
     VALUES 
      (@Description, @FirstName, @LastName, @Email, @Password, @Phone, @BirthDate, @AccountType, @IsActve, @RegistrationDate)",
@@ -112,7 +112,7 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            connection.Execute(@"DELETE FROM ""Administradores"" WHERE ""Id"" = @Id", new { Id = id });
+            connection.Execute(@"DELETE FROM ""Administrators"" WHERE ""Id"" = @Id", new { Id = id });
         }
 
        /* private bool AdministradorExists(int id)

@@ -13,7 +13,7 @@ namespace API.TUNEFLOW.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TiposSuscripcionesController : ControllerBase
+    public class SubscriptionsTypesController : ControllerBase
     {
         /* private readonly TUNEFLOWContext _context;
 
@@ -23,7 +23,7 @@ namespace API.TUNEFLOW.Controllers
          }
         */
         private DbConnection connection;
-        public TiposSuscripcionesController(IConfiguration configuration)
+        public SubscriptionsTypesController(IConfiguration configuration)
         {
             var connString = configuration.GetConnectionString("TUNEFLOWContext");
             connection = new Npgsql.NpgsqlConnection(connString);
@@ -31,64 +31,64 @@ namespace API.TUNEFLOW.Controllers
         }
         // GET: api/TiposSuscripciones
         [HttpGet]
-        public IEnumerable<TipoSuscripcion> GetTipoSuscripcion()
+        public IEnumerable<SubscriptionType> GetTipoSuscripcion()
         {
-            var tiposSuscripciones = connection.Query<TipoSuscripcion>("SELECT * FROM \"TiposSuscripciones\"");
-            return tiposSuscripciones;
+            var subscriptionTypes = connection.Query<SubscriptionType>("SELECT * FROM \"SubscriptionsTypes\"");
+            return subscriptionTypes;
         }
 
         // GET: api/TiposSuscripciones/5
         [HttpGet("{id}")]
-        public ActionResult<TipoSuscripcion> GetTipoSuscripcion(int id)
+        public ActionResult<SubscriptionType> GetTipoSuscripcion(int id)
         {
-            var tipoSuscripcion = connection.QuerySingle<TipoSuscripcion>(@"SELECT * FROM ""TiposSuscripciones"" WHERE ""Id"" = @Id", new { Id = id });
+            var subscriptionType = connection.QuerySingle<SubscriptionType>(@"SELECT * FROM ""SubscriptionsTypes"" WHERE ""Id"" = @Id", new { Id = id });
 
-            if (tipoSuscripcion == null)
+            if (subscriptionType == null)
             {
                 return NotFound();
             }
 
-            return tipoSuscripcion;
+            return subscriptionType;
         }
 
         // PUT: api/TiposSuscripciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutTipoSuscripcion(int id,[FromBody] TipoSuscripcion tipoSuscripcion)
+        public void PutTipoSuscripcion(int id,[FromBody] SubscriptionType subscriptionType)
         {
-            connection.Execute(@"UPDATE ""TiposSuscripciones"" SET 
-                ""Nombre"" = @Nombre,
-                ""Precio"" = @Precio,
-                ""LimiteMiembros"" = @LimiteMiembros,
+            connection.Execute(@"UPDATE ""SubscriptionsTypes"" SET 
+                ""Name"" = @Name,
+                ""Price"" = @Price,
+                ""MemberLimit"" = @MemberLimit,
                 WHERE ""Id"" = @Id", new
             {
                 Id = id,
-                Nombre = tipoSuscripcion.Nombre,
-                Precio = tipoSuscripcion.Precio,
-                LimiteMiembros= tipoSuscripcion.LimiteMiembros
+                Name = subscriptionType.Name,
+                Price = subscriptionType.Price,
+                MemberLimit= subscriptionType.MemberLimit
             });
         }
 
         // POST: api/TiposSuscripciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public TipoSuscripcion PostTipoSuscripcion([FromBody]TipoSuscripcion tipoSuscripcion)
+        public SubscriptionType PostTipoSuscripcion([FromBody]SubscriptionType subscriptionType)
         {
-           connection.Execute(@"INSERT INTO ""TiposSuscripciones"" (""Nombre"", ""Precio"", ""LimiteMiembros"") 
-                VALUES (@Nombre, @Precio, @LimiteMiembros)", new
+           connection.Execute(@"INSERT INTO ""SubscriptionsTypes"" (""Name"", ""Price"", ""MembersLimit"") 
+                VALUES (@Name, @Price, @MembersLimit)", new
            {
-               Nombre = tipoSuscripcion.Nombre,
-               Precio = tipoSuscripcion.Precio,
-               LimiteMiembros = tipoSuscripcion.LimiteMiembros
+               Name = subscriptionType.Name,
+               Price = subscriptionType.Price,
+               MemberLimit = subscriptionType.MemberLimit
            });
-            return tipoSuscripcion;
+            return subscriptionType;
         }
 
         // DELETE: api/TiposSuscripciones/5
         [HttpDelete("{id}")]
         public void DeleteTipoSuscripcion(int id)
         {
-           connection.Execute(@"DELETE FROM ""TiposSuscripciones"" WHERE ""Id"" = @Id", new { Id = id });
+           connection.Execute(@"DELETE FROM ""SubscriptionsTypes"" WHERE ""Id"" = @Id", new { Id = id });
          
         }
         /*

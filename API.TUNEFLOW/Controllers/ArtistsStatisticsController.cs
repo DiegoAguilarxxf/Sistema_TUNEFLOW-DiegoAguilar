@@ -31,44 +31,44 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/EstadisticasArtistas
         [HttpGet]
-        public IEnumerable<EstadisticasArtista> GetEstadisticasArtista()
-        { var estadisticasartistas = connection.Query<EstadisticasArtista>("SELECT * FROM \"EstadisticasArtistas\"");
-            return estadisticasartistas;
+        public IEnumerable<ArtistStatistics> GetEstadisticasArtista()
+        { var artistStatistics = connection.Query<ArtistStatistics>("SELECT * FROM \"ArtistsStatistics\"");
+            return artistStatistics;
         }
 
         // GET: api/EstadisticasArtistas/5
         [HttpGet("{id}")]
-        public ActionResult<EstadisticasArtista> GetEstadisticasArtista(int id)
+        public ActionResult<ArtistStatistics> GetEstadisticasArtista(int id)
         {
-            var estadisticasArtista = connection.QuerySingle<EstadisticasArtista>(@"SELECT * FROM ""EstadisticasArtistas"" WHERE ""Id"" = @Id", new { Id = id });
+            var artistStatistics = connection.QuerySingle<ArtistStatistics>(@"SELECT * FROM ""ArtistsStatistics"" WHERE ""Id"" = @Id", new { Id = id });
 
-            if (estadisticasArtista == null)
+            if (artistStatistics == null)
             {
                 return NotFound();
             }
 
-            return estadisticasArtista;
+            return artistStatistics;
         }
 
         // PUT: api/EstadisticasArtistas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutEstadisticasArtista(int id, [FromBody] EstadisticasArtista estadisticasArtista)
+        public void PutEstadisticasArtista(int id, [FromBody] ArtistStatistics artistStatistics)
         {
-           connection.Execute(@"UPDATE ""EstadisticasArtistas"" SET 
-                ""ArtistaId"" = @ArtistaId,
-                ""ReproduccionesTotales"" = @ReproduccionesTotales,
-                ""SeguidoresTotales"" = @SeguidoresTotales,
-                ""CancionesPublicadas"" = @CancionesPublicadas,
-                ""AlbumesPublicados"" = @AlbumesPublicados
+           connection.Execute(@"UPDATE ""ArtistsStatistics"" SET 
+                ""ArtistId"" = @ArtistId,
+                ""TotalPlays"" = @TotalPlays,
+                ""STotalFollowers"" = @TotalFollowers,
+                ""PublishedSongs"" = @PublishedSongs,
+                ""PublishedAlbums"" = @APublishedAlbums
                 WHERE ""Id"" = @Id", new
            {
                Id = id,
-               ArtistaId = estadisticasArtista.ArtistaId,
-               ReproduccionesTotales = estadisticasArtista.ReproduccionesTotales,
-               SeguidoresTotales = estadisticasArtista.SeguidoresTotales,
-               CancionesPublicadas = estadisticasArtista.CancionesPublicadas,
-               AlbumesPublicados = estadisticasArtista.AlbumesPublicados
+               ArtistId = artistStatistics.ArtistId,
+               TotalPlays = artistStatistics.TotalPlays,
+               TotalFollowers = artistStatistics.TotalFollowers,
+               PublishedSongs = artistStatistics.PublishedSongs,
+               PublishedAlbums = artistStatistics.PublishedAlbums
            });
             
         }
@@ -76,27 +76,27 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/EstadisticasArtistas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public EstadisticasArtista PostEstadisticasArtista([FromBody]EstadisticasArtista estadisticasArtista)
+        public ArtistStatistics PostEstadisticasArtista([FromBody]ArtistStatistics artistStatistics)
         {
-            connection.Execute(@"INSERT INTO ""EstadisticasArtistas"" 
+            connection.Execute(@"INSERT INTO ""ArtistsStatistics"" 
                 (""ArtistaId"", ""ReproduccionesTotales"", ""SeguidoresTotales"", ""CancionesPublicadas"", ""AlbumesPublicados"") 
                 VALUES (@ArtistaId, @ReproduccionesTotales, @SeguidoresTotales, @CancionesPublicadas, @AlbumesPublicados)", new
             {
-                ArtistaId = estadisticasArtista.ArtistaId,
-                ReproduccionesTotales = estadisticasArtista.ReproduccionesTotales,
-                SeguidoresTotales = estadisticasArtista.SeguidoresTotales,
-                CancionesPublicadas = estadisticasArtista.CancionesPublicadas,
-                AlbumesPublicados = estadisticasArtista.AlbumesPublicados
+                ArtistId = artistStatistics.ArtistId,
+                TotalPlays = artistStatistics.TotalPlays,
+                TotalFollowers = artistStatistics.TotalFollowers,
+                PublishedSongs = artistStatistics.PublishedSongs,
+                PublishedAlbums = artistStatistics.PublishedAlbums
             });
 
-            return estadisticasArtista;
+            return artistStatistics;
         }
 
         // DELETE: api/EstadisticasArtistas/5
         [HttpDelete("{id}")]
         public void DeleteEstadisticasArtista(int id)
         {
-            connection.Execute(@"DELETE FROM ""EstadisticasArtistas"" WHERE ""Id"" = @Id", new { Id = id });
+            connection.Execute(@"DELETE FROM ""ArtistsStatistics"" WHERE ""Id"" = @Id", new { Id = id });
 
            
         }

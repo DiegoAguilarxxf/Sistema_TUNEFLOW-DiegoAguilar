@@ -54,21 +54,21 @@ namespace API.TUNEFLOW.Controllers
         {
             connection.Execute(
                 @"UPDATE ""Albums"" SET 
-                ""Titulo"" = @Titulo, 
-                ""FechaLanzamiento"" = @FechaLanzamiento, 
-                ""Genero"" = @Genero, 
-               ""FechaCreacion"" = @FechaCreacion, 
-                ""Descripcion"" = @Descripcion, 
-                ""RutaPortada"" = @RutaPortada 
+                ""Title"" = @Title, 
+                ""ReleaseDate"" = @ReleaseDate, 
+                ""Genre"" = @Genre, 
+               ""CreationDate"" = @CreationDate, 
+                ""Descripction"" = @Description, 
+                ""CoverPath"" = @CoverPath
                 WHERE ""Id"" = @Id",
                 new
                 {
-                    Titulo= album.Titulo,
-                    FechaLanzamiento=album.FechaLanzamiento,
-                    Genero = album.Genero,
-                    FechaCreacion = album.FechaCreacion,
-                    Descripcion = album.Descripcion,
-                    RutaPortada = album.RutaPortada,
+                    Titulo= album.Title,
+                    FechaLanzamiento=album.ReleaseDate,
+                    Genero = album.Genre,
+                    FechaCreacion = album.CreationDate,
+                    Descripcion = album.Description,
+                    RutaPortada = album.CoverPath,
                     Id = id
 
                 });
@@ -80,16 +80,16 @@ namespace API.TUNEFLOW.Controllers
         public Album Post([FromBody]Album album)
         {
             connection.Execute(
-                @"Insert INTO ""Albums"" (""Titulo"", ""FechaLanzamiento"", ""Genero"", ""FechaCreacion"", ""Descripcion"", ""RutaPortada"")VALUES
-                (@Titulo, @FechaLanzamiento, @Genero, @FechaCreacion, @Descripcion, @RutaPortada)",
+                @"Insert INTO ""Albums"" (""Title"", ""ReleaseDate"", ""Genre"", ""FechaCreacion"", ""Description"", ""CoverPath"")VALUES
+                (@Title, @ReleaseDate, @Genre, @CreationDate, @Description, @CoverPath",
                 new
                 {
-                    Titulo= album.Titulo,
-                    FechaLanzamiento = album.FechaLanzamiento,
-                    Genero = album.Genero,
-                    FechaCreacion = album.FechaCreacion,
-                    Descripcion = album.Descripcion,
-                    RutaPortada = album.RutaPortada
+                    Title= album.Title,
+                    ReleaseDate = album.ReleaseDate,
+                    Genre = album.Genre,
+                    CreationDate = album.CreationDate,
+                    Description = album.Description,
+                    CoverPath = album.CoverPath
 
 
                 });

@@ -16,7 +16,7 @@ namespace API.TUNEFLOW.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MusicasPlaylistsController : ControllerBase
+    public class MusicsPlaylistsController : ControllerBase
     {
         /*private readonly TUNEFLOWContext _context;
 
@@ -25,7 +25,7 @@ namespace API.TUNEFLOW.Controllers
             _context = context;
         }*/
         private DbConnection connection;
-        public MusicasPlaylistsController(IConfiguration config)
+        public MusicsPlaylistsController(IConfiguration config)
         {
             var connString = config.GetConnectionString("TUNEFLOWContext");
             connection = new Npgsql.NpgsqlConnection(connString);

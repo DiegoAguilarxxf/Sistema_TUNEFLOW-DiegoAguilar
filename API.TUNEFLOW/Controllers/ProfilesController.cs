@@ -16,7 +16,7 @@ namespace API.TUNEFLOW.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PerfilesController : ControllerBase
+    public class ProfilesController : ControllerBase
     {
         /*private readonly TUNEFLOWContext _context;
 
@@ -27,7 +27,7 @@ namespace API.TUNEFLOW.Controllers
 
         private DbConnection connection;    
 
-        public PerfilesController(IConfiguration config)
+        public ProfilesController(IConfiguration config)
         {
             var connString = config.GetConnectionString("TUNEFLOWContext");
             connection = new Npgsql.NpgsqlConnection(connString);
@@ -36,9 +36,9 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Perfiles
         [HttpGet]
-        public IEnumerable<Perfil> GetPerfil()
+        public IEnumerable<Profile> GetPerfil()
         {
-            var perfiles = connection.Query<Perfil>("SELECT * FROM \"Perfiles\"");
+            var perfiles = connection.Query<Profile>("SELECT * FROM \"Perfiles\"");
             return perfiles;
         }
 
