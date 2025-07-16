@@ -12,7 +12,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             try
             {
-                var cancion = await Crud<Cancion>.GetByIdAsync(id);
+                var cancion = await Crud<Song>.GetByIdAsync(id);
                 if (cancion == null)
                     return NotFound();
 

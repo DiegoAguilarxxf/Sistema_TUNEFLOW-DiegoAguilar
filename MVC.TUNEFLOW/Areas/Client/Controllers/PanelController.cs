@@ -18,26 +18,26 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             try
             {
                 var playlists = await Crud<Playlist>.GetAllAsync();
-                var canciones = await Crud<Cancion>.GetAllAsync();
-                var artistas = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artista>.GetAllAsync();
-                var estadisticas = await Crud<EstadisticasArtista>.GetAllAsync();
+                var songs = await Crud<Song>.GetAllAsync();
+                var artists = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artist>.GetAllAsync();
+                var statistics = await Crud<ArtistStatistics>.GetAllAsync();
 
                 var topPlaylists = playlists
-                    .Where(p => p.Canciones != null && p.Canciones.Any())
+                    .Where(p => p.Songs != null && p.Songs.Any())
                     .Where(p =>
-                        p.Canciones
-                        .Where(c => c.Artista != null)
-                        .GroupBy(c => c.Artista.PaisId)
+                        p.Songs
+                        .Where(c => c.Artist != null)
+                        .GroupBy(c => c.Artist.CountryId)
                         .Any(g => g.Count() > 5)
                     )
                     .ToList();
 
-                var artistasPopulares = artistas
-                    .Where(a => estadisticas.Any(e => e.ArtistaId == a.Id && e.ReproduccionesTotales > 10))
+                var popularArtists = artists
+                    .Where(a => statistics.Any(e => e.ArtistId == a.Id && e.TotalPlays > 10))
                     .ToList();
 
                 ViewBag.TopPlaylists = topPlaylists;
-                ViewBag.ArtistasPopulares = artistasPopulares;
+                ViewBag.PopularArtists = popularArtists;
 
                 
 

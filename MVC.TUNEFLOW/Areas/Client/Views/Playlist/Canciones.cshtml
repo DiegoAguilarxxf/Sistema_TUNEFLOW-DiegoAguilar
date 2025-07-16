@@ -2,15 +2,15 @@
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
-    ViewData["Title"] = Model.Titulo;
+    ViewData["Title"] = Model.Title;
 }
 
 <div class="playlist-header d-flex align-items-end p-4" style="background: linear-gradient(to bottom, #1db954, #121212); color: white;">
-    <img src="@Model.PortadaPlaylist" alt="Portada playlist" class="me-4" style="width: 200px; height: 200px; object-fit: cover; border-radius: 10px;">
+    <img src="@Model.PlaylistCover" alt="Portada playlist" class="me-4" style="width: 200px; height: 200px; object-fit: cover; border-radius: 10px;">
     <div>
         <p class="text-uppercase text-white-50 mb-1">Playlist</p>
-        <h1 class="display-4 fw-bold mb-1">@Model.Titulo</h1>
-        <p class="text-white-50">@Model.Descripcion</p>
+        <h1 class="display-4 fw-bold mb-1">@Model.Title</h1>
+        <p class="text-white-50">@Model.Description</p>
         <button class="btn btn-success btn-lg mt-2">▶ Reproducir</button>
     </div>
 </div>
@@ -27,23 +27,23 @@
             </tr>
         </thead>
         <tbody>
-            @if (Model.Canciones != null && Model.Canciones.Any())
+            @if (Model.Songs != null && Model.Songs.Any())
             {
                 int index = 1;
-                foreach (var cancion in Model.Canciones)
+                foreach (var cancion in Model.Songs)
                 {
                     <tr>
                         <td>@index</td>
                         <td class="d-flex align-items-center gap-3">
-                            <img src="@cancion.RutaImagen" alt="@cancion.Titulo" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                            <img src="@cancion.ImagePath" alt="@cancion.Title" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
                             <div>
-                                <strong>@cancion.Titulo</strong><br />
-                                <small class="text-muted">@cancion.Genero</small>
+                                <strong>@cancion.Title</strong><br />
+                                <small class="text-muted">@cancion.Genre</small>
                             </div>
                         </td>
-                        <td>@(cancion.Artista?.NombreArtistico ?? "Desconocido")</td>
-                        <td>@(cancion.ContenidoExplicito ? "Explícito" : "No")</td>
-                        <td>@cancion.TiempoEnMinutos(cancion.Duracion)</td>
+                        <td>@(cancion.Artist?.StageName ?? "Desconocido")</td>
+                        <td>@(cancion.ExplicitContent ? "Explícito" : "No")</td>
+                        <td>@cancion.TimeInMinutes(cancion.Duration)</td>
                     </tr>
                     index++;
                 }

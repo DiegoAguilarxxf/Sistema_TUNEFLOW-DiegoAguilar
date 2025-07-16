@@ -50,31 +50,31 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required, Display(Name = "Nombre")]
-            public string Nombre { get; set; }
+            public string FirstName { get; set; }
 
             [Required, Display(Name = "Apellido")]
-            public string Apellido { get; set; }
+            public string LastName { get; set; }
 
             [Required, EmailAddress, Display(Name = "Email")]
             public string Email { get; set; }
 
             [Required, Phone, Display(Name = "Teléfono")]
-            public string Telefono { get; set; }
+            public string Phone { get; set; }
 
             [Required, Display(Name = "País")]
-            public int PaisId { get; set; }
+            public int CountryId { get; set; }
 
             [DataType(DataType.Date), Display(Name = "Fecha de Nacimiento")]
-            public DateTime FechaNacimiento { get; set; }
+            public DateTime BirthDate { get; set; }
 
             [Required, Display(Name = "Nombre Artístico")]
-            public string NombreArtistico { get; set; }
+            public string StageName { get; set; }
 
             [Required, Display(Name = "Género Musical")]
-            public string GeneroMusical { get; set; }
+            public string MusicGenre { get; set; }
 
             [Required, Display(Name = "Biografía")]
-            public string Biografia { get; set; }
+            public string Biography { get; set; }
 
             [Required, StringLength(100, MinimumLength = 6), DataType(DataType.Password)]
             [Display(Name = "Contraseña")]
@@ -109,39 +109,39 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("Se creó cuenta para artista.");
 
-                    var artista = new Modelos.Tuneflow.Usuario.Produccion.Artista
+                    var artist = new Modelos.Tuneflow.Usuario.Produccion.Artist
                     {
-                        Nombre = Input.Nombre,
-                        Apellido = Input.Apellido,
+                        FirstName = Input.FirstName,
+                        LastName = Input.LastName,
                         Email = Input.Email,
-                        Telefono = Input.Telefono,
-                        FechaNacimiento = Input.FechaNacimiento.ToUniversalTime(),
-                        PaisId = Input.PaisId,
-                        NombreArtistico = Input.NombreArtistico,
-                        GeneroMusical = Input.GeneroMusical,
-                        Biografia = Input.Biografia,
-                        TipoCuenta = "Artista",
-                        Activo = true,
-                        FechaRegistro = DateTime.UtcNow,
-                        verificado = false, // por defecto
+                        Phone = Input.Phone,
+                        BirthDate = Input.BirthDate.ToUniversalTime(),
+                        CountryId = Input.CountryId,
+                        StageName = Input.StageName,
+                        MusicGenre = Input.MusicGenre,
+                        Biography = Input.Biography,
+                        AccountType = "Artista",
+                        IsActive = true,
+                        RegistrationDate = DateTime.UtcNow,
+                        Verified = false, // por defecto
                         Password = Input.Password,
-                        UsuarioId = user.Id // Asignar el ID del usuario recién creado
+                        UserId = user.Id // Asignar el ID del usuario recién creado
                     };
 
-                    var artistaNuevo = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artista>.CreateAsync(artista);
+                    var newArtist = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artist>.CreateAsync(artist);
 
-                    var perfil = new Perfil
+                    var profile = new Profile
                     {
-                        ClienteId = 0, // No aplica para artistas
-                        ArtistaId = artistaNuevo.Id, // Asignar el ID del artista recién creado
-                        ImagenPerfil = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/ImagenDefault.jpeg",
-                        Biografia = "Apasionado de la Música",
-                        FechaCreacion = DateTime.UtcNow,
+                        ClientId = 0, // No aplica para artistas
+                        ArtistId = newArtist.Id, // Asignar el ID del artista recién creado
+                        ProfileImage = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/ImagenDefault.jpeg",
+                        Biography = "Apasionado de la Música",
+                        CreationDate= DateTime.UtcNow,
                     };
 
-                    var perfilNuevo = await Crud<Perfil>.CreateAsync(perfil);
+                    var newProfile = await Crud<Profile>.CreateAsync(profile);
 
-                    await _userManager.AddToRoleAsync(user, "artista");
+                    await _userManager.AddToRoleAsync(user, "artist");
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -185,9 +185,9 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 
         private async Task<List<SelectListItem>> GetPaisesAsync()
         {
-            var paises = await Crud<Pais>.GetAllAsync();
+            var countries = await Crud<Country>.GetAllAsync();
 
-            return paises.Select(p => new SelectListItem
+            return countries.Select(p => new SelectListItem
             {
                 Value = p.Id.ToString(),
                 Text = p.Name

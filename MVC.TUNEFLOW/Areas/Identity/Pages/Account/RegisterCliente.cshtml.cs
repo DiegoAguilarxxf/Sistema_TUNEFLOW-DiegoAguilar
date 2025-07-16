@@ -46,27 +46,27 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 
         public string ReturnUrl { get; set; }
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
-        public List<SelectListItem> Paises { get; set; }
+        public List<SelectListItem> Countries { get; set; }
 
         public class InputModel
         {
             [Required, Display(Name = "Nombre")]
-            public string Nombre { get; set; }
+            public string FirstName { get; set; }
 
             [Required, Display(Name = "Apellido")]
-            public string Apellido { get; set; }
+            public string LastName { get; set; }
 
             [Required, EmailAddress, Display(Name = "Email")]
             public string Email { get; set; }
 
             [Required, Phone, Display(Name = "Teléfono")]
-            public string Telefono { get; set; }
+            public string Phone { get; set; }
 
             [Required, Display(Name = "País")]
-            public int PaisId { get; set; }
+            public int CountryId { get; set; }
 
             [DataType(DataType.Date), Display(Name = "Fecha de nacimiento")]
-            public DateTime FechaNacimiento { get; set; }
+            public DateTime BirthDate { get; set; }
 
             [Required, StringLength(100, MinimumLength = 6), DataType(DataType.Password)]
             [Display(Name = "Contraseña")]
@@ -81,7 +81,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
-            Paises = await GetPaisesAsync();
+            Countries = await GetPaisesAsync();
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
@@ -92,7 +92,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 
             if (!ModelState.IsValid)
             {
-                Paises = await GetPaisesAsync();
+                Countries = await GetPaisesAsync();
                 return Page();
             }
 
@@ -106,65 +106,65 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                 foreach (var error in result.Errors)
                     ModelState.AddModelError(string.Empty, error.Description);
 
-                Paises = await GetPaisesAsync();
+                Countries = await GetPaisesAsync();
                 return Page();
             }
 
             _logger.LogInformation("Cliente registrado correctamente.");
 
             // Crear suscripción básica
-            var suscripcion = new Suscripcion
+            var subscription = new Subscription
             {
-                FechaInicio = DateTime.UtcNow,
-                TipoSuscripcionId = 1 // Básica por defecto
+                StartDate = DateTime.UtcNow,
+                SubscriptionTypeId= 1 // Básica por defecto
             };
 
-            var suscripcionNueva = await Crud<Suscripcion>.CreateAsync(suscripcion);
+            var newSubscription = await Crud<Subscription>.CreateAsync(subscription);
 
 
             // Crear cliente
-            var cliente = new Modelos.Tuneflow.Usuario.Consumidor.Cliente
+            var client = new Modelos.Tuneflow.Usuario.Consumidor.Client
             {
-                Nombre = Input.Nombre,
-                Apellido = Input.Apellido,
+                FirstName = Input.FirstName,
+                LastName = Input.LastName,
                 Email = Input.Email,
-                Telefono = Input.Telefono,
-                PaisId = Input.PaisId,
-                FechaNacimiento = Input.FechaNacimiento.ToUniversalTime(),
-                TipoCuenta = "Cliente",
-                Activo = true,
-                FechaRegistro = DateTime.UtcNow,
-                SuscripcionId = suscripcionNueva.Id,
+                Phone = Input.Phone,
+                CountryId = Input.CountryId,
+                BirthDate = Input.BirthDate.ToUniversalTime(),
+                AccountType = "Client",
+                IsActive = true,
+                RegistrationDate = DateTime.UtcNow,
+                SubscriptionId = newSubscription.Id,
                 Password = Input.Password,
-                UsuarioId = user.Id // Asignar el ID del usuario recién creado
+                UserId = user.Id // Asignar el ID del usuario recién creado
             };
 
 
-            var clienteNuevo = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.CreateAsync(cliente);
+            var newClient = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.CreateAsync(client);
 
-            var perfil = new Perfil
+            var profile = new Profile
             {
-                ClienteId = clienteNuevo.Id,
-                ArtistaId = 0, // Inicialmente no es un artista
-                ImagenPerfil = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/ImagenDefault.jpeg",
-                Biografia = "Apasionado de la Música",
-                FechaCreacion = DateTime.UtcNow,
+                ClientId = newClient.Id,
+                ArtistId = 0, // Inicialmente no es un artista
+                ProfileImage = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/ImagenDefault.jpeg",
+                Biography = "Apasionado de la Música",
+                CreationDate = DateTime.UtcNow,
             };
 
-            var perfilNuevo = await Crud<Perfil>.CreateAsync(perfil);
+            var newProfile = await Crud<Profile>.CreateAsync(profile);
 
-            var playlistFavorito = new Playlist
+            var favoritePlaylists = new Playlist
             {
-                Titulo = "Tus Me Gusta",
-                Descripcion = "Esta es una playlist que contiene tus canciones favoritas",
-                FechaCreacion = DateTime.UtcNow,
-                ClienteId = clienteNuevo.Id,
-                PortadaPlaylist = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/PortadaFavoritos.png"
+                Title = "Tus Me Gusta",
+                Description = "Esta es una playlist que contiene tus canciones favoritas",
+                CreationDate = DateTime.UtcNow,
+                ClientId = newClient.Id,
+                PlaylistCover = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/PortadaFavoritos.png"
             };
 
-            var playlistNueva = await Crud<Playlist>.CreateAsync(playlistFavorito);
+            var favoritePlaylist = await Crud<Playlist>.CreateAsync(favoritePlaylists);
 
-            await _userManager.AddToRoleAsync(user, "cliente");
+            await _userManager.AddToRoleAsync(user, "client");
 
             var userId = await _userManager.GetUserIdAsync(user);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -200,8 +200,8 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 
         private async Task<List<SelectListItem>> GetPaisesAsync()
         {
-            var paises = await Crud<Pais>.GetAllAsync();
-            return paises.Select(p => new SelectListItem
+            var countries = await Crud<Country>.GetAllAsync();
+            return countries.Select(p => new SelectListItem
             {
                 Value = p.Id.ToString(),
                 Text = p.Name

@@ -18,14 +18,14 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label asp-for="Input.Nombre"></label>
-                        <input asp-for="Input.Nombre" class="form-control" />
-                        <span asp-validation-for="Input.Nombre" class="text-danger"></span>
+                        <label asp-for="Input.FirstName"></label>
+                        <input asp-for="Input.FirstName" class="form-control" />
+                        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label asp-for="Input.Apellido"></label>
-                        <input asp-for="Input.Apellido" class="form-control" />
-                        <span asp-validation-for="Input.Apellido" class="text-danger"></span>
+                        <label asp-for="Input.LastName"></label>
+                        <input asp-for="Input.LastName" class="form-control" />
+                        <span asp-validation-for="Input.LastName" class="text-danger"></span>
                     </div>
                 </div>
 
@@ -36,21 +36,21 @@
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Input.Telefono"></label>
-                    <input asp-for="Input.Telefono" class="form-control" />
-                    <span asp-validation-for="Input.Telefono" class="text-danger"></span>
+                    <label asp-for="Input.Phone"></label>
+                    <input asp-for="Input.Phone" class="form-control" />
+                    <span asp-validation-for="Input.Phone" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Input.PaisId"></label>
-                    <select asp-for="Input.PaisId" asp-items="Model.Paises" class="form-select"></select>
-                    <span asp-validation-for="Input.PaisId" class="text-danger"></span>
+                    <label asp-for="Input.CountryId"></label>
+                    <select asp-for="Input.CountryId" asp-items="Model.Countries" class="form-select"></select>
+                    <span asp-validation-for="Input.CountryId" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Input.FechaNacimiento"></label>
-                    <input asp-for="Input.FechaNacimiento" type="date" class="form-control" />
-                    <span asp-validation-for="Input.FechaNacimiento" class="text-danger"></span>
+                    <label asp-for="Input.BirthDate"></label>
+                    <input asp-for="Input.BirthDate" type="date" class="form-control" />
+                    <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
                 </div>
 
                 <div class="row">
