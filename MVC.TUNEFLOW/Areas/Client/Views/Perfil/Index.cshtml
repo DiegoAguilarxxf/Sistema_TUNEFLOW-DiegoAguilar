@@ -1,4 +1,4 @@
-﻿@model Modelos.Tuneflow.Usuario.Perfiles.Perfil;
+﻿@model Modelos.Tuneflow.Usuario.Perfiles.Profile;
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
@@ -7,15 +7,15 @@
 
 <div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center; justify-content: space-between;">
     <div style="display: flex; align-items: center; gap: 1.5rem;">
-        <img src="@Model.ImagenPerfil" alt="Foto perfil"
+        <img src="@Model.ProfileImage" alt="Foto perfil"
              style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid white;" />
         <div>
             <h4 style="color: white; margin: 0;">Perfil</h4>
             <h2 style="color: white; margin: 0; font-size: 2rem; font-weight: bold;">
                 @(
-                    Model.Cliente != null
-                    ? $"{Model.Cliente.Nombre} {Model.Cliente.Apellido}"
-                    : Model.Artista?.NombreArtistico
+                    Model.Client != null
+                    ? $"{Model.Client.FirstName} {Model.Client.LastName}"
+                    : Model.Artist?.StageName
                     )
             </h2>
           

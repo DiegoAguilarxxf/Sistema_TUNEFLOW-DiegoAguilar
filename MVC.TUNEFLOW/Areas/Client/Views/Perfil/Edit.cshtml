@@ -1,4 +1,4 @@
-﻿@model Modelos.Tuneflow.Usuario.Perfiles.Perfil
+﻿@model Modelos.Tuneflow.Usuario.Perfiles.Profile
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
@@ -16,16 +16,16 @@
         <div class="invalid-feedback">
             Por favor selecciona una imagen válida.
         </div>
-        @if (!string.IsNullOrEmpty(Model.ImagenPerfil))
+        @if (!string.IsNullOrEmpty(Model.ProfileImage))
         {
-            <img src="@Model.ImagenPerfil" alt="Imagen actual" style="max-height:150px; margin-top:10px; border-radius:10px;" />
+            <img src="@Model.ProfileImage" alt="Imagen actual" style="max-height:150px; margin-top:10px; border-radius:10px;" />
         }
     </div>
 
     <!-- Biografía -->
     <div class="mb-3">
         <label for="biografia" class="form-label">Biografía (máximo 100 palabras)</label>
-        <textarea class="form-control" id="biografia" name="Biografia" rows="5" maxlength="800" required>@Model.Biografia</textarea>
+        <textarea class="form-control" id="biografia" name="Biografia" rows="5" maxlength="800" required>@Model.Biography</textarea>
         <div class="form-text">
             Palabras usadas: <span id="wordCount">0</span>/100
         </div>

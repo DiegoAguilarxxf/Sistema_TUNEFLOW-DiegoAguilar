@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Modelos.Tuneflow.Media.Cancion>
+﻿@model IEnumerable<Modelos.Tuneflow.Media.Song>
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
@@ -30,16 +30,16 @@ else
             {
                 <tr>
                     <td>
-                        <img src="@item.RutaImagen" alt="Imagen de @item.Titulo" style="max-height: 100px;" />
+                        <img src="@item.ImagePath" alt="Imagen de @item.Title" style="max-height: 100px;" />
                     </td>
-                    <td>@item.Titulo</td>
-                    <td>@item.Genero</td>
+                    <td>@item.Title</td>
+                    <td>@item.Genre</td>
                     <td>
 
-                        @if (item.Artista != null)
+                        @if (item.Artist != null)
                         {
-                            <a href="/Artista/Perfil/@item.Artista.NombreArtistico">
-                                @item.Artista.NombreArtistico
+                            <a href="/Artista/Perfil/@item.Artist.StageName">
+                                @item.Artist.StageName
                             </a>
 
 
@@ -50,15 +50,15 @@ else
                             <span>Desconocido</span>
                         }
                     </td>
-                    <td>@(item.ContenidoExplicito ? "Sí" : "No")</td>
-                    <td>@item.TiempoEnMinutos(item.Duracion)</td>
+                    <td>@(item.ExplicitContent ? "Sí" : "No")</td>
+                    <td>@item.TimeInMinutes(item.Duration)</td>
                     <td>
                         <button class="btn btn-sm btn-success" type="button"
                                 onclick="reproducirCancion(
                             @item.Id,
-                            '@item.Titulo',
-                            '@item.RutaArchivo',
-                            '@item.RutaImagen',
+                            '@item.Title',
+                            '@item.FilePath',
+                            '@item.ImagePath',
                             @ViewBag.IdCliente
                         )">
                             ▶ Reproducir
