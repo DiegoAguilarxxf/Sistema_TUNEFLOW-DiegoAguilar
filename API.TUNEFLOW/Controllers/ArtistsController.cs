@@ -34,7 +34,7 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet]
         public IEnumerable<Artist> GetArtista()
         {
-           var artistas = connection.Query<Artist>("SELECT * FROM \"Artistas\"");
+           var artistas = connection.Query<Artist>("SELECT * FROM \"Artists\"");
             return artistas;
         }
 

@@ -131,7 +131,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                 Phone = Input.Phone,
                 CountryId = Input.CountryId,
                 BirthDate = Input.BirthDate.ToUniversalTime(),
-                AccountType = "Client",
+                AccountType = "Cliente",
                 IsActive = true,
                 RegistrationDate = DateTime.UtcNow,
                 SubscriptionId = newSubscription.Id,
@@ -164,7 +164,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 
             var favoritePlaylist = await Crud<Playlist>.CreateAsync(favoritePlaylists);
 
-            await _userManager.AddToRoleAsync(user, "client");
+            await _userManager.AddToRoleAsync(user, "cliente");
 
             var userId = await _userManager.GetUserIdAsync(user);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

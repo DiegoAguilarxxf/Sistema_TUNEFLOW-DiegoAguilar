@@ -141,7 +141,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 
                     var newProfile = await Crud<Profile>.CreateAsync(profile);
 
-                    await _userManager.AddToRoleAsync(user, "artist");
+                    await _userManager.AddToRoleAsync(user, "artista");
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

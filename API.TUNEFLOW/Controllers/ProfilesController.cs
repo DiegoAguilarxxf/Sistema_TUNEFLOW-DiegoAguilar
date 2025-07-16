@@ -129,7 +129,7 @@ namespace API.TUNEFLOW.Controllers
 
             if (profile.ArtistId == 0)
             {
-                var sql = @"INSERT INTO ""Profiles"" (""ClientId"", ""IProfileImage"", ""Biography"", ""CreationDate"")
+                var sql = @"INSERT INTO ""Profiles"" (""ClientId"", ""ProfileImage"", ""Biography"", ""CreationDate"")
                             VALUES
                             (@ClientId,@ProfileImage,@Biography,@CreationDate) RETURNING ""Id"";";
 

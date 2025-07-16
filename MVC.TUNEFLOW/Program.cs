@@ -39,7 +39,7 @@ namespace MVC.TUNEFLOW
             Crud<Profile>.EndPoint = "https://localhost:7031/api/Profiles";
             Crud<Playback>.EndPoint = "https://localhost:7031/api/Playbacks";
             Crud<Follow>.EndPoint = "https://localhost:7031/api/Follows";
-            Crud<Subscription>.EndPoint = "https://localhost:7031/api/Suscriptions";
+            Crud<Subscription>.EndPoint = "https://localhost:7031/api/Subscriptions";
             Crud<SubscriptionType>.EndPoint = "https://localhost:7031/api/SubscriptionsTypes";
             Crud<Playlist>.EndPoint = "https://localhost:7031/api/Playlists";
             Crud<Country>.EndPoint = "https://localhost:7031/api/Countries";
