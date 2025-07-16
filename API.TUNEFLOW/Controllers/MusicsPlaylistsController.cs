@@ -34,83 +34,83 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/MusicasPlaylists
         [HttpGet]
-        public IEnumerable<MusicaPlaylist> GetMusicaPlaylist()
-        {   var getmusic = connection.Query<MusicaPlaylist>("SELECT * FROM \"MusicasPlaylists\"");
+        public IEnumerable<MusicPlaylist> GetMusicaPlaylist()
+        {   var getmusic = connection.Query<MusicPlaylist>("SELECT * FROM \"MusicsPlaylists\"");
             return getmusic;
         }
 
         // GET: api/MusicasPlaylists/5
         [HttpGet("{id}")]
-        public ActionResult<MusicaPlaylist> GetMusicaPlaylistById(int id)
+        public ActionResult<MusicPlaylist> GetMusicaPlaylistById(int id)
         {
-            var musicaPlaylist = connection.QuerySingle<MusicaPlaylist>(@"SELECT * FROM ""MusicasPlaylists"" WHERE ""Id"" = @Id", new { Id = id });
+            var musicPlaylist = connection.QuerySingle<MusicPlaylist>(@"SELECT * FROM ""MusicsPlaylists"" WHERE ""Id"" = @Id", new { Id = id });
 
-            if (musicaPlaylist == null)
+            if (musicPlaylist == null)
             {
                 return NotFound();
             }
 
-            return musicaPlaylist;
+            return musicPlaylist;
         }
 
-        [HttpGet("ExistMusicaPlaylist/{CancionId}/{PlaylistId}")]
-        public ActionResult<int> GetCancionFavoritaPorIdEIdCliente(int CancionId, int PlaylistId)
+        [HttpGet("ExistMusicPlaylist/{SongId}/{PlaylistId}")]
+        public ActionResult<int> GetCancionFavoritaPorIdEIdCliente(int SongId, int PlaylistId)
         {
-            var sql = @"SELECT ""Id"" FROM ""MusicasPlaylists"" WHERE ""CancionId"" = @IdCancion AND ""PlaylistId"" = @IdPlaylist";
+            var sql = @"SELECT ""Id"" FROM ""MusicsPlaylists"" WHERE ""SongId"" = @IdSong AND ""PlaylistId"" = @IdPlaylist";
 
-            var existeId = connection.ExecuteScalar<int?>(sql, new { IdCancion = CancionId, IdPlaylist = PlaylistId });
+            var existId = connection.ExecuteScalar<int?>(sql, new { IdSong = SongId, IdPlaylist = PlaylistId });
 
-            if (existeId.HasValue)
-                return Ok(new { id = existeId.Value });  // Devuelve el Id encontrado
+            if (existId.HasValue)
+                return Ok(new { id = existId.Value });  // Devuelve el Id encontrado
             else
                 return NotFound();  // O puedes devolver algo distinto si no existe
 
 
         }
 
-        [HttpGet("CancionesPorPlaylist/{idPlaylist}")]
-        public ActionResult<IEnumerable<Cancion>> ObtenerCancionesPorPlaylist(int idPlaylist)
+        [HttpGet("SongsForPlaylist/{idPlaylist}")]
+        public ActionResult<IEnumerable<Song>> ObtenerCancionesPorPlaylist(int idPlaylist)
         {
             var sql = @"
                             SELECT 
-                                c.""Id"", c.""Titulo"", c.""Duracion"", c.""Genero"", c.""ArtistaId"", c.""AlbumId"",
-                                c.""RutaArchivo"", c.""ContenidoExplicito"", c.""RutaImagen"",
+                                c.""Id"", c.""Title"", c.""Duration"", c.""Genere"", c.""ArtistId"", c.""AlbumId"",
+                                c.""FilePath"", c.""ExplicitContent"", c.""ImagePath"",
 
-                                a.""Id"", a.""NombreArtistico"", a.""GeneroMusical"", a.""Biografia"",
-                                a.""PaisId"", a.""verificado"", a.""UsuarioId"",
+                                a.""Id"", a.""StageName"", a.""MusicGenre"", a.""Biography"",
+                                a.""CountryId"", a.""Virified"", a.""UserId"",
 
-                                al.""Id"", al.""Titulo"", al.""FechaLanzamiento"", al.""Genero"",
-                                al.""FechaCreacion"", al.""Descripcion"", al.""RutaPortada""
-                            FROM ""MusicasPlaylists"" mp
-                            INNER JOIN ""Canciones"" c ON mp.""CancionId"" = c.""Id""
-                            INNER JOIN ""Artistas"" a ON c.""ArtistaId"" = a.""Id""
+                                al.""Id"", al.""Title"", al.""ReleaseDate"", al.""Genre"",
+                                al.""CreationDate"", al.""Description"", al.""CoverPath""
+                            FROM ""MusicsPlaylists"" mp
+                            INNER JOIN ""Songs"" c ON mp.""SongId"" = c.""Id""
+                            INNER JOIN ""Artists"" a ON c.""ArtistId"" = a.""Id""
                             LEFT JOIN ""Albums"" al ON c.""AlbumId"" = al.""Id""
                             WHERE mp.""PlaylistId"" = @IdPlaylist";
 
-            var canciones = connection.Query<Cancion, Artista, Album, Cancion>(
+            var songs = connection.Query<Song, Artist, Album, Song>(
                 sql,
-                (cancion, artista, album) =>
+                (song, artist, album) =>
                 {
-                    cancion.Artista = artista;
-                    cancion.Album = album;
-                    return cancion;
+                    song.Artist = artist;
+                    song.Album = album;
+                    return song;
                 },
                 new { IdPlaylist = idPlaylist },
                 splitOn: "Id,Id" // importante para Dapper
             ).ToList();
 
-            if (!canciones.Any())
+            if (!songs.Any())
             {
                 return NotFound($"No se encontraron canciones para la playlist con ID {idPlaylist}.");
             }
 
-            return Ok(canciones);
+            return Ok(songs);
         }
 
         // PUT: api/MusicasPlaylists/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutMusicaPlaylist(int id,[FromBody] MusicaPlaylist musicaPlaylist)
+        public void PutMusicaPlaylist(int id,[FromBody] MusicPlaylist musicPlaylist)
         {
             connection.Execute(@"UPDATE ""MusicasPlaylists"" SET 
                 ""PlaylistId"" = @PlaylistId,
@@ -118,33 +118,33 @@ namespace API.TUNEFLOW.Controllers
                 WHERE ""Id"" = @Id", new
             {
                 Id = id,
-                PlaylistId = musicaPlaylist.PlaylistId,
-                CancionId = musicaPlaylist.CancionId
+                PlaylistId = musicPlaylist.PlaylistId,
+                SongId = musicPlaylist.SongId
             });
         }
 
         // POST: api/MusicasPlaylists
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public ActionResult<MusicaPlaylist> PostMusicaPlaylist([FromBody]MusicaPlaylist musicaPlaylist)
+        public ActionResult<MusicPlaylist> PostMusicaPlaylist([FromBody]MusicPlaylist musicPlaylist)
         {
-            var idDevuelto = connection.ExecuteScalar<int>(@"INSERT INTO ""MusicasPlaylists"" (""CancionId"", ""PlaylistId"") 
-                VALUES (@CancionId, @PlaylistId) RETURNING ""Id"";", new
+            var idReturned = connection.ExecuteScalar<int>(@"INSERT INTO ""MusicsPlaylists"" (""SongId"", ""PlaylistId"") 
+                VALUES (@SongId, @PlaylistId) RETURNING ""Id"";", new
             {
-                CancionId = musicaPlaylist.CancionId,
-                PlaylistId = musicaPlaylist.PlaylistId
+                SongId = musicPlaylist.SongId,
+                PlaylistId = musicPlaylist.PlaylistId
             });
 
-            musicaPlaylist.Id = idDevuelto;
+            musicPlaylist.Id = idReturned;
 
-            return CreatedAtAction(nameof(GetMusicaPlaylistById), new { id = idDevuelto }, musicaPlaylist);
+            return CreatedAtAction(nameof(GetMusicaPlaylistById), new { id = idReturned }, musicPlaylist);
         }
 
         // DELETE: api/MusicasPlaylists/5
         [HttpDelete("{id}")]
         public ActionResult DeleteMusicaPlaylist(int id)
         {
-            connection.Execute(@"DELETE FROM ""MusicasPlaylists"" WHERE ""Id"" = @Id", new { Id = id });
+            connection.Execute(@"DELETE FROM ""MusicsPlaylists"" WHERE ""Id"" = @Id", new { Id = id });
             return NoContent(); // Código 204
         }
 

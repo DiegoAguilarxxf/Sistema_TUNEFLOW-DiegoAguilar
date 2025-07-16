@@ -33,34 +33,34 @@ namespace API.TUNEFLOW.Controllers
         }
         // GET: api/CancionesFavoritas
         [HttpGet]
-        public IEnumerable<CancionFavorita> GetCancionFavorita()
-        { var cancionesfav = connection.Query<CancionFavorita>("SELECT * FROM \"CancionesFavoritas\"");
+        public IEnumerable<FavoriteSong> GetCancionFavorita()
+        { var cancionesfav = connection.Query<FavoriteSong>("SELECT * FROM \"FavoritesSongs\"");
             return cancionesfav;
         }
 
         // GET: api/CancionesFavoritas/5
         [HttpGet("{id}")]
-        public ActionResult<CancionFavorita> GetCancionFavoritaById(int id)
+        public ActionResult<FavoriteSong> GetCancionFavoritaById(int id)
         {
-            var cancionFavorita = connection.QuerySingle<CancionFavorita>(@"SELECT * FROM ""CancionesFavoritas"" WERE ""Id""= @Id", new { Id = id });
+            var favoriteSong = connection.QuerySingle<FavoriteSong>(@"SELECT * FROM ""FavoritesSongs"" WERE ""Id""= @Id", new { Id = id });
 
-            if (cancionFavorita == null)
+            if (favoriteSong == null)
             {
                 return NotFound();
             }
 
-            return cancionFavorita;
+            return favoriteSong;
         }
 
-        [HttpGet("IsFavorita/{id}/{idCliente}")]
-        public ActionResult<int> GetCancionFavoritaPorIdEIdCliente(int id, int idCliente)
+        [HttpGet("IsFavorite/{id}/{idClient}")]
+        public ActionResult<int> GetCancionFavoritaPorIdEIdCliente(int id, int idClient)
         {
-            var sql = @"SELECT ""Id"" FROM ""CancionesFavoritas"" WHERE ""ClienteId"" = @IdCliente AND ""CancionId"" = @Id";
+            var sql = @"SELECT ""Id"" FROM ""FavoritesSongs"" WHERE ""ClientId"" = @IdClient AND ""SongId"" = @Id";
 
-            var existeId = connection.ExecuteScalar<int?>(sql, new { IdCliente = idCliente, Id = id });
+            var existId = connection.ExecuteScalar<int?>(sql, new { IdClient = idClient, Id = id });
 
-            if (existeId.HasValue)
-                return Ok(new { id = existeId.Value });  // Devuelve el Id encontrado
+            if (existId.HasValue)
+                return Ok(new { id = existId.Value });  // Devuelve el Id encontrado
             else
                 return NotFound();  // O puedes devolver algo distinto si no existe
 
@@ -70,17 +70,17 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/CancionesFavoritas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutCancionFavorita(int id,[FromBody] CancionFavorita cancionFavorita)
+        public void PutCancionFavorita(int id,[FromBody] FavoriteSong favoriteSong)
         {
-            connection.Execute(@"UPDATE ""CancionesFavoritas"" SET " +
-                "\"ClienteId\" = @ClienteId, " +
-                "\"CancionId\" = @CancionId, " +
-                "\"FechaAgregado\" = @FechaAgregado " +
+            connection.Execute(@"UPDATE ""FavoritesSongs"" SET " +
+                "\"ClientId\" = @ClientId, " +
+                "\"SongsId\" = @SongsId, " +
+                "\"DateAdded\" = @DateAdded " +
                 "WHERE \"Id\" = @Id",new
                 {
-                    ClienteId=cancionFavorita.ClienteId,
-                    CancionId=cancionFavorita.CancionId,
-                    FechaAgregado = cancionFavorita.FechaAgregado,
+                    ClientId=favoriteSong.ClientId,
+                    SongId=favoriteSong.SongId,
+                    DateAdded = favoriteSong.DateAdded,
                     Id = id
                 } );
         }
@@ -88,27 +88,27 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/CancionesFavoritas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public ActionResult<CancionFavorita> PostCancionFavorita([FromBody]CancionFavorita cancionfavorita)
+        public ActionResult<FavoriteSong> PostCancionFavorita([FromBody]FavoriteSong favoriteSong)
         {   
             
-            var idDevuelto = connection.ExecuteScalar<int>(@"INSERT INTO ""CancionesFavoritas"" (""ClienteId"", ""CancionId"", ""FechaAgregado"") 
-                                                VALUES (@ClienteId, @CancionId, @FechaAgregado) RETURNING ""Id"";",
+            var idReturned = connection.ExecuteScalar<int>(@"INSERT INTO ""FavoritesSongs"" (""ClientId"", ""SongId"", ""DateAdded"") 
+                                                VALUES (@ClientId, @SongId, @DateAdded) RETURNING ""Id"";",
                 new
                 {
-                    ClienteId = cancionfavorita.ClienteId,
-                    CancionId = cancionfavorita.CancionId,
-                    FechaAgregado = cancionfavorita.FechaAgregado
+                    ClientId = favoriteSong.ClientId,
+                    SongId = favoriteSong.SongId,
+                    DateAdded = favoriteSong.DateAdded
                 });
-            cancionfavorita.Id = idDevuelto;
+            favoriteSong.Id = idReturned;
 
-            return CreatedAtAction(nameof(GetCancionFavoritaById), new { id = idDevuelto }, cancionfavorita);
+            return CreatedAtAction(nameof(GetCancionFavoritaById), new { id = idReturned }, favoriteSong);
         }
 
         // DELETE: api/CancionesFavoritas/5
         [HttpDelete("{id}")]
         public ActionResult DeleteCancionFavorita(int id)
         {
-           connection.Execute(@"DELETE FROM ""CancionesFavoritas"" WHERE ""Id"" = @Id", new { Id = id });
+           connection.Execute(@"DELETE FROM ""FavoritesSongs"" WHERE ""Id"" = @Id", new { Id = id });
             return NoContent(); // Código 204
         }
 

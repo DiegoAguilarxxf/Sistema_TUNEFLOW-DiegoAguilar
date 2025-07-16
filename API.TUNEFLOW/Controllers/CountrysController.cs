@@ -31,53 +31,53 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Paises
         [HttpGet]
-        public IEnumerable<Pais> GetPais()
+        public IEnumerable<Country> GetPais()
         {
-            var paises = connection.Query<Pais>("SELECT * FROM \"Paises\"");
+            var paises = connection.Query<Country>("SELECT * FROM \"Countrys\"");
             return paises;
         }
 
         // GET: api/Paises/5
         [HttpGet("{id}")]
-        public ActionResult<Pais> GetPais(int id)
+        public ActionResult<Country> GetPais(int id)
         {
-            var pais = connection.QuerySingle<Pais>(@"SELECT * FROM ""Paises"" WHERE ""Id"" = @Id", new { Id = id });
+            var country = connection.QuerySingle<Country>(@"SELECT * FROM ""Countrys"" WHERE ""Id"" = @Id", new { Id = id });
 
-            if (pais == null)
+            if (country == null)
             {
                 return NotFound();
             }
 
-            return pais;
+            return country;
         }
 
         // PUT: api/Paises/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutPais(int id,[FromBody] Pais pais)
+        public void PutPais(int id,[FromBody] Country country)
         {
-            connection.Execute(@"UPDATE ""Paises"" SET 
+            connection.Execute(@"UPDATE ""Countrys"" SET 
               ""Name""= @Name,
-              "" Continente""= @Continente,
-              ""Moneda""= @Moneda
-            WHERE ""Id"" = @Id", new { Id = id, Name = pais.Name, Continente = pais.Continente, Moneda=pais.Moneda });
+              "" Continent""= @Continent,
+              ""Currency""= @Currency
+            WHERE ""Id"" = @Id", new { Id = id, Name = country.Name, Continent = country.Continent, Currency=country.Currency });
         }
 
         // POST: api/Paises
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Pais PostPais([FromBody]Pais pais)
+        public Country PostPais([FromBody]Country country)
         {
-           connection.Execute(@"INSERT INTO ""Paises"" (""Name"", ""Continente"", ""Moneda"") 
-            VALUES (@Name, @Continente, @Moneda)", new { Name = pais.Name, Continente = pais.Continente, Moneda = pais.Moneda });
-            return pais;
+           connection.Execute(@"INSERT INTO ""Paises"" (""Name"", ""Continent"", ""Currency"") 
+            VALUES (@Name, @Continent, @Currency)", new { Name = country.Name, Continent = country.Continent, Currency = country.Currency });
+            return country;
         }
 
         // DELETE: api/Paises/5
         [HttpDelete("{id}")]
         public void DeletePais(int id)
         {
-            connection.Execute(@"DELETE FROM ""Paises"" WHERE ""Id"" = @Id", new { Id = id });
+            connection.Execute(@"DELETE FROM ""Countrys"" WHERE ""Id"" = @Id", new { Id = id });
         }
         /*
         private bool PaisExists(int id)

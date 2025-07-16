@@ -32,65 +32,65 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Pagos
         [HttpGet]
-        public IEnumerable<Pago> GetPago()
-        {   var pagos = connection.Query<Pago>("SELECT * FROM \"Pagos\"");
-            return pagos;
+        public IEnumerable<Payment> GetPago()
+        {   var payment = connection.Query<Payment>("SELECT * FROM \"Payments\"");
+            return payment;
         }
 
         // GET: api/Pagos/5
         [HttpGet("{id}")]
-        public ActionResult<Pago> GetPago(int id)
+        public ActionResult<Payment> GetPago(int id)
         {
-            var pago = connection.QuerySingle<Pago>(@"SELECT * FROM ""Pagos"" WHERE ""Id"" = @Id", new { Id = id });
+            var payment = connection.QuerySingle<Payment>(@"SELECT * FROM ""Payments"" WHERE ""Id"" = @Id", new { Id = id });
 
-            if (pago == null)
+            if (payment == null)
             {
                 return NotFound();
             }
 
-            return pago;
+            return payment;
         }
 
         // PUT: api/Pagos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutPago(int id, [FromBody] Pago pago)
+        public void PutPago(int id, [FromBody] Payment payment)
         {
-            connection.Execute(@"UPDATE ""Pagos"" SET 
-                ""ClienteId"" = @ClienteId,
-                ""FechaPago"" = @FechaPago,
-                ""Monto"" = @Monto,
-                ""MetodoPago"" = @MetodoPago
+            connection.Execute(@"UPDATE ""Payments"" SET 
+                ""ClientId"" = @ClientId,
+                ""PaymentDate"" = @PaymentDate,
+                ""Amount"" = @Amount,
+                ""PaymentMethod"" = @PaymentMethod
                 WHERE ""Id"" = @Id", new
             {
                 Id = id,
-                ClienteId = pago.ClienteId,
-                FechaPago = pago.FechaPago,
-                Monto = pago.Monto,
-                MetodoPago = pago.MetodoPago
+                ClientId = payment.ClientId,
+                PaymentDate = payment.PaymentDate,
+                Amount = payment.Amount,
+                PaymentMethod = payment.PaymentMethod
             });
         }
 
         // POST: api/Pagos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Pago PostPago([FromBody]Pago pago)
-        { connection.Execute(@"INSERT INTO ""Pagos"" (""ClienteId"", ""FechaPago"", ""Monto"", ""MetodoPago"") 
-                VALUES (@ClienteId, @FechaPago, @Monto, @MetodoPago) RETURNING ""Id""", new
+        public Payment PostPago([FromBody]Payment payment)
+        { connection.Execute(@"INSERT INTO ""Payments"" (""ClientId"", ""PaymentDate"", ""Amount"", ""PaymentMethod"") 
+                VALUES (@ClientId, @PaymentDate, @Amount, @PaymentMethod) RETURNING ""Id""", new
         {
-            ClienteId = pago.ClienteId,
-            FechaPago = pago.FechaPago,
-            Monto = pago.Monto,
-            MetodoPago = pago.MetodoPago
+            ClientId = payment.ClientId,
+            PaymentDate = payment.PaymentDate,
+            Amount = payment.Amount,
+            PaymentMethod = payment.PaymentMethod
         });
-            return pago;
+            return payment;
         }
 
         // DELETE: api/Pagos/5
         [HttpDelete("{id}")]
         public void DeletePago(int id)
         {
-           connection.Execute(@"DELETE FROM ""Pagos"" WERE ""Id"" = @Id", new { Id = id });
+           connection.Execute(@"DELETE FROM ""Payments"" WERE ""Id"" = @Id", new { Id = id });
            
         }
         /*

@@ -31,36 +31,36 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Seguimientos
         [HttpGet]
-        public IEnumerable<Seguimiento> GetSeguimiento()
-        { var seguimientos = connection.Query<Seguimiento>("SELECT * FROM \"Seguimientos\"");
-            return seguimientos;
+        public IEnumerable<Follow> GetSeguimiento()
+        { var follows = connection.Query<Follow>("SELECT * FROM \"Follows\"");
+            return follows;
         }
 
         // GET: api/Seguimientos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Seguimiento>> GetSeguimiento(int id)
+        public async Task<ActionResult<Follow>> GetSeguimiento(int id)
         {
-            var seguimiento = connection.QuerySingle<Seguimiento>(@"SELECT * FROM ""Seguimientos"" WHERE ""Id"" = @Id", new { Id = id });
+            var follow = connection.QuerySingle<Follow>(@"SELECT * FROM ""Follows"" WHERE ""Id"" = @Id", new { Id = id });
 
-            if (seguimiento == null)
+            if (follow == null)
             {
                 return NotFound();
             }
 
-            return seguimiento;
+            return follow;
         }
 
         // PUT: api/Seguimientos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutSeguimiento(int id,[FromBody] Seguimiento seguimiento)
+        public void PutSeguimiento(int id,[FromBody] Follow follow)
         {
-            connection.Execute(@"UPDATE ""Seguimientos"" SET
-                ""ClienteId""=@ClienteId,
-                ""ArtistaId""=@ArtistaId WERE ""Id""=@Id", new
+            connection.Execute(@"UPDATE ""Follows"" SET
+                ""ClientId""=@ClientId,
+                ""ArtistId""=@ArtistId WERE ""Id""=@Id", new
             {
-                ClienteId = seguimiento.ClienteId,
-                ArtistaId = seguimiento.ArtistaId
+                ClientId = follow.ClientId,
+                ArtistId =  follow.ArtistId
             });
 
         }
@@ -68,21 +68,21 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Seguimientos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Seguimiento PostSeguimiento([FromBody]Seguimiento seguimiento)
+        public Follow PostSeguimiento([FromBody]Follow follow)
         {
-            connection.Execute(@"INSERT INTO ""Seguimientos"" (""ClienteId"", ""ArtistaId"") VALUES (@ClienteId, @ArtistaId)", new
+            connection.Execute(@"INSERT INTO ""Follows"" (""ClientId"", ""ArtistId"") VALUES (@ClientId, @ArtistId)", new
             {
-                ClienteId = seguimiento.ClienteId,
-                ArtistaId = seguimiento.ArtistaId
+                ClientId = follow.ClientId,
+                ArtistId = follow.ArtistId
             });
 
-            return seguimiento;
+            return follow;
         }
 
         // DELETE: api/Seguimientos/5
         [HttpDelete("{id}")]
         public void DeleteSeguimiento(int id)
-        {connection.Execute(@"DELETE FROM ""Seguimientos"" WHERE ""Id"" = @Id", new { Id = id });
+        {connection.Execute(@"DELETE FROM ""Follows"" WHERE ""Id"" = @Id", new { Id = id });
             
         }
         /*
