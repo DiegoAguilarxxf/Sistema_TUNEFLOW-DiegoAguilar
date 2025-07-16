@@ -22,7 +22,7 @@ namespace Modelos.Tuneflow.Usuario.Produccion
         public Country? Country { get; set; }
         public List<Song>? Songs { get; set; }
         public List<Album>? Albums { get; set; }
-        public Profile? Profile { get; set; } // Relación con el perfil del artista
+       // public Profile? Profile { get; set; } // Relación con el perfil del artista
         public string? ProfileImage { get; set; } // URL o ruta de la imagen del perfil del artista
     }
 

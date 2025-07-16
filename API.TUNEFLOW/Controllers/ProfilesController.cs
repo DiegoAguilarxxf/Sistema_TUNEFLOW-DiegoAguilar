@@ -56,39 +56,52 @@ namespace API.TUNEFLOW.Controllers
             return profile;
         }
 
-        [HttpGet("User/Obtainingn/{idAmbos}")]
-        public ActionResult<Profile> ObtenerPerfilPorClienteId(int idAmbos)
+        [HttpGet("User/Obtainingn/{idClient}")]
+        public ActionResult<Profile> ObtenerPerfilPorClienteId(int idClient)
         {
-            var sql = @"SELECT * FROM ""Perfiles"" 
-                WHERE ""ClienteId"" = @Id OR ""ArtistaId"" = @Id";
+            var sql = @"SELECT * FROM ""Profiles"" 
+                WHERE ""ClientId"" = @Id";
 
-            var perfil = connection.QueryFirstOrDefault<Profile>(sql, new { Id = idAmbos });
+            var profile = connection.QueryFirstOrDefault<Profile>(sql, new { Id = idClient });
 
-            if (perfil == null)
+            if (profile == null)
                 return NotFound();
 
             // Si tiene ClienteId, obtener Cliente con sus relaciones
-            if (perfil.ClientId != null && perfil.ClientId != 0)
+            if (profile.ClientId != null && profile.ClientId != 0)
             {
-                var clienteSql = @"SELECT ""Nombre"", ""Apellido"" FROM ""Clientes"" WHERE ""Id"" = @Id";
-                perfil.Client = connection.QueryFirstOrDefault<Client>(clienteSql, new { Id = perfil.ClientId });
-            }
-                
-
-            // Si tiene ArtistaId, obtener Artista
-            if (perfil.ArtistId != null && perfil.ArtistId != 0)
-            {
-                var artistaSql = @"SELECT ""NombreArtistico"" FROM ""Artistas"" WHERE ""Id"" = @Id";
-                perfil.Artist = connection.QueryFirstOrDefault<Artist>(artistaSql, new { Id = perfil.ArtistId });
+                var clientSql = @"SELECT ""FirstName"", ""LastName"" FROM ""Clients"" WHERE ""Id"" = @Id";
+                profile.Client = connection.QueryFirstOrDefault<Client>(clientSql, new { Id = profile.ClientId });
             }
 
-            return perfil;
+            return profile;
+        }
+
+        [HttpGet("User/Obtainingn/{idArtist}")]
+        public ActionResult<Profile> ObtenerPerfilPorArtistaId(int idArtist)
+        {
+            var sql = @"SELECT * FROM ""Profiles"" 
+                WHERE ""ArtistId"" = @Id";
+
+            var profile = connection.QueryFirstOrDefault<Profile>(sql, new { Id = idArtist });
+
+            if (profile == null)
+                return NotFound();
+
+
+            if (profile.ArtistId != null && profile.ArtistId != 0)
+            {
+                var artistSql = @"SELECT ""StageName"" FROM ""Artists"" WHERE ""Id"" = @Id";
+                profile.Artist = connection.QueryFirstOrDefault<Artist>(artistSql, new { Id = profile.ArtistId });
+            }
+
+            return profile;
         }
 
 
-        // PUT: api/Perfiles/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+            // PUT: api/Perfiles/5
+            // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+            [HttpPut("{id}")]
         public ActionResult PutPerfil(int id,[FromBody] Profile profile)
         {
             if (profile == null || profile.Id != id)

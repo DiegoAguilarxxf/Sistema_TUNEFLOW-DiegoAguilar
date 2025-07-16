@@ -108,6 +108,9 @@ namespace API.TUNEFLOW.Migrations
                     b.Property<int?>("PlaylistId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -174,7 +177,7 @@ namespace API.TUNEFLOW.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Album", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Album", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -214,30 +217,7 @@ namespace API.TUNEFLOW.Migrations
                     b.ToTable("Albums");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.MusicPlaylist", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("PlaylistId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SongId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlaylistId");
-
-                    b.HasIndex("SongId");
-
-                    b.ToTable("MusicsPlaylists");
-                });
-
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Playlist", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Playlist", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -268,6 +248,29 @@ namespace API.TUNEFLOW.Migrations
                     b.HasIndex("ClientId");
 
                     b.ToTable("Playlists");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.SongPlaylist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PlaylistId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SongId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlaylistId");
+
+                    b.HasIndex("SongId");
+
+                    b.ToTable("MusicsPlaylists");
                 });
 
             modelBuilder.Entity("Modelos.Tuneflow.Usuario.Administracion.Administrator", b =>
@@ -635,7 +638,7 @@ namespace API.TUNEFLOW.Migrations
 
             modelBuilder.Entity("Modelos.Tuneflow.Media.Song", b =>
                 {
-                    b.HasOne("Modelos.Tuneflow.Playlist.Album", "Album")
+                    b.HasOne("Modelos.Tuneflow.Playlists.Album", "Album")
                         .WithMany("Songs")
                         .HasForeignKey("AlbumId");
 
@@ -645,7 +648,7 @@ namespace API.TUNEFLOW.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Modelos.Tuneflow.Playlist.Playlist", null)
+                    b.HasOne("Modelos.Tuneflow.Playlists.Playlist", null)
                         .WithMany("Songs")
                         .HasForeignKey("PlaylistId");
 
@@ -654,16 +657,27 @@ namespace API.TUNEFLOW.Migrations
                     b.Navigation("Artist");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Album", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Album", b =>
                 {
                     b.HasOne("Modelos.Tuneflow.Usuario.Produccion.Artist", null)
                         .WithMany("Albums")
                         .HasForeignKey("ArtistId");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.MusicPlaylist", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Playlist", b =>
                 {
-                    b.HasOne("Modelos.Tuneflow.Playlist.Playlist", "Playlist")
+                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Client", "Client")
+                        .WithMany("Playlists")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.SongPlaylist", b =>
+                {
+                    b.HasOne("Modelos.Tuneflow.Playlists.Playlist", "Playlist")
                         .WithMany()
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -678,17 +692,6 @@ namespace API.TUNEFLOW.Migrations
                     b.Navigation("Playlist");
 
                     b.Navigation("Song");
-                });
-
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Playlist", b =>
-                {
-                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("Modelos.Tuneflow.Usuario.Administracion.ArtistStatistics", b =>
@@ -777,14 +780,19 @@ namespace API.TUNEFLOW.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Album", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Album", b =>
                 {
                     b.Navigation("Songs");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Playlist", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Playlist", b =>
                 {
                     b.Navigation("Songs");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Client", b =>
+                {
+                    b.Navigation("Playlists");
                 });
 
             modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Subscription", b =>

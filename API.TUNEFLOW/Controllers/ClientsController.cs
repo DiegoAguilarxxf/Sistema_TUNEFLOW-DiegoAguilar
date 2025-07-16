@@ -98,18 +98,18 @@ namespace API.TUNEFLOW.Controllers
             
             var idReturned = connection.ExecuteScalar<int>(sql,new
            {
-               PaisId = client.CountryId,
-               SuscripcionId = client.SubscriptionId,
-               Nombre = client.FirstName,
-               Apellido = client.LastName,
+               CountryId = client.CountryId,
+               SubscriptionId = client.SubscriptionId,
+               FirstName = client.FirstName,
+               LastName = client.LastName,
                Email = client.Email,
                Password = client.Password,
-               Telefono = client.Phone,
-               FechaNacimiento = client.BirthDate,
-               TipoCuenta = client.AccountType,
-               Activo = client.IsActive,
-               FechaRegistro = client.RegistrationDate,
-               UsuarioId = client.UserId
+               Phone = client.Phone,
+               BirthDate = client.BirthDate,
+               AccountType = client.AccountType,
+               IsActive = client.IsActive,
+               RegistrationDate = client.RegistrationDate,
+               UserId = client.UserId
 
             });
 

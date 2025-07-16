@@ -33,7 +33,7 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet]
         public IEnumerable<Country> GetPais()
         {
-            var paises = connection.Query<Country>("SELECT * FROM \"Countrys\"");
+            var paises = connection.Query<Country>("SELECT * FROM \"Countries\"");
             return paises;
         }
 
@@ -41,7 +41,7 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<Country> GetPais(int id)
         {
-            var country = connection.QuerySingle<Country>(@"SELECT * FROM ""Countrys"" WHERE ""Id"" = @Id", new { Id = id });
+            var country = connection.QuerySingle<Country>(@"SELECT * FROM ""Countries"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (country == null)
             {

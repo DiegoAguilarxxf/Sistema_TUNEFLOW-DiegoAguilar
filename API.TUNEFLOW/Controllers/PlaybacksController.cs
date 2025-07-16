@@ -61,7 +61,7 @@ namespace API.TUNEFLOW.Controllers
                 ""SongId"" = @SongId
             WHERE ""Id"" = @Id", new
             {
-                DateTime = playback.DateTime,
+                PlaybackDate = playback.PlaybackDate,
                 ClientId = playback.ClientId,
                 SongId = playback.SongId,
                 Id = id
@@ -76,7 +76,7 @@ namespace API.TUNEFLOW.Controllers
             connection.Execute(@"INSERT INTO ""PLaybacks"" (""DateTime"", ""ClientId"", ""SongId"")
 VALUES (@DateTime, @ClientId, @SongId)", new
             {
-                DateTime = playback.DateTime,
+                PlaybackDate = playback.PlaybackDate,
                 ClientId = playback.ClientId,
                 SongId = playback.SongId
             });

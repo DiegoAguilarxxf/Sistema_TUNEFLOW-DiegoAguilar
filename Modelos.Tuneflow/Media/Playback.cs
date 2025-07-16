@@ -17,7 +17,7 @@ namespace Modelos.Tuneflow.Media
 
         [ForeignKey(nameof(Song))] public int SongId { get; set; }
 
-        public DateTime DateTime { get; set; }
+        public DateTime PlaybackDate { get; set; }
 
         public Client? Client { get; set; }
         public Song? Song { get; set; }

@@ -63,12 +63,12 @@ namespace API.TUNEFLOW.Controllers
                 WHERE ""Id"" = @Id",
                 new
                 {
-                    Titulo= album.Title,
-                    FechaLanzamiento=album.ReleaseDate,
-                    Genero = album.Genre,
-                    FechaCreacion = album.CreationDate,
-                    Descripcion = album.Description,
-                    RutaPortada = album.CoverPath,
+                    Title= album.Title,
+                    ReleaseDate=album.ReleaseDate,
+                    Genre = album.Genre,
+                    CreationDate= album.CreationDate,
+                    Description = album.Description,
+                    CoverPath = album.CoverPath,
                     Id = id
 
                 });
