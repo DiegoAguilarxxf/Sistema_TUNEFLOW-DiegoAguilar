@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Modelos.Tuneflow.Modelos;
-using Modelos.Tuneflow.Usuario.Perfiles;
-
+using Modelos.Tuneflow.Playlists;
+    
 namespace Modelos.Tuneflow.Usuario.Consumidor
 {
     public class Client : User
@@ -16,7 +16,7 @@ namespace Modelos.Tuneflow.Usuario.Consumidor
 
         public string UserId { get; set; } // Identificador único del usuario cliente, puede ser un GUID o un ID de base de datos.
         public Subscription? Subscription { get; set; }
-
+        public List<Playlist>? Playlists { get; set; } // List of playlists created by the client
         public Country? Country { get; set; }
     }
 

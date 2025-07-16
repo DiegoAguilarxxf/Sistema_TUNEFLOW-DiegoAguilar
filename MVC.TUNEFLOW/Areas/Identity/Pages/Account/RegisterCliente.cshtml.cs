@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Modelos.Tuneflow.Modelos;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
 

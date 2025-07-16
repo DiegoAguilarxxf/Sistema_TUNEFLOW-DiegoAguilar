@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Media;
 
-namespace Modelos.Tuneflow.Playlist
+namespace Modelos.Tuneflow.Playlists
 {
     public class Playlist
     {

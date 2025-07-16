@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Modelos;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Usuario.Perfiles;
 
 namespace Modelos.Tuneflow.Usuario.Produccion

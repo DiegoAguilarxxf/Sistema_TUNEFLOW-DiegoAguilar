@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Usuario.Produccion;
 
 namespace Modelos.Tuneflow.Media
@@ -21,6 +21,7 @@ namespace Modelos.Tuneflow.Media
         public string FilePath { get; set; }
         public bool ExplicitContent { get; set; }
         public string ImagePath { get; set; }
+        public DateTime ReleaseDate { get; set; }
         public Artist? Artist { get; set; }
         public Album? Album { get; set; }
 

@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Modelos.Tuneflow.Media;
 
-namespace Modelos.Tuneflow.Playlist
+namespace Modelos.Tuneflow.Playlists
 {
-    public class MusicPlaylist
+    public class SongPlaylist
     {
         [Key] public int Id { get; set; }
         [ForeignKey(nameof(Song))] public int SongId { get; set; }

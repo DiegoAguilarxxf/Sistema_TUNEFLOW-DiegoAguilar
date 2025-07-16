@@ -1,5 +1,5 @@
 ﻿using API.Consumer;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -7,6 +7,7 @@ using Modelos;
 using System.Text.RegularExpressions;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
+
 using System.Text.Json;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
@@ -39,7 +40,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         public async Task<ActionResult> Canciones(int id)
         {
             Playlist playlist = await Crud<Playlist>.GetByIdAsync(id);
-            playlist.Songs = await Crud<MusicPlaylist>.GetCancionesPorPlaylist(id);
+            playlist.Songs = await Crud<SongPlaylist>.GetCancionesPorPlaylist(id);
             return View(playlist);
         }
 

@@ -13,7 +13,7 @@ namespace API.TUNEFLOW.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CountrysController : ControllerBase
+    public class CountriesController : ControllerBase
     {
        /* private readonly TUNEFLOWContext _context;
 
@@ -22,7 +22,7 @@ namespace API.TUNEFLOW.Controllers
             _context = context;
         }*/
        private DbConnection connection;
-        public CountrysController(IConfiguration config)
+        public CountriesController(IConfiguration config)
         {
             var connString = config.GetConnectionString("TUNEFLOWContext");
             connection = new Npgsql.NpgsqlConnection(connString);

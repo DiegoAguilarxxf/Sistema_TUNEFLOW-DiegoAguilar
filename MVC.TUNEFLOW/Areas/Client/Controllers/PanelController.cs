@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Usuario.Produccion;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Modelos;

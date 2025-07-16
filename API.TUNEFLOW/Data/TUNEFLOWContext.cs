@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Pagos;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Usuario.Administracion;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
@@ -27,11 +27,11 @@ public DbSet<Modelos.Tuneflow.Media.Playback> Playbacks { get; set; } = default!
 
 public DbSet<Modelos.Tuneflow.Pagos.Payment> Payments { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Playlist.Album> Albums { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Playlists.Album> Albums { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Playlist.MusicPlaylist> MusicsPlaylists { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Playlists.SongPlaylist> MusicsPlaylists { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Playlist.Playlist> Playlists { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Playlists.Playlist> Playlists { get; set; } = default!;
 
 public DbSet<Modelos.Tuneflow.Usuario.Administracion.Administrator> Administrators { get; set; } = default!;
 
