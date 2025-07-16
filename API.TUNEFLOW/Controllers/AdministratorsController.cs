@@ -1,0 +1,123 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Modelos.Tuneflow.Usuario.Administracion;
+using Dapper;
+
+
+namespace API.TUNEFLOW.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AdministratorsController : ControllerBase
+    {   private DbConnection connection;
+        
+        public AdministratorsController(IConfiguration config)
+        {
+            var connString = config.GetConnectionString("TUNEFLOWContext");
+            connection = new Npgsql.NpgsqlConnection(connString);
+            connection.Open();
+        }
+       
+
+        // GET: api/Administradores
+        [HttpGet]
+        public IEnumerable<Administrator> Get()
+        {
+            var administradores = connection.Query<Administrator>("SELECT * FROM \"Administradores\"");
+            return administradores;
+        }
+
+        // GET: api/Administradores/5
+        [HttpGet("{id}")]
+        public ActionResult <Administrator> Get(int id)
+        {
+            var administrador = connection.QuerySingle<Administrator>(@"SELECT * FROM ""Administradores"" WHERE ""Id"" = @Id", new { Id=id });
+          
+
+            if (administrador == null)
+            {
+                return NotFound();
+            }
+
+            return administrador;
+        }
+
+        // PUT: api/Administradores/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public void  Put(int id,[FromBody] Administrator administrator)
+        {
+            connection.Execute(@"UPDATE ""Administradores"" SET 
+             ""Description"" = @Description,
+            ""FirstName""= @FirstName,
+            ""LastName"" = @LastName,
+            ""Email"" = @Email,
+            ""Password"" = @Password,
+            ""Phone"" = @Phone,
+            ""BirthDate"" = @BirthDate,
+            ""AccountType"" = @AccountType,
+            ""IsActive"" = @IsActive,
+            ""RegistrationDate"" = @RegistrationDate
+        WHERE ""Id"" = @Id",
+            new
+                { Description=administrator.Description,
+                FirstName = administrator.FirstName,
+                LastName = administrator.LastName,
+                Email = administrator.Email,
+                Password = administrator.Password,
+                Phone = administrator.Phone,
+                BirthDate = administrator.BirthDate,
+                AccountType= administrator.AccountType,
+                IsActive = administrator.IsActive,
+                RegistrationDate = administrator.RegistrationDate,
+                Id = id
+
+
+            });
+        }
+        // POST: api/Administradores
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public Administrator Post([FromBody]Administrator administrator)
+        {
+       
+   connection.Execute(
+    @"INSERT INTO ""Administradores""
+     (""Description"", ""FirstName"", ""LastName"", ""Email"", ""Password"", ""Phone"", ""BirthDate"", ""AccountType"", ""IsActive"", ""RegistrationDate"")
+    VALUES 
+     (@Description, @FirstName, @LastName, @Email, @Password, @Phone, @BirthDate, @AccountType, @IsActve, @RegistrationDate)",
+    new
+    {
+        Description = administrator.Description,
+        FirstName = administrator.FirstName,
+        LastName = administrator.LastName,
+        Email = administrator.Email,
+        Password = administrator.Password,
+        Phone = administrator.Phone,
+        BirthDate = administrator.BirthDate,
+        AccountType = administrator.AccountType,
+        IsActive = administrator.IsActive,
+        RegistrationDate = administrator.RegistrationDate,
+    });
+    return administrator;
+        }
+
+        // DELETE: api/Administradores/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+            connection.Execute(@"DELETE FROM ""Administradores"" WHERE ""Id"" = @Id", new { Id = id });
+        }
+
+       /* private bool AdministradorExists(int id)
+        {
+            return _context.Administradores.Any(e => e.Id == id);
+        }*/
+    }
+}
