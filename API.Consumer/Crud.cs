@@ -138,7 +138,7 @@ namespace API.Consumer
             {
                 using (var client = new HttpClient())
                 {
-                    var url = $"{EndPoint}/Titulo/{Uri.EscapeDataString(palabraClave)}";
+                    var url = $"{EndPoint}/Title/{Uri.EscapeDataString(palabraClave)}";
                     Console.WriteLine($"Llamando a API: {url}");
                     var response = await client.GetAsync(url);
 

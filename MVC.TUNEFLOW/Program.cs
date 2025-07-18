@@ -30,7 +30,7 @@ namespace MVC.TUNEFLOW
             Crud<Administrator>.EndPoint = "https://localhost:7031/api/Administrators";
             Crud<Album>.EndPoint = "https://localhost:7031/api/Albums";
             Crud<Song>.EndPoint = "https://localhost:7031/api/Songs";
-            Crud<FavoriteSong>.EndPoint = "https://localhost:7031/api/FavoritesSongs";
+            Crud<FavoriteSong>.EndPoint = "https://localhost:7031/api/FavoriteSongs";
             Crud<Artist>.EndPoint = "https://localhost:7031/api/Artists";
             Crud<Client>.EndPoint = "https://localhost:7031/api/Clients"; // Aquí tenías una duplicación, se mantiene una.
             Crud<ArtistStatistics>.EndPoint = "https://localhost:7031/api/StatisticsArtists";

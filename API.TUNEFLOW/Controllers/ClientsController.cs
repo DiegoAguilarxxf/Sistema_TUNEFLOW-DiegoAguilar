@@ -52,7 +52,7 @@ namespace API.TUNEFLOW.Controllers
             return client;
         }
 
-        [HttpGet("Usuario/{idUsuario}")]
+        [HttpGet("Usuario/{idUser}")]
         public ActionResult<Client> GetClienteByUsuarioId(string idUser)
         {
             var client = connection.QuerySingleOrDefault<Client>(@"SELECT * FROM ""Clients"" WHERE ""UserId"" = @UserId", new { UserId = idUser });

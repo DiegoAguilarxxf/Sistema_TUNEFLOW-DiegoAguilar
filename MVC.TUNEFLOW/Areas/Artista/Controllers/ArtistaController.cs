@@ -27,8 +27,8 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         public IActionResult Perfil(int id)
         {
             var sql = @"
-            SELECT * FROM Artistas WHERE Id = @Id;
-            SELECT * FROM Canciones WHERE ArtistaId = @Id;
+            SELECT * FROM Artists WHERE Id = @Id;
+            SELECT * FROM Songs WHERE ArtistId = @Id;
         ";
 
             using (var multi = _db.QueryMultiple(sql, new { Id = id }))
@@ -122,7 +122,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         }
         [Area("Artista")]
         [AllowAnonymous]
-        [HttpGet("Artista/Perfil/{nombreArtistico}")]
+        [HttpGet("Artist/Profile/{nombreArtistico}")]
         public async Task<IActionResult> ArtistaPorNombre(string nombreArtistico)
         {
             var artistas = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artist>.GetAllAsync();
@@ -168,7 +168,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         {
             try
             {
-                var sql = @"SELECT * FROM ""Canciones"" WHERE ""ArtistaId"" = @ArtistaId;";
+                var sql = @"SELECT * FROM ""Songs"" WHERE ""ArtistId"" = @ArtistId;";
 
                 var canciones = await _db.QueryAsync<Song>(sql, new { ArtistaId = artistaId });
 

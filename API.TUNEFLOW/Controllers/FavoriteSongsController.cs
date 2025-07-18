@@ -89,8 +89,8 @@ namespace API.TUNEFLOW.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public ActionResult<FavoriteSong> PostCancionFavorita([FromBody]FavoriteSong favoriteSong)
-        {   
-            
+        {
+            Console.WriteLine("Entro al post");
             var idReturned = connection.ExecuteScalar<int>(@"INSERT INTO ""FavoritesSongs"" (""ClientId"", ""SongId"", ""DateAdded"") 
                                                 VALUES (@ClientId, @SongId, @DateAdded) RETURNING ""Id"";",
                 new

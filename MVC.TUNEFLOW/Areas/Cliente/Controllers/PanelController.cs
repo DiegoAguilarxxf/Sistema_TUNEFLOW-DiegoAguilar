@@ -17,15 +17,15 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             try
             {
-                Console.WriteLine("p1");
+                
                 var playlists = await Crud<Playlist>.GetAllAsync();
-                Console.WriteLine("p2");
+               
                 var songs = await Crud<Song>.GetAllAsync();
-                Console.WriteLine("p3");
+                
                 var artists = await Crud<Artist>.GetAllAsync();
-                Console.WriteLine("p4");
+               
                // var statistics = await Crud<ArtistStatistics>.GetAllAsync();//no entra
-                Console.WriteLine("p5");
+               
                 // Validación básica
                 if (playlists == null || songs == null || artists == null /*|| statistics == null*/)
                 {
@@ -33,7 +33,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 }
                 else
                 {
-                    Console.WriteLine("p6");
+                    
                     var topPlaylists = playlists
                         .Where(p => p.Songs != null && p.Songs.Any())
                         .Where(p =>

@@ -74,7 +74,7 @@ namespace API.TUNEFLOW.Controllers
         {
             string sql = @"
                             SELECT 
-                                c.""Id"", c.""Title"", c.""Duration"", c.""Genre"", c.""FilePath"", c.""ExplictContent"", c.""ImagePath"",
+                                c.""Id"", c.""Title"", c.""Duration"", c.""Genre"", c.""FilePath"", c.""ExplicitContent"", c.""ImagePath"",
                                 al.""Title"" AS AlbumTitle,
                                 ar.""StageName"" AS StageName
                             FROM ""Songs"" c
