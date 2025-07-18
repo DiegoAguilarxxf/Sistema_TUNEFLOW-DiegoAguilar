@@ -92,14 +92,26 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                     {
                         var roles = await _userManager.GetRolesAsync(user);
 
-                        if (roles.Contains("cliente"))
+                        if (roles.Contains("cliente")) {
+                            Console.Write("entro a rol cliente");
                             return RedirectToAction("Panel", "Panel", new { area = "Cliente" });
-                        else if (roles.Contains("artista"))
-                            return RedirectToAction("Panel", "Panel", new { area = "Artista" });
-                        else if (roles.Contains("admin"))
-                            return RedirectToAction("Panel", "Panel", new { area = "Admin" });
-                    }
+                        }
 
+                        else if (roles.Contains("artista"))
+                        {
+                            Console.Write("entro a artist"); 
+                            return RedirectToAction("Panel", "Panel", new { area = "Artista" });
+                        }
+                           
+                        else if (roles.Contains("admin"))
+                        {
+                            Console.Write("entro a admin");
+                            return RedirectToAction("Panel", "Panel", new { area = "Admin" });
+                        }
+                            
+                        
+                    }
+                    
 
                     return LocalRedirect(returnUrl);
                 }

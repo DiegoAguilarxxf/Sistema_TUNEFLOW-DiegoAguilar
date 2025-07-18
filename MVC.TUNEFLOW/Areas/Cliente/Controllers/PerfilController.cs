@@ -12,7 +12,7 @@ using System;
 
 namespace MVC.TUNEFLOW.Areas.Client.Controllers
 {
-    [Area("Client")]
+    [Area("Cliente")]
     public class PerfilController : Controller
     {
         // GET: PerfilController

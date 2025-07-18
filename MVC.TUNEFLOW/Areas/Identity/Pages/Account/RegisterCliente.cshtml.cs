@@ -51,22 +51,22 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required, Display(Name = "Nombre")]
-            public string FirstName { get; set; }
+            public string Nombre { get; set; }
 
             [Required, Display(Name = "Apellido")]
-            public string LastName { get; set; }
+            public string Apellido { get; set; }
 
             [Required, EmailAddress, Display(Name = "Email")]
             public string Email { get; set; }
 
             [Required, Phone, Display(Name = "Teléfono")]
-            public string Phone { get; set; }
+            public string Telefono { get; set; }
 
             [Required, Display(Name = "País")]
-            public int CountryId { get; set; }
+            public int PaisId { get; set; }
 
             [DataType(DataType.Date), Display(Name = "Fecha de nacimiento")]
-            public DateTime BirthDate { get; set; }
+            public DateTime FechaNacimiento { get; set; }
 
             [Required, StringLength(100, MinimumLength = 6), DataType(DataType.Password)]
             [Display(Name = "Contraseña")]
@@ -125,12 +125,12 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
             // Crear cliente
             var client = new Modelos.Tuneflow.Usuario.Consumidor.Client
             {
-                FirstName = Input.FirstName,
-                LastName = Input.LastName,
+                FirstName = Input.Nombre,
+                LastName = Input.Apellido,
                 Email = Input.Email,
-                Phone = Input.Phone,
-                CountryId = Input.CountryId,
-                BirthDate = Input.BirthDate.ToUniversalTime(),
+                Phone = Input.Telefono,
+                CountryId = Input.PaisId,
+                BirthDate = Input.FechaNacimiento.ToUniversalTime(),
                 AccountType = "Cliente",
                 IsActive = true,
                 RegistrationDate = DateTime.UtcNow,

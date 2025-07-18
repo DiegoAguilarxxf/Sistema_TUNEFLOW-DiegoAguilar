@@ -58,9 +58,9 @@ namespace API.TUNEFLOW.Controllers
            connection.Execute(@"UPDATE ""ArtistsStatistics"" SET 
                 ""ArtistId"" = @ArtistId,
                 ""TotalPlays"" = @TotalPlays,
-                ""STotalFollowers"" = @TotalFollowers,
+                ""TotalFollowers"" = @TotalFollowers,
                 ""PublishedSongs"" = @PublishedSongs,
-                ""PublishedAlbums"" = @APublishedAlbums
+                ""PublishedAlbums"" = @PublishedAlbums
                 WHERE ""Id"" = @Id", new
            {
                Id = id,
@@ -79,8 +79,8 @@ namespace API.TUNEFLOW.Controllers
         public ArtistStatistics PostEstadisticasArtista([FromBody]ArtistStatistics artistStatistics)
         {
             connection.Execute(@"INSERT INTO ""ArtistsStatistics"" 
-                (""ArtistaId"", ""ReproduccionesTotales"", ""SeguidoresTotales"", ""CancionesPublicadas"", ""AlbumesPublicados"") 
-                VALUES (@ArtistaId, @ReproduccionesTotales, @SeguidoresTotales, @CancionesPublicadas, @AlbumesPublicados)", new
+                (""ArtistId"", ""TotalPLays"", ""TotalFollowers"", ""PublishedSongs"", ""PublishedAlbums"") 
+                VALUES (@ArtistId, @TotalPlays, @TotalFollowers, @PublishedSongs, @PublishedAlbums)", new
             {
                 ArtistId = artistStatistics.ArtistId,
                 TotalPlays = artistStatistics.TotalPlays,
