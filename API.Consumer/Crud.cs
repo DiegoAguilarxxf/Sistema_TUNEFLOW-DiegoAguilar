@@ -2,7 +2,7 @@
 using Modelos.Tuneflow.Usuario.Administracion;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Globalization;
@@ -132,13 +132,13 @@ namespace API.Consumer
             }
         }
 
-        public static async Task<List<Cancion>> GetCancionesPorPalabrasClave(string palabraClave)
+        public static async Task<List<Song>> GetCancionesPorPalabrasClave(string palabraClave)
         {
             try
             {
                 using (var client = new HttpClient())
                 {
-                    var url = $"{EndPoint}/Titulo/{Uri.EscapeDataString(palabraClave)}";
+                    var url = $"{EndPoint}/Title/{Uri.EscapeDataString(palabraClave)}";
                     Console.WriteLine($"Llamando a API: {url}");
                     var response = await client.GetAsync(url);
 
@@ -146,30 +146,30 @@ namespace API.Consumer
                     {
                         var json = await response.Content.ReadAsStringAsync();
                         Console.WriteLine($"Respuesta JSON: {json.Substring(0, Math.Min(json.Length, 200))}..."); // imprime primeros 200 caracteres
-                        var canciones = JsonConvert.DeserializeObject<List<Cancion>>(json);
+                        var canciones = JsonConvert.DeserializeObject<List<Song>>(json);
                         Console.WriteLine($"Canciones deserializadas: {canciones?.Count ?? 0}");
                         return canciones;
                     }
                     else if (response.StatusCode == HttpStatusCode.NotFound)
                     {
                         Console.WriteLine("No se encontraron canciones.");
-                        return new List<Cancion>();
+                        return new List<Song>();
                     }
                     else
                     {
                         Console.WriteLine($"Error en llamada API: {response.StatusCode}");
-                        return new List<Cancion>();
+                        return new List<Song>();
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Excepción en llamada API: {ex.Message}");
-                return new List<Cancion>();
+                return new List<Song>();
             }
         }
 
-        public static async Task<Cliente> GetClientePorUsuarioId(string idUsuario)
+        public static async Task<Client> GetClientePorUsuarioId(string idUsuario)
         {
             using (var client = new HttpClient())
             {
@@ -183,7 +183,7 @@ namespace API.Consumer
 
                     try
                     {
-                        var cliente = JsonConvert.DeserializeObject<Cliente>(json);
+                        var cliente = JsonConvert.DeserializeObject<Client>(json);
                         return cliente;
                     }
                     catch (Exception ex)
@@ -200,7 +200,7 @@ namespace API.Consumer
             }
         }
 
-        public static async Task<Perfil> GetPerfilPorClienteId(int id)
+        public static async Task<Profile> GetPerfilPorClienteId(int id)
         {
             using (var client = new HttpClient())
             {
@@ -208,11 +208,11 @@ namespace API.Consumer
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<Perfil>(json);
+                    return JsonConvert.DeserializeObject<Profile>(json);
                 }
                 else
                 {
-                    return new Perfil();
+                    return new Profile();
                 }
             }
         }
@@ -242,7 +242,7 @@ namespace API.Consumer
             }
         }
 
-        public static async Task<List<Cancion>> GetCancionesPorPlaylist(int idPlaylist)
+        public static async Task<List<Song>> GetCancionesPorPlaylist(int idPlaylist)
         {
             using (var client = new HttpClient())
             {
@@ -251,18 +251,18 @@ namespace API.Consumer
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    var canciones = JsonConvert.DeserializeObject<List<Cancion>>(json);
+                    var canciones = JsonConvert.DeserializeObject<List<Song>>(json);
                     return canciones;
                 }
                 else if (response.StatusCode == HttpStatusCode.NotFound)
                 {
                     Console.WriteLine("No se encontraron canciones");
-                    return new List<Cancion>();
+                    return new List<Song>();
                 }
                 else
                 {
                     Console.WriteLine($"Error en llamada API: {response.StatusCode}");
-                    return new List<Cancion>();
+                    return new List<Song>();
                 }
             }
         }

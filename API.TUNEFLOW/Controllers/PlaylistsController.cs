@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Media;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Usuario.Consumidor;
 
 namespace API.TUNEFLOW.Controllers
@@ -55,7 +55,7 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("Cliente/Playlist/{id}")]
         public ActionResult<IEnumerable<Playlist>> GetPlaylistForClienteId(int id)
         {
-            var sql = @"SELECT * FROM ""Playlists"" WHERE ""ClienteId"" = @Id";
+            var sql = @"SELECT * FROM ""Playlists"" WHERE ""ClientId"" = @Id";
 
             var playlists = connection.Query<Playlist>(sql, new {Id = id});
 
@@ -65,17 +65,17 @@ namespace API.TUNEFLOW.Controllers
             return Ok(playlists);
         }
 
-        [HttpGet("PlaylistFavoritos/{id}")]
+        [HttpGet("FavoritesPlaylist/{id}")]
         public ActionResult<int> GetPlaylistFavoritosBiClienteId(int id)
         {
-            var sql = @"SELECT ""Id"" FROM ""Playlists"" WHERE ""ClienteId"" = @Id AND ""Titulo"" = @Titulo";
+            var sql = @"SELECT ""Id"" FROM ""Playlists"" WHERE ""ClientId"" = @Id AND ""Title"" = @Title";
 
-            var iddevuelto = connection.QueryFirstOrDefault<int?>(sql, new { Id = id, Titulo = "Tus Me Gusta" });
+            var idreturned = connection.QueryFirstOrDefault<int?>(sql, new { Id = id, Title = "Tus Me Gusta" });
 
-            if (!iddevuelto.HasValue)
+            if (!idreturned.HasValue)
                 return NotFound("No se encontró la playlist 'Tus Me Gusta' para este cliente.");
 
-            return Ok(iddevuelto.Value);
+            return Ok(idreturned.Value);
         }
 
         // PUT: api/Playlists/5
@@ -84,16 +84,15 @@ namespace API.TUNEFLOW.Controllers
         public void  PutPlaylist(int id,[FromBody] Playlist playlist)
         {
             connection.Execute(@"UPDATE ""Playlists"" SET
-            ""Titulo"" = @Titulo,
-            ""Descripcion"" = @Descripcion,
-            ""FechaCreacion"" = @FechaCreacion,
-            ""FechaCreacion"" = @FechaCreacion,
-            ""ClienteId"" = @ClienteId", new
+            ""Title"" = @Title,
+            ""Description"" = @Description,
+            ""CreationDate"" = @CreationDate,
+            ""ClientId"" = @ClientId", new
             {
-                Titulo = playlist.Titulo,
-                Descripcion = playlist.Descripcion,
-                FechaCreacion = playlist.FechaCreacion,
-                ClienteId = playlist.ClienteId
+                Title = playlist.Title,
+                Description = playlist.Description,
+                CreationDate = playlist.CreationDate,
+                ClientId = playlist.ClientId
             });
 
         }
@@ -103,20 +102,20 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<Playlist> PostPlaylist([FromBody] Playlist playlist)
         {
-            var sql = @"INSERT INTO ""Playlists"" (""Titulo"", ""Descripcion"", ""FechaCreacion"", ""ClienteId"",""PortadaPlaylist"")
-            VALUES (@Titulo, @Descripcion, @FechaCreacion, @ClienteId, @PortadaPlaylist) RETURNING ""Id"";";
+            var sql = @"INSERT INTO ""Playlists"" (""Title"", ""Description"", ""CreationDate"", ""ClientId"",""PlaylistCover"")
+            VALUES (@Title, @Description, @CreationDate, @ClientId, @PlaylistCover) RETURNING ""Id"";";
             
-            var idDevuelto = connection.ExecuteScalar<int>(sql, new
+            var idReturned = connection.ExecuteScalar<int>(sql, new
             {
-                Titulo = playlist.Titulo,
-                Descripcion = playlist.Descripcion,
-                FechaCreacion = playlist.FechaCreacion,
-                ClienteId = playlist.ClienteId,
-                PortadaPlaylist = playlist.PortadaPlaylist
+                Title = playlist.Title,
+                Description = playlist.Description,
+                CreationDate = playlist.CreationDate,
+                ClientId = playlist.ClientId,
+                PlaylistCover = playlist.PlaylistCover
             });
-            playlist.Id = idDevuelto;
+            playlist.Id = idReturned;
             
-            return CreatedAtAction(nameof(GetPlaylistById), new { id = idDevuelto }, playlist);
+            return CreatedAtAction(nameof(GetPlaylistById), new { id = idReturned }, playlist);
 
         }
           

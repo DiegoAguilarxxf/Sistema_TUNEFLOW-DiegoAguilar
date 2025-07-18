@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Pagos;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Usuario.Administracion;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
@@ -19,35 +19,35 @@ using Modelos.Tuneflow.Usuario.Produccion;
         {
         }
 
-        public DbSet<Modelos.Tuneflow.Media.Cancion> Canciones { get; set; } = default!;
+        public DbSet<Modelos.Tuneflow.Media.Song> Songs { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Media.CancionFavorita> CancionesFavoritas { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Media.FavoriteSong> FavoritesSongs { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Media.Reproduccion> Reproducciones { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Media.Playback> Playbacks { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Pagos.Pago> Pagos { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Pagos.Payment> Payments { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Playlist.Album> Albums { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Playlists.Album> Albums { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Playlist.MusicaPlaylist> MusicasPlaylists { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Playlists.SongPlaylist> MusicsPlaylists { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Playlist.Playlist> Playlists { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Playlists.Playlist> Playlists { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Usuario.Administracion.Administrador> Administradores { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Usuario.Administracion.Administrator> Administrators { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Usuario.Consumidor.Cliente> Clientes { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Usuario.Consumidor.Client> Clients { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Usuario.Consumidor.Suscripcion> Suscripciones { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Usuario.Consumidor.Subscription> Subscriptions { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Usuario.Consumidor.TipoSuscripcion> TiposSuscripciones { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Usuario.Consumidor.SubscriptionType> SubscriptionsTypes { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Usuario.Perfiles.Perfil> Perfiles { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Usuario.Perfiles.Profile> Profiles { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Modelos.Pais> Paises { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Modelos.Country> Countrys { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Usuario.Administracion.EstadisticasArtista> EstadisticasArtistas { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Usuario.Administracion.ArtistStatistics> ArtistsStatistics { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Usuario.Produccion.Artista> Artistas { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Usuario.Produccion.Artist> Artists { get; set; } = default!;
 
-public DbSet<Modelos.Tuneflow.Usuario.Produccion.Seguimiento> Seguimientos { get; set; } = default!;
+public DbSet<Modelos.Tuneflow.Usuario.Produccion.Follow> Follows { get; set; } = default!;
     }

@@ -14,54 +14,58 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             public async Task<IActionResult> Index()
             {
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return RedirectToAction("Login", "Account");
+               
+            if (string.IsNullOrEmpty(userId))
+            {
+                
+                return RedirectToAction("Login", "Account");
                 }
-                var cliente = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.GetClientePorUsuarioId(userId);
-
-                if (cliente == null)
-                {
-                    return RedirectToAction("Index", "Buscar");
+            var client = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.GetClientePorUsuarioId(userId);
+         
+          
+            if (client == null)
+            {
+                Console.WriteLine("p4");
+                return RedirectToAction("Index", "Buscar");
                 }
-
-                ViewBag.IdCliente = cliente.Id;
-            Console.WriteLine($"ViewBag: {ViewBag.IdCliente}");
-                return View(new List<Cancion>());
+            
+            ViewBag.IdClient = client.Id;
+            Console.WriteLine($"ViewBag: {ViewBag.IdClient}");
+            
+            return View(new List<Song>());
             }
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Buscar(string nameCancion)
+        public async Task<IActionResult> Buscar(string nameSong)
         {
-            Console.WriteLine($"Buscar llamado con parámetro: '{nameCancion}'");
-            if (string.IsNullOrWhiteSpace(nameCancion))
+            Console.WriteLine($"Buscar llamado con parámetro: '{nameSong}'");
+            if (string.IsNullOrWhiteSpace(nameSong))
             {
                 Console.WriteLine("Error: parámetro vacío");
-                return View("Index", new List<Cancion>());
+                return View("Index", new List<Song>());
             }
-
-            var canciones = await Crud<Cancion>.GetCancionesPorPalabrasClave(nameCancion);
-
-            Console.WriteLine($"Número de canciones recibidas en controlador: {canciones?.Count ?? 0}");
+          
+            var songs = await Crud<Song>.GetCancionesPorPalabrasClave(nameSong);
+            Console.WriteLine($"Buscar llamado con parámetro: '{nameSong}'");
+            Console.WriteLine($"Número de canciones recibidas en controlador: {songs?.Count ?? 0}");
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userId))
             {
                 return RedirectToAction("Login", "Account");
             }
-            var cliente = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.GetClientePorUsuarioId(userId);
+            var client = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.GetClientePorUsuarioId(userId);
 
-            if (cliente == null)
+            if (client == null)
             {
                 return RedirectToAction("Index", "Buscar");
             }
 
-            ViewBag.IdCliente = cliente.Id;
-            Console.WriteLine($"ViewBag: {ViewBag.IdCliente}");
+            ViewBag.IdClient = client.Id;
+            Console.WriteLine($"ViewBag: {ViewBag.IdClient}");
 
-            return View("Index", canciones);
+            return View("Index", songs);
         }
     }
 

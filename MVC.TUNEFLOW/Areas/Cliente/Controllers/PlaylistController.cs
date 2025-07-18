@@ -1,5 +1,5 @@
 ﻿using API.Consumer;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -7,6 +7,7 @@ using Modelos;
 using System.Text.RegularExpressions;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
+
 using System.Text.Json;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
@@ -23,14 +24,14 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            var cliente = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.GetClientePorUsuarioId(userId);
+            var client = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.GetClientePorUsuarioId(userId);
 
-            if (cliente == null)
+            if (client == null)
             {
                 return RedirectToAction("Index", "Buscar");
             }
 
-            var playlists = await Crud<Playlist>.GetPlaylistPorClienteId(cliente.Id);
+            var playlists = await Crud<Playlist>.GetPlaylistPorClienteId(client.Id);
 
             return View(playlists);
         }
@@ -39,7 +40,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         public async Task<ActionResult> Canciones(int id)
         {
             Playlist playlist = await Crud<Playlist>.GetByIdAsync(id);
-            playlist.Canciones = await Crud<MusicaPlaylist>.GetCancionesPorPlaylist(id);
+            playlist.Songs = await Crud<SongPlaylist>.GetCancionesPorPlaylist(id);
             return View(playlist);
         }
 
@@ -52,39 +53,39 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         // POST: PlaylistController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(string Titulo, string Descripcion, IFormFile ImagenPortada)
+        public async Task<ActionResult> Create(string Title, string Description, IFormFile ImageCover)
         {
             try
             {
                 string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co";
                 string supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o"; // La API key de anon pública
                 string bucket = "imagenesplaylistusuarios"; // Nombre del bucket en Supabase
-                string carpeta = "PortadasPlaylists";   // Carpeta donde quieres guardar la imagen
+                string directory = "PortadasPlaylists";   // Carpeta donde quieres guardar la imagen
                 string URLPARAACCEDER = "";
 
-                if (ImagenPortada != null && ImagenPortada.Length > 0)
+                if ( ImageCover!= null && ImageCover.Length > 0)
                 {
-                    var fileNameClean = Path.GetFileNameWithoutExtension(ImagenPortada.FileName);
+                    var fileNameClean = Path.GetFileNameWithoutExtension(ImageCover.FileName);
                     fileNameClean = Regex.Replace(fileNameClean, @"[^a-zA-Z0-9_\-]", "");
-                    var extension = Path.GetExtension(ImagenPortada.FileName);
-                    var nombreArchivo = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{fileNameClean}{extension}";
-                    var rutaArchivo = $"{carpeta}/{nombreArchivo}";
+                    var extension = Path.GetExtension(ImageCover.FileName);
+                    var fileName = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{fileNameClean}{extension}";
+                    var filePath = $"{directory}/{fileName}";
 
-                    using (var client = new HttpClient())
+                    using (var clients = new HttpClient())
                     {
-                        client.BaseAddress = new Uri(supabaseUrl);
+                        clients.BaseAddress = new Uri(supabaseUrl);
 
-                        client.DefaultRequestHeaders.Add("apikey", supabaseAnonKey);
-                        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {supabaseAnonKey}");
+                        clients.DefaultRequestHeaders.Add("apikey", supabaseAnonKey);
+                        clients.DefaultRequestHeaders.Add("Authorization", $"Bearer {supabaseAnonKey}");
 
                         using (var memori = new MemoryStream())
                         {
-                            await ImagenPortada.CopyToAsync(memori);
-                            var contenido = new ByteArrayContent(memori.ToArray());
-                            contenido.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(ImagenPortada.ContentType);
+                            await ImageCover.CopyToAsync(memori);
+                            var content = new ByteArrayContent(memori.ToArray());
+                            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(ImageCover.ContentType);
 
                             // Llamada PUT para subir archivo a Supabase Storage
-                            var response = await client.PutAsync($"/storage/v1/object/{bucket}/{rutaArchivo}", contenido);
+                            var response = await clients.PutAsync($"/storage/v1/object/{bucket}/{filePath}", content);
 
                             if (!response.IsSuccessStatusCode)
                             {
@@ -96,7 +97,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                         }
                     }
                     
-                    URLPARAACCEDER = $"{supabaseUrl}/storage/v1/object/public/{bucket}/{rutaArchivo}";
+                    URLPARAACCEDER = $"{supabaseUrl}/storage/v1/object/public/{bucket}/{filePath}";
 
                 }
 
@@ -106,22 +107,22 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 {
                     return RedirectToAction("Login", "Account");
                 }
-                var cliente = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.GetClientePorUsuarioId(userId);
+                var client = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.GetClientePorUsuarioId(userId);
 
-                if (cliente == null)
+                if (client == null)
                 {
                     return RedirectToAction("Index", "Buscar");
                 }
 
-                Console.WriteLine($"ClienteId que se enviará: {cliente.Id}");
+                Console.WriteLine($"ClienteId que se enviará: {client.Id}");
 
                 var playlistPost = new Playlist
                 {
-                    Titulo = Titulo,
-                    Descripcion = Descripcion,
-                    FechaCreacion = DateTime.UtcNow,
-                    ClienteId = cliente.Id,
-                    PortadaPlaylist = URLPARAACCEDER
+                    Title = Title,
+                    Description = Description,
+                    CreationDate = DateTime.UtcNow,
+                    ClientId = client.Id,
+                    PlaylistCover = URLPARAACCEDER
                 };
 
                 Console.WriteLine(JsonSerializer.Serialize(playlistPost));
@@ -140,7 +141,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             }
         }
 
-        private async Task<bool> EliminarArchivoSupabaseAsync(string supabaseUrl, string apiKey, string bucket, string rutaArchivo)
+        private async Task<bool> EliminarArchivoSupabaseAsync(string supabaseUrl, string apiKey, string bucket, string filePath)
         {
             try
             {
@@ -150,7 +151,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                     client.DefaultRequestHeaders.Add("apikey", apiKey);
                     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
 
-                    var response = await client.DeleteAsync($"/storage/v1/object/{bucket}/{rutaArchivo}");
+                    var response = await client.DeleteAsync($"/storage/v1/object/{bucket}/{filePath}");
                     return response.IsSuccessStatusCode;
                 }
 

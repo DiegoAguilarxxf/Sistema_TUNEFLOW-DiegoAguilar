@@ -5,12 +5,14 @@ using Microsoft.EntityFrameworkCore; // Para interactuar con la base de datos a 
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Modelos;
 using Modelos.Tuneflow.Pagos;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Usuario.Administracion;
 using Modelos.Tuneflow.Usuario.Consumidor;
 using Modelos.Tuneflow.Usuario.Perfiles;
 using Modelos.Tuneflow.Usuario.Produccion;
 using MVC.TUNEFLOW.Data; // Tu contexto de base de datos para el proyecto MVC
+using Npgsql;
+using System.Data;
 using System; // Agregado para usar TimeSpan
 
 namespace MVC.TUNEFLOW
@@ -25,23 +27,26 @@ namespace MVC.TUNEFLOW
             // Es crucial que estos EndPoints apunten a la URL correcta de tu API de backend.
             // Si tu API (API.TUNEFLOW) no se ejecuta en 'https://localhost:7031',
             // debes ajustar estos EndPoints a la URL real donde está alojada.
-            Crud<Administrador>.EndPoint = "https://localhost:7031/api/Administradores";
+            Crud<Administrator>.EndPoint = "https://localhost:7031/api/Administrators";
             Crud<Album>.EndPoint = "https://localhost:7031/api/Albums";
-            Crud<Cancion>.EndPoint = "https://localhost:7031/api/Canciones";
-            Crud<CancionFavorita>.EndPoint = "https://localhost:7031/api/CancionesFavoritas";
-            Crud<Artista>.EndPoint = "https://localhost:7031/api/Artistas";
-            Crud<Cliente>.EndPoint = "https://localhost:7031/api/Clientes"; // Aquí tenías una duplicación, se mantiene una.
-            Crud<EstadisticasArtista>.EndPoint = "https://localhost:7031/api/EstadisticasArtistas";
-            Crud<MusicaPlaylist>.EndPoint = "https://localhost:7031/api/MusicasPlaylists";
-            Crud<Pago>.EndPoint = "https://localhost:7031/api/Pagos";
-            Crud<Perfil>.EndPoint = "https://localhost:7031/api/Perfiles";
-            Crud<Reproduccion>.EndPoint = "https://localhost:7031/api/Reproducciones";
-            Crud<Seguimiento>.EndPoint = "https://localhost:7031/api/Seguimientos";
-            Crud<Suscripcion>.EndPoint = "https://localhost:7031/api/Suscripciones";
-            Crud<TipoSuscripcion>.EndPoint = "https://localhost:7031/api/TiposSuscripciones";
+            Crud<Song>.EndPoint = "https://localhost:7031/api/Songs";
+            Crud<FavoriteSong>.EndPoint = "https://localhost:7031/api/FavoriteSongs";
+            Crud<Artist>.EndPoint = "https://localhost:7031/api/Artists";
+            Crud<Client>.EndPoint = "https://localhost:7031/api/Clients"; // Aquí tenías una duplicación, se mantiene una.
+            Crud<ArtistStatistics>.EndPoint = "https://localhost:7031/api/StatisticsArtists";
+            Crud<SongPlaylist>.EndPoint = "https://localhost:7031/api/MusicsPlaylists";
+            Crud<Payment>.EndPoint = "https://localhost:7031/api/Payments";
+            Crud<Profile>.EndPoint = "https://localhost:7031/api/Profiles";
+            Crud<Playback>.EndPoint = "https://localhost:7031/api/Playbacks";
+            Crud<Follow>.EndPoint = "https://localhost:7031/api/Follows";
+            Crud<Subscription>.EndPoint = "https://localhost:7031/api/Subscriptions";
+            Crud<SubscriptionType>.EndPoint = "https://localhost:7031/api/SubscriptionsTypes";
             Crud<Playlist>.EndPoint = "https://localhost:7031/api/Playlists";
-            Crud<Pais>.EndPoint = "https://localhost:7031/api/Paises";
+            Crud<Country>.EndPoint = "https://localhost:7031/api/Countries";
             // Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.EndPoint = "https://localhost:7031/api/Clientes"; // Esta línea estaba duplicada y es redundante. Se eliminó o se consolidó con la anterior.
+
+            builder.Services.AddTransient<IDbConnection>(sp =>
+    new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
             // --- Configuración de DbContext para la Autenticación (Identity) ---

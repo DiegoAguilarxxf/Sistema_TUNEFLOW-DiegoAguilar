@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Modelos.Tuneflow.Playlist;
+using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Usuario.Produccion;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Modelos;
@@ -17,38 +17,49 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             try
             {
-                var playlists = await Crud<Playlist>.GetAllAsync();
-                var canciones = await Crud<Cancion>.GetAllAsync();
-                var artistas = await Crud<Artista>.GetAllAsync();
-                var estadisticas = await Crud<EstadisticasArtista>.GetAllAsync();
-
-                var topPlaylists = playlists
-                    .Where(p => p.Canciones != null && p.Canciones.Any())
-                    .Where(p =>
-                        p.Canciones
-                        .Where(c => c.Artista != null)
-                        .GroupBy(c => c.Artista.PaisId)
-                        .Any(g => g.Count() > 5)
-                    )
-                    .ToList();
-
-                var artistasPopulares = artistas
-                    .Where(a => estadisticas.Any(e => e.ArtistaId == a.Id && e.ReproduccionesTotales > 10))
-                    .ToList();
-
-                ViewBag.TopPlaylists = topPlaylists;
-                ViewBag.ArtistasPopulares = artistasPopulares;
-
                 
+                var playlists = await Crud<Playlist>.GetAllAsync();
+               
+                var songs = await Crud<Song>.GetAllAsync();
+                
+                var artists = await Crud<Artist>.GetAllAsync();
+               
+               // var statistics = await Crud<ArtistStatistics>.GetAllAsync();//no entra
+               
+                // Validación básica
+                if (playlists == null || songs == null || artists == null /*|| statistics == null*/)
+                {
+                    throw new Exception("Una de las listas es null.");
+                }
+                else
+                {
+                    
+                    var topPlaylists = playlists
+                        .Where(p => p.Songs != null && p.Songs.Any())
+                        .Where(p =>
+                            p.Songs
+                            .Where(c => c.Artist != null)
+                            .GroupBy(c => c.Artist.CountryId)
+                            .Any(g => g.Count() > 5)
+                        )
+                        .ToList();
 
-                return View();
+                  /*  var popularArtists = artists
+                        .Where(a => statistics.Any(e => e.ArtistId == a.Id && e.TotalPlays > 10))
+                        .ToList();
+
+                    ViewBag.TopPlaylists = topPlaylists;
+                    ViewBag.PopularArtists = popularArtists;*/
+
+                    return View();
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error al cargar datos: {ex.Message}");
-                ModelState.AddModelError("", "Hubo un error al cargar datos.");
-                return View("Error");
+                Debug.WriteLine($"❌ ERROR EN PanelController: {ex.Message}");
+                return RedirectToAction("Error", "Home", new { area = "" }); // o View("Error")
             }
         }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Modelos.Tuneflow.Media.Cancion>
+﻿@model IEnumerable<Modelos.Tuneflow.Media.Song>
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
@@ -8,7 +8,7 @@
 <h2>🎧 Buscar canciones</h2>
 
 <form method="get" action="/Cliente/Buscar/Buscar" class="mb-3">
-    <input type="text" name="nameCancion" placeholder="Busca tu canción" class="form-control d-inline-block w-50" />
+    <input type="text" name="nameSong" placeholder="Busca tu canción" class="form-control d-inline-block w-50" />
     <button type="submit" class="btn btn-primary ms-2">Buscar</button>
 </form>
 
@@ -38,21 +38,36 @@ else
             {
                 <tr>
                     <td>
-                        <img src="@item.RutaImagen" alt="Imagen de @item.Titulo" style="max-height: 100px;" />
+                        <img src="@item.ImagePath" alt="Imagen de @item.Title" style="max-height: 100px;" />
                     </td>
-                    <td>@item.Titulo</td>
-                    <td>@item.Genero</td>
-                    <td>@(item.Artista?.NombreArtistico ?? "Desconocido")</td>
-                    <td>@(item.ContenidoExplicito ? "Sí" : "No")</td>
-                    <td>@item.TiempoEnMinutos(item.Duracion)</td>
+                    <td>@item.Title</td>
+                    <td>@item.Genre</td>
+                    <td>
+
+                        @if (item.Artist != null)
+                        {
+                            <a href="/Artista/Perfil/@item.Artist.StageName">
+                                @item.Artist.StageName
+                            </a>
+
+
+
+                        }
+                        else
+                        {
+                            <span>Desconocido</span>
+                        }
+                    </td>
+                    <td>@(item.ExplicitContent ? "Sí" : "No")</td>
+                    <td>@item.TimeInMinutes(item.Duration)</td>
                     <td>
                         <button class="btn btn-sm btn-success" type="button"
                                 onclick="reproducirCancion(
                             @item.Id,
-                            '@item.Titulo',
-                            '@item.RutaArchivo',
-                            '@item.RutaImagen',
-                            @ViewBag.IdCliente
+                            '@item.Title',
+                            '@item.FilePath',
+                            '@item.ImagePath',
+                            @ViewBag.IdClient
                         )">
                             ▶ Reproducir
                         </button>

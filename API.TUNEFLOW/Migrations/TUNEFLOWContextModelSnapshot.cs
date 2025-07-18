@@ -21,7 +21,59 @@ namespace API.TUNEFLOW.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Modelos.Tuneflow.Media.Cancion", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Media.FavoriteSong", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SongId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("SongId");
+
+                    b.ToTable("FavoritesSongs");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Media.Playback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SongId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("SongId");
+
+                    b.ToTable("Playbacks");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Media.Song", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,30 +84,34 @@ namespace API.TUNEFLOW.Migrations
                     b.Property<int?>("AlbumId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ArtistaId")
+                    b.Property<int>("ArtistId")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("ContenidoExplicito")
+                    b.Property<int>("Duration")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("ExplicitContent")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("Duracion")
-                        .HasColumnType("integer");
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("FechaLanzamiento")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<string>("Genre")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<string>("Genero")
+                    b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("PlaylistId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("RutaArchivo")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Titulo")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -63,14 +119,14 @@ namespace API.TUNEFLOW.Migrations
 
                     b.HasIndex("AlbumId");
 
-                    b.HasIndex("ArtistaId");
+                    b.HasIndex("ArtistId");
 
                     b.HasIndex("PlaylistId");
 
-                    b.ToTable("Canciones");
+                    b.ToTable("Songs");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Media.CancionFavorita", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Modelos.Country", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,63 +134,11 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CancionId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("FechaAgregado")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CancionId");
-
-                    b.HasIndex("ClienteId");
-
-                    b.ToTable("CancionesFavoritas");
-                });
-
-            modelBuilder.Entity("Modelos.Tuneflow.Media.Reproduccion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CancionId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("FechaHora")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CancionId");
-
-                    b.HasIndex("ClienteId");
-
-                    b.ToTable("Reproducciones");
-                });
-
-            modelBuilder.Entity("Modelos.Tuneflow.Modelos.Pais", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Continente")
+                    b.Property<string>("Continent")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Moneda")
+                    b.Property<string>("Currency")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -144,10 +148,10 @@ namespace API.TUNEFLOW.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Paises");
+                    b.ToTable("Countrys");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Pagos.Pago", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Pagos.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -155,25 +159,25 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("FechaPago")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("MetodoPago")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("Monto")
+                    b.Property<double>("Amount")
                         .HasColumnType("double precision");
 
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Pagos");
+                    b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Album", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Album", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -181,34 +185,39 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Descripcion")
+                    b.Property<int?>("ArtistId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CoverPath")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateOnly>("FechaCreacion")
+                    b.Property<DateOnly>("CreationDate")
                         .HasColumnType("date");
 
-                    b.Property<DateTime>("FechaLanzamiento")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Genre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Genero")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RutaPortada")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Titulo")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ArtistId");
 
                     b.ToTable("Albums");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.MusicaPlaylist", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Playlist", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -216,51 +225,32 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CancionId")
+                    b.Property<int>("ClientId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("PlaylistId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CancionId");
-
-                    b.HasIndex("PlaylistId");
-
-                    b.ToTable("MusicasPlaylists");
-                });
-
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Playlist", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("FechaCreacion")
+                    b.Property<DateTime>("CreationDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Titulo")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PlaylistCover")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("ClientId");
 
                     b.ToTable("Playlists");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Administracion.Administrador", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.SongPlaylist", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -268,14 +258,37 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Activo")
-                        .HasColumnType("boolean");
+                    b.Property<int>("PlaylistId")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Apellido")
+                    b.Property<int>("SongId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlaylistId");
+
+                    b.HasIndex("SongId");
+
+                    b.ToTable("MusicsPlaylists");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Administracion.Administrator", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccountType")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Descripcion")
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -283,13 +296,14 @@ namespace API.TUNEFLOW.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("FechaNacimiento")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("FechaRegistro")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -297,20 +311,23 @@ namespace API.TUNEFLOW.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Telefono")
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("TipoCuenta")
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Administradores");
+                    b.ToTable("Administrators");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Administracion.EstadisticasArtista", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Administracion.ArtistStatistics", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -318,29 +335,29 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AlbumesPublicados")
+                    b.Property<int>("ArtistId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ArtistaId")
+                    b.Property<int>("PublishedAlbums")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CancionesPublicadas")
+                    b.Property<int>("PublishedSongs")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ReproduccionesTotales")
+                    b.Property<int>("TotalFollowers")
                         .HasColumnType("integer");
 
-                    b.Property<int>("SeguidoresTotales")
+                    b.Property<int>("TotalPlays")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ArtistaId");
+                    b.HasIndex("ArtistId");
 
-                    b.ToTable("EstadisticasArtistas");
+                    b.ToTable("ArtistsStatistics");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Cliente", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Client", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -348,55 +365,59 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Activo")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Apellido")
+                    b.Property<string>("AccountType")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("FechaNacimiento")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("FechaRegistro")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Nombre")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("PaisId")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("SuscripcionId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Telefono")
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("TipoCuenta")
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PaisId");
+                    b.HasIndex("CountryId");
 
-                    b.HasIndex("SuscripcionId");
+                    b.HasIndex("SubscriptionId");
 
-                    b.ToTable("Clientes");
+                    b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Suscripcion", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Subscription", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -404,26 +425,26 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CodigoUnion")
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("JoinCode")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("FechaFin")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("FechaInicio")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("TipoSuscripcionId")
+                    b.Property<int>("SubscriptionTypeId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TipoSuscripcionId");
+                    b.HasIndex("SubscriptionTypeId");
 
-                    b.ToTable("Suscripciones");
+                    b.ToTable("Subscriptions");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.TipoSuscripcion", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.SubscriptionType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -431,22 +452,22 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("LimiteMiembros")
+                    b.Property<int>("MemberLimit")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double>("Precio")
+                    b.Property<double>("Price")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
 
-                    b.ToTable("TiposSuscripciones");
+                    b.ToTable("SubscriptionsTypes");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Perfiles.Perfil", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Perfiles.Profile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -454,33 +475,34 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ArtistaId")
+                    b.Property<int?>("ArtistId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Biografia")
+                    b.Property<string>("Biography")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("ClienteId")
+                    b.Property<int?>("ClientId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("FechaCreacion")
+                    b.Property<DateTime>("CreationDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ImagenPerfil")
+                    b.Property<string>("ProfileImage")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ArtistaId");
+                    b.HasIndex("ArtistId")
+                        .IsUnique();
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("ClientId");
 
-                    b.ToTable("Perfiles");
+                    b.ToTable("Profiles");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Produccion.Artista", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Produccion.Artist", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -488,65 +510,72 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Activo")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Apellido")
+                    b.Property<string>("AccountType")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Biografia")
+                    b.Property<string>("Biography")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("FechaNacimiento")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("FechaRegistro")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("GeneroMusical")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Nombre")
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("NombreArtistico")
+                    b.Property<string>("MusicGenre")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("PaisId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Telefono")
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("TipoCuenta")
+                    b.Property<string>("ProfileImage")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("StageName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("verificado")
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Verified")
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PaisId");
+                    b.HasIndex("CountryId");
 
-                    b.ToTable("Artistas");
+                    b.ToTable("Artists");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Produccion.Seguimiento", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Produccion.Follow", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -554,209 +583,230 @@ namespace API.TUNEFLOW.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ArtistaId")
+                    b.Property<int>("ArtistId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ClienteId")
+                    b.Property<int>("ClientId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ArtistaId");
+                    b.HasIndex("ArtistId");
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("ClientId");
 
-                    b.ToTable("Seguimientos");
+                    b.ToTable("Follows");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Media.Cancion", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Media.FavoriteSong", b =>
                 {
-                    b.HasOne("Modelos.Tuneflow.Playlist.Album", "Album")
-                        .WithMany("Canciones")
-                        .HasForeignKey("AlbumId");
-
-                    b.HasOne("Modelos.Tuneflow.Usuario.Produccion.Artista", "Artista")
+                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Client", "Client")
                         .WithMany()
-                        .HasForeignKey("ArtistaId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Modelos.Tuneflow.Playlist.Playlist", null)
-                        .WithMany("Canciones")
+                    b.HasOne("Modelos.Tuneflow.Media.Song", "Song")
+                        .WithMany()
+                        .HasForeignKey("SongId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Song");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Media.Playback", b =>
+                {
+                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Modelos.Tuneflow.Media.Song", "Song")
+                        .WithMany()
+                        .HasForeignKey("SongId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Song");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Media.Song", b =>
+                {
+                    b.HasOne("Modelos.Tuneflow.Playlists.Album", "Album")
+                        .WithMany("Songs")
+                        .HasForeignKey("AlbumId");
+
+                    b.HasOne("Modelos.Tuneflow.Usuario.Produccion.Artist", "Artist")
+                        .WithMany("Songs")
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Modelos.Tuneflow.Playlists.Playlist", null)
+                        .WithMany("Songs")
                         .HasForeignKey("PlaylistId");
 
                     b.Navigation("Album");
 
-                    b.Navigation("Artista");
+                    b.Navigation("Artist");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Media.CancionFavorita", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Album", b =>
                 {
-                    b.HasOne("Modelos.Tuneflow.Media.Cancion", "Cancion")
-                        .WithMany()
-                        .HasForeignKey("CancionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Cliente", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Cancion");
-
-                    b.Navigation("Cliente");
+                    b.HasOne("Modelos.Tuneflow.Usuario.Produccion.Artist", null)
+                        .WithMany("Albums")
+                        .HasForeignKey("ArtistId");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Media.Reproduccion", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Playlist", b =>
                 {
-                    b.HasOne("Modelos.Tuneflow.Media.Cancion", "Cancion")
-                        .WithMany()
-                        .HasForeignKey("CancionId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Client", "Client")
+                        .WithMany("Playlists")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Cliente", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId") 
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Cancion");
-
-                    b.Navigation("Cliente");
+                    b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.MusicaPlaylist", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.SongPlaylist", b =>
                 {
-                    b.HasOne("Modelos.Tuneflow.Media.Cancion", "Cancion")
-                        .WithMany()
-                        .HasForeignKey("CancionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Modelos.Tuneflow.Playlist.Playlist", "Playlist")
+                    b.HasOne("Modelos.Tuneflow.Playlists.Playlist", "Playlist")
                         .WithMany()
                         .HasForeignKey("PlaylistId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Cancion");
+                    b.HasOne("Modelos.Tuneflow.Media.Song", "Song")
+                        .WithMany()
+                        .HasForeignKey("SongId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Playlist");
+
+                    b.Navigation("Song");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Playlist", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Administracion.ArtistStatistics", b =>
                 {
-                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Cliente", "Cliente")
+                    b.HasOne("Modelos.Tuneflow.Usuario.Produccion.Artist", "Artist")
                         .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Cliente");
+                    b.Navigation("Artist");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Administracion.EstadisticasArtista", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Client", b =>
                 {
-                    b.HasOne("Modelos.Tuneflow.Usuario.Produccion.Artista", "Artista")
+                    b.HasOne("Modelos.Tuneflow.Modelos.Country", "Country")
                         .WithMany()
-                        .HasForeignKey("ArtistaId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Artista");
-                });
-
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Cliente", b =>
-                {
-                    b.HasOne("Modelos.Tuneflow.Modelos.Pais", "Pais")
-                        .WithMany()
-                        .HasForeignKey("PaisId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Subscription", "Subscription")
+                        .WithMany("Members")
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Suscripcion", "Suscripcion")
-                        .WithMany("Miembros")
-                        .HasForeignKey("SuscripcionId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                    b.Navigation("Country");
+
+                    b.Navigation("Subscription");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Subscription", b =>
+                {
+                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.SubscriptionType", "SubscriptionType")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Pais");
-
-                    b.Navigation("Suscripcion");
+                    b.Navigation("SubscriptionType");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Suscripcion", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Perfiles.Profile", b =>
                 {
-                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.TipoSuscripcion", "TipoSuscripcion")
+                    b.HasOne("Modelos.Tuneflow.Usuario.Produccion.Artist", "Artist")
+                        .WithOne("Profile")
+                        .HasForeignKey("Modelos.Tuneflow.Usuario.Perfiles.Profile", "ArtistId");
+
+                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Client", "Client")
                         .WithMany()
-                        .HasForeignKey("TipoSuscripcionId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("ClientId");
+
+                    b.Navigation("Artist");
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Produccion.Artist", b =>
+                {
+                    b.HasOne("Modelos.Tuneflow.Modelos.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("TipoSuscripcion");
+                    b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Perfiles.Perfil", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Produccion.Follow", b =>
                 {
-                    b.HasOne("Modelos.Tuneflow.Usuario.Produccion.Artista", "Artista")
+                    b.HasOne("Modelos.Tuneflow.Usuario.Produccion.Artist", "Artist")
                         .WithMany()
-                        .HasForeignKey("ArtistaId");
-
-                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Cliente", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId");
-
-                    b.Navigation("Artista");
-
-                    b.Navigation("Cliente");
-                });
-
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Produccion.Artista", b =>
-                {
-                    b.HasOne("Modelos.Tuneflow.Modelos.Pais", "Pais")
-                        .WithMany()
-                        .HasForeignKey("PaisId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Pais");
-                });
-
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Produccion.Seguimiento", b =>
-                {
-                    b.HasOne("Modelos.Tuneflow.Usuario.Produccion.Artista", "Artista")
+                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Client", "Client")
                         .WithMany()
-                        .HasForeignKey("ArtistaId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Modelos.Tuneflow.Usuario.Consumidor.Cliente", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    b.Navigation("Artist");
 
-                    b.Navigation("Artista");
-
-                    b.Navigation("Cliente");
+                    b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Album", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Album", b =>
                 {
-                    b.Navigation("Canciones");
+                    b.Navigation("Songs");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Playlist.Playlist", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Playlists.Playlist", b =>
                 {
-                    b.Navigation("Canciones");
+                    b.Navigation("Songs");
                 });
 
-            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Suscripcion", b =>
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Client", b =>
                 {
-                    b.Navigation("Miembros");
+                    b.Navigation("Playlists");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Consumidor.Subscription", b =>
+                {
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("Modelos.Tuneflow.Usuario.Produccion.Artist", b =>
+                {
+                    b.Navigation("Albums");
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Songs");
                 });
 #pragma warning restore 612, 618
         }
