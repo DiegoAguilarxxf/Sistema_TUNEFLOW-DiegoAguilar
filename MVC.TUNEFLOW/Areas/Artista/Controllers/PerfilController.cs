@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
+    [Area("Artista")]
+    [Authorize]
     public class PerfilController : Controller
     {
         // GET: PerfilController

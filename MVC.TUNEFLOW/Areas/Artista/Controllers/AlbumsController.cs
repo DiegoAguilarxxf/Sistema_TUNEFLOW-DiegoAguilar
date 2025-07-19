@@ -1,10 +1,13 @@
 ﻿using API.Consumer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Playlists;
 
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
+    [Area("Artista")]
+    [Authorize]
     public class AlbumsController : Controller
     {
         // GET: AlbumsController

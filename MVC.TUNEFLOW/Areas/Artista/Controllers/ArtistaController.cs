@@ -13,6 +13,7 @@ using System;
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
     [Area("Artista")]
+    [Authorize]
     public class ArtistaController : Controller
     {
         private readonly IDbConnection _db;
