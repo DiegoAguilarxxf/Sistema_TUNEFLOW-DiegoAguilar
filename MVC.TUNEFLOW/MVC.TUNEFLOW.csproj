@@ -30,7 +30,11 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Admin\Views\Shared\" />
-    <Folder Include="Areas\Cliente\Views\Reproductor\" />
+    <Folder Include="Areas\Artista\Views\Canciones\" />
+    <Folder Include="Areas\Artista\Views\Albums\" />
+    <Folder Include="Areas\Artista\Views\Estadisticas\" />
+    <Folder Include="Areas\Artista\Views\Panel\" />
+    <Folder Include="Areas\Artista\Views\Seguidores\" />
     <Folder Include="wwwroot\img_descubre\" />
   </ItemGroup>
 

@@ -979,65 +979,89 @@ input:checked + .slider {
 
 
 /* =====================================================================
-    Planes
-    ===================================================================== */
-.plan-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    justify-content: center;
-    padding: 2rem;
+   Sección Planes - Estilos específicos para la página de planes
+   ===================================================================== */
+
+.planes-page .plan-container {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 2rem !important;
+    justify-content: center !important;
+    padding: 2rem !important;
 }
 
-.plan-card {
-    background: var(--bg-card);
-    color: var(--text-color);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    width: 300px;
-    box-shadow: var(--shadow-md);
-    transition: transform var(--transition-normal), box-shadow var(--transition-fast);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+.planes-page .plan-card {
+    background: var(--bg-card) !important;
+    color: var(--text-color) !important;
+    border-radius: var(--radius-lg) !important;
+    padding: 2rem !important;
+    width: 300px !important;
+    box-shadow: var(--shadow-md) !important;
+    transition: transform var(--transition-normal) !important, box-shadow var(--transition-fast) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
 }
 
-    .plan-card:hover {
-        transform: scale(1.05);
-        box-shadow: var(--shadow-xl);
+    .planes-page .plan-card:hover {
+        transform: scale(1.05) !important;
+        box-shadow: var(--shadow-xl) !important;
     }
 
-.plan-name {
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
+.planes-page .plan-name {
+    font-size: 1.8rem !important;
+    font-weight: bold !important;
+    margin-bottom: 1rem !important;
+    color: var(--text-color) !important;
 }
 
-.plan-price {
-    font-size: 2.2rem;
-    margin-bottom: 1rem;
+.planes-page .plan-price {
+    font-size: 2.2rem !important;
+    margin-bottom: 1rem !important;
+    color: var(--text-color) !important;
 }
 
-.plan-members {
-    font-size: 1rem;
-    margin-bottom: 2rem;
-    color: var(--text-secondary);
+.planes-page .plan-members {
+    font-size: 1rem !important;
+    margin-bottom: 2rem !important;
+    color: var(--text-secondary) !important;
 }
 
-.btn-adquirir {
-    background-color: var(--btn-bg);
-    color: var(--btn-text);
-    font-weight: bold;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius-full);
-    text-decoration: none;
-    transition: background var(--transition-fast), transform var(--transition-fast);
-    cursor: pointer;
+.planes-page .btn-adquirir {
+    background-color: var(--btn-bg) !important;
+    color: var(--btn-text) !important;
+    font-weight: bold !important;
+    border: none !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: var(--radius-full) !important;
+    text-decoration: none !important;
+    transition: background var(--transition-fast) !important, transform var(--transition-fast) !important;
+    cursor: pointer !important;
 }
 
-    .btn-adquirir:hover {
-        background-color: var(--btn-hover);
-        transform: scale(1.05);
+    .planes-page .btn-adquirir:hover {
+        background-color: var(--btn-hover) !important;
+        transform: scale(1.05) !important;
+    }
+
+/* Botón detalles con estilo outline adaptado */
+.planes-page .btn-detalles {
+    color: var(--primary) !important;
+    border: 1px solid var(--primary) !important;
+    background: transparent !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--radius-md) !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: background var(--transition-fast) !important, color var(--transition-fast) !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    text-align: center !important;
+}
+
+    .planes-page .btn-detalles:hover {
+        background-color: var(--primary) !important;
+        color: white !important;
+        text-decoration: none !important;
     }

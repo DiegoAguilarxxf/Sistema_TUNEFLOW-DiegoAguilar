@@ -1,4 +1,6 @@
-﻿@model IEnumerable<Modelos.Tuneflow.Media.Song>
+﻿@using System.Text.Json
+@model IEnumerable<Modelos.Tuneflow.Media.Song>
+
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
@@ -8,7 +10,7 @@
     {
         var minutos = segundos / 60;
         var seg = segundos % 60;
-        return $"{minutos}:{seg.ToString("D2")} min";
+        return $"{minutos}:{seg.ToString("D2")}";
     }
 }
 
@@ -40,7 +42,7 @@
                         <tr>
                             <td>
                                 <div class="reproductor-portada">
-                                    <img src="@item.ImagePath" alt="Portada de @item.Title" style="height: 60px; border-radius: 6px;" />
+                                    <img src="@item.ImagePath" alt="Portada de @item.Title" style="height: 60px; width: 60px; object-fit: cover; border-radius: 6px;" />
                                 </div>
                             </td>
                             <td>@item.Title</td>
@@ -56,10 +58,20 @@
                                 }
                             </td>
                             <td>@(item.ExplicitContent ? "Sí" : "No")</td>
-                            <td>@FormatearTiempo(item.Duration)</td>
+                            <td>@FormatearTiempo(item.Duration) min</td>
                             <td>
+
                                 <button class="btn btn-sm btn-success"
-                                        onclick="cargarDetalle(@item.Id)">
+                                        onclick='reproducirCancion(
+        @item.Id,
+        @Html.Raw(JsonSerializer.Serialize(item.Title)),
+        @Html.Raw(JsonSerializer.Serialize(item.FilePath)),
+        @Html.Raw(JsonSerializer.Serialize(item.ImagePath)),
+        @ViewBag.IdCliente,
+        0,
+        true,
+        @Html.Raw(item.Artist != null && !string.IsNullOrEmpty(item.Artist.StageName) ? JsonSerializer.Serialize(item.Artist.StageName) : "\"Desconocido\"")
+    )'>
                                     ▶ Reproducir
                                 </button>
                             </td>
@@ -70,26 +82,3 @@
         </div>
     }
 </div>
-
-<!-- Modal para reproductor -->
-<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" id="modalContent"></div>
-    </div>
-</div>
-
-<script>
-    function cargarDetalle(id) {
-        fetch(`/Reproductor/Reproducir?id=${id}`)
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('modalContent').innerHTML = html;
-                const modal = new bootstrap.Modal(document.getElementById('detalleModal'));
-                modal.show();
-            })
-            .catch(err => {
-                console.error("Error al cargar detalle:", err);
-                alert("No se pudo cargar el reproductor.");
-            });
-    }
-</script>
