@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Modelos.Tuneflow.Modelos
+namespace Modelos.Tuneflow.Models
 {
     public class Country
     {

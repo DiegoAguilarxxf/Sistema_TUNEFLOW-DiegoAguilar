@@ -3,13 +3,13 @@ using API.TUNEFLOW.Controllers; // Posiblemente se refiere a controladores de tu
 using Microsoft.AspNetCore.Identity; // Para la gestión de usuarios y autenticación
 using Microsoft.EntityFrameworkCore; // Para interactuar con la base de datos a través de Entity Framework Core
 using Modelos.Tuneflow.Media;
-using Modelos.Tuneflow.Modelos;
-using Modelos.Tuneflow.Pagos;
+using Modelos.Tuneflow.Models;
+using Modelos.Tuneflow.Payments;
 using Modelos.Tuneflow.Playlists;
-using Modelos.Tuneflow.Usuario.Administracion;
-using Modelos.Tuneflow.Usuario.Consumidor;
-using Modelos.Tuneflow.Usuario.Perfiles;
-using Modelos.Tuneflow.Usuario.Produccion;
+using Modelos.Tuneflow.User.Administration;
+using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.User.Profiles;
+using Modelos.Tuneflow.User.Production;
 using MVC.TUNEFLOW.Data; // Tu contexto de base de datos para el proyecto MVC
 using Npgsql;
 using System.Data;

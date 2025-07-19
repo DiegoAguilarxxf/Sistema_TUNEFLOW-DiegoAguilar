@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Modelos.Tuneflow.Media;
-using Modelos.Tuneflow.Modelos;
 using Modelos.Tuneflow.Playlists;
-using Modelos.Tuneflow.Usuario.Perfiles;
+using Modelos.Tuneflow.Models;
 
-namespace Modelos.Tuneflow.Usuario.Produccion
+namespace Modelos.Tuneflow.User.Production
 {
     public class Artist : User
     {

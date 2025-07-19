@@ -5,86 +5,80 @@
     ViewData["Title"] = "Buscar Canciones";
 }
 
-<h2>🎧 Buscar canciones</h2>
+<div class="buscar-container">
+    <h2 class="text-center mb-4">🎧 Buscar Canciones</h2>
 
-<form method="get" action="/Cliente/Buscar/Buscar" class="mb-3">
-    <input type="text" name="nameSong" placeholder="Busca tu canción" class="form-control d-inline-block w-50" />
-    <button type="submit" class="btn btn-primary ms-2">Buscar</button>
-</form>
+    <form method="get" action="/Cliente/Buscar/Buscar" class="search-form d-flex justify-content-center mb-4">
+        <input type="text" name="nameSong" placeholder="Busca tu canción" class="form-control w-50" />
+        <button type="submit" class="btn btn-primary ms-2">Buscar</button>
+    </form>
 
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning text-center">No se encontraron canciones con ese título.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Portada</th>
+                        <th>Título</th>
+                        <th>Género</th>
+                        <th>Artista</th>
+                        <th>Explícito</th>
+                        <th>Duración</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="reproductor-portada">
+                                    <img src="@item.ImagePath" alt="Portada de @item.Title" />
+                                </div>
+                            </td>
+                            <td>@item.Title</td>
+                            <td>@item.Genre</td>
+                            <td>
+                                @if (item.Artist != null)
+                                {
+                                    <a href="/Artista/Perfil/@item.Artist.StageName">@item.Artist.StageName</a>
+                                }
+                                else
+                                {
+                                    <span>Desconocido</span>
+                                }
+                            </td>
+                            <td>@(item.ExplicitContent ? "Sí" : "No")</td>
+                            <td>@item.TimeInMinutes(item.Duration)</td>
+                            <td>
+                                <button class="btn btn-sm btn-success"
+                                        onclick="reproducirCancion(
+                                            @item.Id,
+                                            '@item.Title',
+                                            '@item.FilePath',
+                                            '@item.ImagePath',
+                                            @ViewBag.IdCliente
+                                        )">
+                                    ▶ Reproducir
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
 
-
-
-@if (Model == null || !Model.Any())
-{
-    <div class="alert alert-warning">No se encontraron canciones con ese título.</div>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Título</th>
-                <th>Género</th>
-                <th>Artista</th>
-                <th>Contenido Explícito</th>
-                <th>Duración</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        <img src="@item.ImagePath" alt="Imagen de @item.Title" style="max-height: 100px;" />
-                    </td>
-                    <td>@item.Title</td>
-                    <td>@item.Genre</td>
-                    <td>
-
-                        @if (item.Artist != null)
-                        {
-                            <a href="/Artista/Perfil/@item.Artist.StageName">
-                                @item.Artist.StageName
-                            </a>
-
-
-
-                        }
-                        else
-                        {
-                            <span>Desconocido</span>
-                        }
-                    </td>
-                    <td>@(item.ExplicitContent ? "Sí" : "No")</td>
-                    <td>@item.TimeInMinutes(item.Duration)</td>
-                    <td>
-                        <button class="btn btn-sm btn-success" type="button"
-                                onclick="reproducirCancion(
-                            @item.Id,
-                            '@item.Title',
-                            '@item.FilePath',
-                            '@item.ImagePath',
-                            @ViewBag.IdClient
-                        )">
-                            ▶ Reproducir
-                        </button>
-
-
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
+<!-- Modal para reproductor -->
 <div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" id="modalContent">
-            <!-- Aquí se carga el contenido del modal desde el controlador -->
-        </div>
+        <div class="modal-content" id="modalContent"></div>
     </div>
 </div>
 
@@ -103,4 +97,3 @@ else
             });
     }
 </script>
-

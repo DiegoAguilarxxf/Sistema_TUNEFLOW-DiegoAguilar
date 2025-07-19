@@ -1,31 +1,37 @@
-﻿@model  Modelos.Tuneflow.Playlists.Playlist
+﻿@model Modelos.Tuneflow.Playlists.Playlist
 
 @{
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
     ViewData["Title"] = "Crear Playlist";
 }
 
-<h2>Crear Playlist</h2>
+<div class="panel-container">
+    <h2>➕ Crear Playlist</h2>
 
-<form asp-area="Cliente" asp-controller="Playlist" asp-action="Create" method="post" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
+    <form asp-area="Cliente" asp-controller="Playlist" asp-action="Create" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        @Html.AntiForgeryToken()
 
-    <div class="mb-3">
-        <label for="Titulo" class="form-label">Título</label>
-        <input type="text" name="Titulo" class="form-control" required />
-    </div>
+        <div class="mb-3">
+            <label for="Titulo" class="form-label">Título</label>
+            <input type="text" name="Titulo" class="form-control" required />
+            <div class="invalid-feedback">Por favor ingresa un título.</div>
+        </div>
 
-    <div class="mb-3">
-        <label for="Descripcion" class="form-label">Descripción</label>
-        <textarea name="Descripcion" class="form-control" rows="3" required></textarea>
-    </div>
+        <div class="mb-3">
+            <label for="Descripcion" class="form-label">Descripción</label>
+            <textarea name="Descripcion" class="form-control" rows="3" required></textarea>
+            <div class="invalid-feedback">Por favor ingresa una descripción.</div>
+        </div>
 
-    <div class="mb-3">
-        <label for="ImagenPortada" class="form-label">Portada (imagen)</label>
-        <input type="file" name="ImagenPortada" class="form-control" accept="image/*" required />
-    </div>
+        <div class="mb-3">
+            <label for="ImagenPortada" class="form-label">Portada (imagen)</label>
+            <input type="file" name="ImagenPortada" class="form-control" accept="image/*" required />
+            <div class="invalid-feedback">Por favor selecciona una imagen.</div>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Crear Playlist</button>
-</form>
+        <button type="submit" class="btn btn-primary">Crear Playlist</button>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

@@ -10,10 +10,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using Modelos.Tuneflow.Modelos;
+using Modelos.Tuneflow.Models;
 using Modelos.Tuneflow.Playlists;
-using Modelos.Tuneflow.Usuario.Consumidor;
-using Modelos.Tuneflow.Usuario.Perfiles;
+using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.User.Profiles;
 
 namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 {
@@ -123,7 +123,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 
 
             // Crear cliente
-            var client = new Modelos.Tuneflow.Usuario.Consumidor.Client
+            var client = new Modelos.Tuneflow.User.Consumer.Client
             {
                 FirstName = Input.Nombre,
                 LastName = Input.Apellido,
@@ -140,7 +140,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
             };
 
 
-            var newClient = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.CreateAsync(client);
+            var newClient = await Crud<Modelos.Tuneflow.User.Consumer.Client>.CreateAsync(client);
 
             var profile = new Profile
             {

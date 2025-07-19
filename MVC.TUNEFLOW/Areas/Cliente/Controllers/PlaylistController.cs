@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Modelos;
 using System.Text.RegularExpressions;
-using Modelos.Tuneflow.Usuario.Consumidor;
-using Modelos.Tuneflow.Usuario.Perfiles;
+using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.User.Profiles;
 
 using System.Text.Json;
 
@@ -24,7 +24,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            var client = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.GetClientePorUsuarioId(userId);
+            var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
 
             if (client == null)
             {
@@ -107,7 +107,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 {
                     return RedirectToAction("Login", "Account");
                 }
-                var client = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.GetClientePorUsuarioId(userId);
+                var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
 
                 if (client == null)
                 {

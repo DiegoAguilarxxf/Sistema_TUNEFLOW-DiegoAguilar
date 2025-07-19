@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Playlists;
-using Modelos.Tuneflow.Usuario.Produccion;
+using Modelos.Tuneflow.User.Production;
 using Modelos.Tuneflow.Media;
-using Modelos.Tuneflow.Modelos;
+using Modelos.Tuneflow.Models;
 using API.Consumer;
 using System.Diagnostics;
-using Modelos.Tuneflow.Usuario.Administracion;
+using Modelos.Tuneflow.User.Administration;
 using System.Security.Claims;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers

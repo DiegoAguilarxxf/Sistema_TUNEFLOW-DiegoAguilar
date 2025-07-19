@@ -5,8 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Modelos.Tuneflow.User.Consumer;
 
-namespace Modelos.Tuneflow.Usuario.Consumidor
+namespace Modelos.Tuneflow.User.Consumer
 {
     public class Subscription
     {

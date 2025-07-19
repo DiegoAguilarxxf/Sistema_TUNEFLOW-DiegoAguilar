@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Modelos.Tuneflow.Usuario.Produccion;
+using Modelos.Tuneflow.User.Production;
 
-namespace Modelos.Tuneflow.Usuario.Administracion
+namespace Modelos.Tuneflow.User.Administration
 {
     public class ArtistStatistics
     {

@@ -1,7 +1,7 @@
 ﻿using Modelos.Tuneflow.Media;
-using Modelos.Tuneflow.Usuario.Administracion;
-using Modelos.Tuneflow.Usuario.Consumidor;
-using Modelos.Tuneflow.Usuario.Perfiles;
+using Modelos.Tuneflow.User.Administration;
+using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.User.Profiles;
 using Modelos.Tuneflow.Playlists;
 using Newtonsoft.Json;
 using System.Diagnostics;

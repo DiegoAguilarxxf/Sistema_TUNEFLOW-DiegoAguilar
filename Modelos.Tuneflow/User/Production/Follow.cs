@@ -5,9 +5,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Modelos.Tuneflow.Usuario.Consumidor;
+using Modelos.Tuneflow.User.Administration;
+using Modelos.Tuneflow.User.Consumer;
 
-namespace Modelos.Tuneflow.Usuario.Produccion
+namespace Modelos.Tuneflow.User.Production
 {
     public class Follow
     {

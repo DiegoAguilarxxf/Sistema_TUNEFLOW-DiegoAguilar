@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Modelos.Tuneflow.Usuario.Consumidor;
-using Modelos.Tuneflow.Usuario.Perfiles;
-using System.Text.RegularExpressions;
+using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.User.Profiles;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using System.Text.RegularExpressions;
+
 
 namespace MVC.TUNEFLOW.Areas.Client.Controllers
 {
@@ -24,7 +25,7 @@ namespace MVC.TUNEFLOW.Areas.Client.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            var cliente = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.GetClientePorUsuarioId(userId);
+            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
 
             if (cliente == null)
             {

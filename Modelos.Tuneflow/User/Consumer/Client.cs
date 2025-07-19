@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Modelos.Tuneflow.Modelos;
 using Modelos.Tuneflow.Playlists;
-    
-namespace Modelos.Tuneflow.Usuario.Consumidor
+using Modelos.Tuneflow.Models;
+
+namespace Modelos.Tuneflow.User.Consumer
 {
     public class Client : User
     {

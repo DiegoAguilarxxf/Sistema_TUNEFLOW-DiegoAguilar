@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Modelos.Tuneflow.Usuario.Consumidor;
+using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.Media;
 
 namespace Modelos.Tuneflow.Playlists

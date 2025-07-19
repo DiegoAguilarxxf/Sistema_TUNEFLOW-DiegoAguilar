@@ -7,7 +7,7 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Modelos.Tuneflow.Usuario.Consumidor;
+using Modelos.Tuneflow.User.Consumer;
 
 namespace API.TUNEFLOW.Controllers
 {

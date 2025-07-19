@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Modelos.Tuneflow.Usuario.Consumidor;
+using Modelos.Tuneflow.User.Consumer;
 
-namespace Modelos.Tuneflow.Pagos
+namespace Modelos.Tuneflow.Payments
 {
     public class Payment
     {

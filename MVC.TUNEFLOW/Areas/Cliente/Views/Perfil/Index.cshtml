@@ -1,30 +1,31 @@
-﻿@model Modelos.Tuneflow.Usuario.Perfiles.Profile;
+﻿@model Modelos.Tuneflow.User.Profiles.Profile
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
-    ViewData["Title"] = "Perfil"; 
+    ViewData["Title"] = "Perfil";
 }
 
-<div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center; justify-content: space-between;">
-    <div style="display: flex; align-items: center; gap: 1.5rem;">
-        <img src="@Model.ProfileImage" alt="Foto perfil"
-             style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid white;" />
-        <div>
-            <h4 style="color: white; margin: 0;">Perfil</h4>
-            <h2 style="color: white; margin: 0; font-size: 2rem; font-weight: bold;">
-                @(
-                    Model.Client != null
-                    ? $"{Model.Client.FirstName} {Model.Client.LastName}"
-                    : Model.Artist?.StageName
-                    )
-            </h2>
-          
+<div class="panel-container">
+    <div style="background-color: var(--primary-dark); padding: 2rem; border-radius: var(--radius-lg);">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-4">
+                <img src="@Model.ProfileImage" alt="Foto de perfil"
+                     style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--text-white);" />
+                <div>
+                    <h4 class="mb-0 text-white">Perfil</h4>
+                    <h2 class="mb-0 text-white fs-2 fw-bold">
+                        @(
+                            Model.Client != null
+                            ? $"{Model.Client.FirstName} {Model.Client.LastName}"
+                            : Model.Artist?.StageName ?? "Desconocido"
+                            )
+                    </h2>
+                </div>
+            </div>
+
+            <a href="@Url.Action("Edit", "Perfil", new { id = Model.Id })" class="btn btn-primary">
+                Editar
+            </a>
         </div>
     </div>
-
-    <nav>
-        <a class="btn btn-primary">
-            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
-        </a>
-    </nav>
 </div>
