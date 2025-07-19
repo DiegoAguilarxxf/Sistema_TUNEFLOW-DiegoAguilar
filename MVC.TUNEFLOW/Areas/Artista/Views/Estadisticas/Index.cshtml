@@ -1,31 +1,28 @@
-﻿@model IEnumerable<Modelos.Tuneflow.Playlists.Album>
+﻿@model IEnumerable<Modelos.Tuneflow.User.Administration.ArtistStatistics>
 
 @{
-    ViewData["Title"] = "Mis Albums";
+    ViewData["Title"] = "Estadisticas";
 }
 
-<h1>Index</h1>
+<h1>Mis Estadisticas</h1>
 
-<p>
-    <a asp-action="Create">Subir Album</a>
-</p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                Título
+                Artista
             </th>
             <th>
-                Fecha Lanzamiento
+                Total Reproduciones
             </th>
             <th>
-                Género
+                Total Seguidores
             </th>
             <th>
-                Descripción
+                Canciones Publicadas
             </th>
             <th>
-                Portada
+                Albums Publicados
             </th>
             <th></th>
         </tr>
@@ -34,23 +31,23 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
+                @Html.DisplayFor(modelItem => item.Artist.StageName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ReleaseDate)
+                @Html.DisplayFor(modelItem => item.TotalPlays)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Genre)
+                @Html.DisplayFor(modelItem => item.TotalFollowers)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.PublishedSongs)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CoverPath)
+                @Html.DisplayFor(modelItem => item.PublishedAlbums)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id=item.Id}) |
+                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
                 @Html.ActionLink("Delete", "Delete", new { id=item.Id })
             </td>
         </tr>
