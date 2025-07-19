@@ -26,6 +26,17 @@
                                 <h5 class="card-title">@playlist.Title</h5>
                             </div>
                         </a>
+                        <div class="card-footer d-flex justify-content-center gap-2">
+                            <a href="@Url.Action("Edit", "Playlist", new { id = playlist.Id })" class="btn btn-sm btn-warning">
+                                Editar
+                            </a>
+
+                            <form method="post" action="@Url.Action("Delete", "Playlist", new { id = playlist.Id })" onsubmit="return confirm('¿Seguro que quieres eliminar esta playlist?');" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             }

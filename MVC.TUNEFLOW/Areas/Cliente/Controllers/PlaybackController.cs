@@ -1,34 +1,29 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using API.Consumer;
-using Modelos.Tuneflow.User.Consumer;
-
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
-    [Area("Cliente")]
-    public class PlanesController : Controller
+    public class PlaybackController : Controller
     {
-        // GET: PlanesController
-        public ActionResult Planes()
+        // GET: PlayBackController
+        public ActionResult Index()
         {
-            var planes = Crud<SubscriptionType>.GetAllAsync();
-            return View(planes);
+            return View();
         }
 
-        // GET: PlanesController/Details/5
+        // GET: PlayBackController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: PlanesController/Create
+        // GET: PlayBackController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: PlanesController/Create
+        // POST: PlayBackController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -43,13 +38,13 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             }
         }
 
-        // GET: PlanesController/Edit/5
+        // GET: PlayBackController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: PlanesController/Edit/5
+        // POST: PlayBackController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -64,13 +59,13 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             }
         }
 
-        // GET: PlanesController/Delete/5
+        // GET: PlayBackController/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: PlanesController/Delete/5
+        // POST: PlayBackController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
