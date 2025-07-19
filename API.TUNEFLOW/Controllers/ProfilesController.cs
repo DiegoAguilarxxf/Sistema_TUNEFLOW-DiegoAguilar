@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Threading.Tasks;
 using Dapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Modelos.Tuneflow.Modelos;
-using Modelos.Tuneflow.Usuario.Consumidor;
-using Modelos.Tuneflow.Usuario.Perfiles;
-using Modelos.Tuneflow.Usuario.Produccion;
+using Microsoft.Extensions.Configuration;
+using Modelos.Tuneflow.Models;
+using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.User.Profiles;
+using Modelos.Tuneflow.User.Production;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -18,14 +15,7 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class ProfilesController : ControllerBase
     {
-        /*private readonly TUNEFLOWContext _context;
-
-        public PerfilesController(TUNEFLOWContext context)
-        {
-            _context = context;
-        }*/
-
-        private DbConnection connection;    
+        private readonly DbConnection connection;
 
         public ProfilesController(IConfiguration config)
         {
@@ -34,40 +24,37 @@ namespace API.TUNEFLOW.Controllers
             connection.Open();
         }
 
-        // GET: api/Perfiles
+        // GET: api/Profiles
         [HttpGet]
-        public IEnumerable<Profile> GetPerfil()
+        public IEnumerable<Profile> GetPerfiles()
         {
-            var perfiles = connection.Query<Profile>("SELECT * FROM \"Profiles\"");
-            return perfiles;
+            return connection.Query<Profile>("SELECT * FROM \"Profiles\"");
         }
 
-        // GET: api/Perfiles/5
+        // GET: api/Profiles/5
         [HttpGet("{id}")]
         public ActionResult<Profile> GetPerfilById(int id)
         {
-            var profile = connection.QuerySingleOrDefault<Profile>(@"SELECT * FROM ""Profiles"" WHERE ""Id"" = @Id", new { Id = id });
+            var profile = connection.QuerySingleOrDefault<Profile>(
+                @"SELECT * FROM ""Profiles"" WHERE ""Id"" = @Id",
+                new { Id = id });
 
             if (profile == null)
-            {
                 return NotFound();
-            }
 
             return profile;
         }
 
-        [HttpGet("User/Obtainingn/{idClient}")]
+        // GET: api/Profiles/User/ByClient/5
+        [HttpGet("User/ByClient/{idClient}")]
         public ActionResult<Profile> ObtenerPerfilPorClienteId(int idClient)
         {
-            var sql = @"SELECT * FROM ""Profiles"" 
-                WHERE ""ClientId"" = @Id";
-
+            var sql = @"SELECT * FROM ""Profiles"" WHERE ""ClientId"" = @Id";
             var profile = connection.QueryFirstOrDefault<Profile>(sql, new { Id = idClient });
 
             if (profile == null)
                 return NotFound();
 
-            // Si tiene ClienteId, obtener Cliente con sus relaciones
             if (profile.ClientId != null && profile.ClientId != 0)
             {
                 var clientSql = @"SELECT ""FirstName"", ""LastName"" FROM ""Clients"" WHERE ""Id"" = @Id";
@@ -77,17 +64,15 @@ namespace API.TUNEFLOW.Controllers
             return profile;
         }
 
-        [HttpGet("User/Obtainingn/{idArtist}")]
+        // GET: api/Profiles/User/ByArtist/5
+        [HttpGet("User/ByArtist/{idArtist}")]
         public ActionResult<Profile> ObtenerPerfilPorArtistaId(int idArtist)
         {
-            var sql = @"SELECT * FROM ""Profiles"" 
-                WHERE ""ArtistId"" = @Id";
-
+            var sql = @"SELECT * FROM ""Profiles"" WHERE ""ArtistId"" = @Id";
             var profile = connection.QueryFirstOrDefault<Profile>(sql, new { Id = idArtist });
 
             if (profile == null)
                 return NotFound();
-
 
             if (profile.ArtistId != null && profile.ArtistId != 0)
             {
@@ -98,79 +83,85 @@ namespace API.TUNEFLOW.Controllers
             return profile;
         }
 
-
-            // PUT: api/Perfiles/5
-            // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-            [HttpPut("{id}")]
-        public ActionResult PutPerfil(int id,[FromBody] Profile profile)
+        // PUT: api/Profiles/5
+        [HttpPut("{id}")]
+        public ActionResult PutPerfil(int id, [FromBody] Profile profile)
         {
             if (profile == null || profile.Id != id)
                 return BadRequest("ID en URL no coincide con el perfil.");
 
             connection.Execute(@"UPDATE ""Profiles"" SET 
-                            ""ProfileImage"" = @ProfileImage,
-                            ""Biography"" = @Biography
-                         WHERE ""Id"" = @Id", new
+                                ""ProfileImage"" = @ProfileImage,
+                                ""Biography"" = @Biography
+                             WHERE ""Id"" = @Id", new
             {
                 ProfileImage = profile.ProfileImage,
                 Biography = profile.Biography,
                 Id = id
             });
 
-            return NoContent(); // HTTP 204
+            return NoContent();
         }
 
-        // POST: api/Perfiles
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // POST: api/Profiles
         [HttpPost]
         public ActionResult<Profile> PostPerfil([FromBody] Profile profile)
-        { 
-            var idDevuelto = 0;
+        {
+            if (profile == null)
+                return BadRequest("Datos inválidos.");
 
-            if (profile.ArtistId == 0)
+            string sql;
+            object parametros;
+
+            if (profile.ArtistId == 0 && profile.ClientId != 0)
             {
-                var sql = @"INSERT INTO ""Profiles"" (""ClientId"", ""ProfileImage"", ""Biography"", ""CreationDate"")
-                            VALUES
-                            (@ClientId,@ProfileImage,@Biography,@CreationDate) RETURNING ""Id"";";
+                sql = @"INSERT INTO ""Profiles"" (""ClientId"", ""ProfileImage"", ""Biography"", ""CreationDate"")
+                        VALUES (@ClientId, @ProfileImage, @Biography, @CreationDate)
+                        RETURNING ""Id"";";
 
-                idDevuelto = connection.ExecuteScalar<int>(sql, new
+                parametros = new
                 {
                     ClientId = profile.ClientId,
                     ProfileImage = profile.ProfileImage,
                     Biography = profile.Biography,
                     CreationDate = profile.CreationDate
-                });
-                profile.Id = idDevuelto;
-
+                };
             }
-            else if(profile.ClientId == 0)
+            else if (profile.ClientId == 0 && profile.ArtistId != 0)
             {
-                var sql = @"INSERT INTO ""Profiles"" (""ArtistId"", ""ProfileImage"", ""Biography"", ""CreationDate"")
-                            VALUES
-                            (@ArtistId,@ProfileImage,@Biography,@CreationDate) RETURNING ""Id"";";
-                idDevuelto = connection.ExecuteScalar<int>(sql, new
+                sql = @"INSERT INTO ""Profiles"" (""ArtistId"", ""ProfileImage"", ""Biography"", ""CreationDate"")
+                        VALUES (@ArtistId, @ProfileImage, @Biography, @CreationDate)
+                        RETURNING ""Id"";";
+
+                parametros = new
                 {
                     ArtistId = profile.ArtistId,
                     ProfileImage = profile.ProfileImage,
                     Biography = profile.Biography,
                     CreationDate = profile.CreationDate
-                });
-                profile.Id = idDevuelto;
+                };
+            }
+            else
+            {
+                return BadRequest("Debe especificar solo un tipo de perfil (Cliente o Artista).");
             }
 
-                return CreatedAtAction(nameof(GetPerfilById), new { id = idDevuelto }, profile);
+            var id = connection.ExecuteScalar<int>(sql, parametros);
+            profile.Id = id;
+
+            return CreatedAtAction(nameof(GetPerfilById), new { id = id }, profile);
         }
 
-        // DELETE: api/Perfiles/5
+        // DELETE: api/Profiles/5
         [HttpDelete("{id}")]
-        public void DeletePerfil(int id)
+        public ActionResult DeletePerfil(int id)
         {
-            connection.Execute(@"DELETE FROM ""Profiles"" WHERE ""Id"" = @Id", new { Id = id });
+            var filasAfectadas = connection.Execute(@"DELETE FROM ""Profiles"" WHERE ""Id"" = @Id", new { Id = id });
+
+            if (filasAfectadas == 0)
+                return NotFound();
+
+            return NoContent();
         }
-        /*
-        private bool PerfilExists(int id)
-        {
-            return _context.Perfiles.Any(e => e.Id == id);
-        }*/
     }
 }

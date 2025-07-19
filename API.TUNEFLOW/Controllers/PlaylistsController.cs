@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Playlists;
-using Modelos.Tuneflow.Usuario.Consumidor;
+using Modelos.Tuneflow.User.Consumer;
 
 namespace API.TUNEFLOW.Controllers
 {

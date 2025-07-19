@@ -1,5 +1,4 @@
-﻿using Modelos.Tuneflow.Usuario.Consumidor;
-using Modelos.Tuneflow.Usuario.Produccion;
+﻿using Modelos.Tuneflow.User.Administration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,8 +6,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.User.Production;
 
-namespace Modelos.Tuneflow.Usuario.Perfiles
+namespace Modelos.Tuneflow.User.Profiles
 {
     public class Profile
     {

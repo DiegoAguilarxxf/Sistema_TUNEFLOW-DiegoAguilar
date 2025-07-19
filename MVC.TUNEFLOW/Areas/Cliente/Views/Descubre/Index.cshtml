@@ -1,20 +1,22 @@
-﻿﻿@{
+﻿@model IEnumerable<string>
+
+@{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
     ViewData["Title"] = "Descubre";
 }
 
+<div class="descubre-container">
+    <h2 class="text-center mb-4">🔍 Descubre por Género</h2>
 
-<div style="display: flex; flex-wrap: wrap; gap: 20px;">
-    <a href="#">
-        <img src="@Url.Content("~/img_descubre/Creado para ti-Descubrir.png")" alt="Creado para ti" style="width: 200px;" />
-    </a>
-    <a href="#">
-        <img src="@Url.Content("~/img_descubre/Musica de descubrir.png")" alt="Música" style="width: 200px;" />
-    </a>
-    <a href="#">
-        <img src="@Url.Content("~/img_descubre/Amor-Descubrir.png")" alt="Amor" style="width: 200px;" />
-    </a>
-    <a href="#">
-        <img src="@Url.Content("~/img_descubre/Salsa-Descubrir.png")" alt="Salsa" style="width: 200px;" />
-    </a>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+        @foreach (var genero in Model)
+        {
+            <a href="/Cliente/Buscar/Buscar?nameSong=@genero" class="genre-card">
+                <div class="card" style="width: 200px; text-align: center; border-radius: var(--radius-lg); background: var(--bg-tertiary); padding: 16px; box-shadow: var(--shadow-md);">
+                    <h5>@genero</h5>
+                    <img src="@Url.Content($"~/img_descubre/{genero}.png")" alt="Género: @genero" style="width: 100%; border-radius: var(--radius-md);" />
+                </div>
+            </a>
+        }
+    </div>
 </div>

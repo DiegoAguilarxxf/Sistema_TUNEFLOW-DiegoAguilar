@@ -5,67 +5,67 @@
     ViewData["Title"] = "Biblioteca";
 }
 
-<h2>🎼 TUNFLOW Biblioteca</h2>
+<div class="panel-container">
+    <h2 class="text-center mb-4">TUNFLOW - BIBLIOTECA</h2>
 
-@if (Model == null || !Model.Any())
-{
-    <div class="alert alert-info">Aún no hay canciones en la biblioteca.</div>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Título</th>
-                <th>Género</th>
-                <th>Artista</th>
-                <th>Contenido Explícito</th>
-                <th>Duración</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        <img src="@item.ImagePath" alt="Imagen de @item.Title" style="max-height: 100px;" />
-                    </td>
-                    <td>@item.Title</td>
-                    <td>@item.Genre</td>
-                    <td>
-
-                        @if (item.Artist != null)
-                        {
-                            <a href="/Artista/Perfil/@item.Artist.StageName">
-                                @item.Artist.StageName
-                            </a>
-
-
-
-                        }
-                        else
-                        {
-                            <span>Desconocido</span>
-                        }
-                    </td>
-                    <td>@(item.ExplicitContent ? "Sí" : "No")</td>
-                    <td>@item.TimeInMinutes(item.Duration)</td>
-                    <td>
-                        <button class="btn btn-sm btn-success" type="button"
-                                onclick="reproducirCancion(
-                            @item.Id,
-                            '@item.Title',
-                            '@item.FilePath',
-                            '@item.ImagePath',
-                            @ViewBag.IdCliente
-                        )">
-                            ▶ Reproducir
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info text-center">Aún no hay canciones en la biblioteca.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Portada</th>
+                        <th>Título</th>
+                        <th>Género</th>
+                        <th>Artista</th>
+                        <th>Explícito</th>
+                        <th>Duración</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="reproductor-portada">
+                                    <img src="@item.ImagePath" alt="Portada de @item.Title" />
+                                </div>
+                            </td>
+                            <td>@item.Title</td>
+                            <td>@item.Genre</td>
+                            <td>
+                                @if (item.Artist != null)
+                                {
+                                    <a href="/Artista/Perfil/@item.Artist.StageName">@item.Artist.StageName</a>
+                                }
+                                else
+                                {
+                                    <span>Desconocido</span>
+                                }
+                            </td>
+                            <td>@(item.ExplicitContent ? "Sí" : "No")</td>
+                            <td>@item.TimeInMinutes(item.Duration)</td>
+                            <td>
+                                <button class="btn btn-sm btn-success"
+                                        onclick="reproducirCancion(
+                                            @item.Id,
+                                            '@item.Title',
+                                            '@item.FilePath',
+                                            '@item.ImagePath',
+                                            @ViewBag.IdCliente
+                                        )">
+                                    ▶ Reproducir
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,59 +1,44 @@
-﻿@model Modelos.Tuneflow.Playlists.Playlist
-
-@{
-    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
-    ViewData["Title"] = Model.Title;
-}
-
-<div class="playlist-header d-flex align-items-end p-4" style="background: linear-gradient(to bottom, #1db954, #121212); color: white;">
-    <img src="@Model.PlaylistCover" alt="Portada playlist" class="me-4" style="width: 200px; height: 200px; object-fit: cover; border-radius: 10px;">
-    <div>
-        <p class="text-uppercase text-white-50 mb-1">Playlist</p>
-        <h1 class="display-4 fw-bold mb-1">@Model.Title</h1>
-        <p class="text-white-50">@Model.Description</p>
-        <button class="btn btn-success btn-lg mt-2">▶ Reproducir</button>
-    </div>
-</div>
-
-<div class="container mt-4 text-white">
-    <table class="table table-dark table-borderless align-middle">
-        <thead>
+﻿<tbody>
+    @if (Model.Songs != null && Model.Songs.Any())
+    {
+        int index = 1;
+        foreach (var cancion in Model.Songs)
+        {
             <tr>
-                <th>#</th>
-                <th>Título</th>
-                <th>Artista</th>
-                <th>Contenido Explicito</th>
-                <th>Duración</th>
+                <td>@index</td>
+                <td class="d-flex align-items-center gap-3">
+                    <img src="@cancion.ImagePath" alt="@cancion.Title" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                    <div>
+                        <strong>@cancion.Title</strong><br />
+                        <small class="text-muted">@cancion.Genre</small>
+                    </div>
+                </td>
+                <td>@(cancion.Artist?.StageName ?? "Desconocido")</td>
+                <td>@(cancion.ExplicitContent ? "Sí" : "No")</td>
+                <td>@cancion.TimeInMinutes(cancion.Duration)</td>
+                <td>
+                    <!-- Botón Reproducir -->
+                    <button class="btn btn-success btn-sm" type="button" onclick="reproducirCancion('@cancion.Id')">
+                        ▶
+                    </button>
+
+                    <!-- Botón Eliminar -->
+                    <form method="post" action="@Url.Action("DeleteSong", "Playlist", new { playlistId = Model.Id, songId = cancion.Id })"
+                          style="display:inline" onsubmit="return confirm('¿Quieres eliminar esta canción de la playlist?');">
+                        <button type="submit" class="btn btn-danger btn-sm ms-1">
+                            🗑️
+                        </button>
+                    </form>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @if (Model.Songs != null && Model.Songs.Any())
-            {
-                int index = 1;
-                foreach (var cancion in Model.Songs)
-                {
-                    <tr>
-                        <td>@index</td>
-                        <td class="d-flex align-items-center gap-3">
-                            <img src="@cancion.ImagePath" alt="@cancion.Title" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-                            <div>
-                                <strong>@cancion.Title</strong><br />
-                                <small class="text-muted">@cancion.Genre</small>
-                            </div>
-                        </td>
-                        <td>@(cancion.Artist?.StageName ?? "Desconocido")</td>
-                        <td>@(cancion.ExplicitContent ? "Explícito" : "No")</td>
-                        <td>@cancion.TimeInMinutes(cancion.Duration)</td>
-                    </tr>
-                    index++;
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="5" class="text-center text-muted">Esta playlist no tiene canciones.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            index++;
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="6" class="text-center text-muted">Esta playlist no tiene canciones.</td>
+        </tr>
+    }
+</tbody>
+v>

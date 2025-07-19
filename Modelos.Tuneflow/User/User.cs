@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Modelos.Tuneflow.Usuario
+namespace Modelos.Tuneflow.User
 {
     public abstract class User
     {

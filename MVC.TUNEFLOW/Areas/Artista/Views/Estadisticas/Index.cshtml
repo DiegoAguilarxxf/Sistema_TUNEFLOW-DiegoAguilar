@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Modelos.Tuneflow.User.Administration.ArtistStatistics>
+
+@{
+    ViewData["Title"] = "Estadisticas";
+}
+
+<h1>Mis Estadisticas</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Artista
+            </th>
+            <th>
+                Total Reproduciones
+            </th>
+            <th>
+                Total Seguidores
+            </th>
+            <th>
+                Canciones Publicadas
+            </th>
+            <th>
+                Albums Publicados
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Artist.StageName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalPlays)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalFollowers)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublishedSongs)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublishedAlbums)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Modelos.Tuneflow.Usuario.Consumidor
+namespace Modelos.Tuneflow.User.Consumer
 {
     public class SubscriptionType
     {

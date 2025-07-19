@@ -7,7 +7,7 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Modelos.Tuneflow.Pagos;
+using Modelos.Tuneflow.Payments;
 
 namespace API.TUNEFLOW.Controllers
 {

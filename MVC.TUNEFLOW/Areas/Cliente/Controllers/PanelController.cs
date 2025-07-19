@@ -1,65 +1,41 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Modelos.Tuneflow.Playlists;
-using Modelos.Tuneflow.Usuario.Produccion;
-using Modelos.Tuneflow.Media;
-using Modelos.Tuneflow.Modelos;
+using Modelos.Tuneflow.Models;
 using API.Consumer;
-using System.Diagnostics;
-using Modelos.Tuneflow.Usuario.Administracion;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using System.Text.Json;
+using Modelos.Tuneflow.Media;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
     [Area("Cliente")]
+    [Authorize]
     public class PanelController : Controller
     {
         public async Task<IActionResult> Panel()
         {
-            try
-            {
-                
-                var playlists = await Crud<Playlist>.GetAllAsync();
-               
-                var songs = await Crud<Song>.GetAllAsync();
-                
-                var artists = await Crud<Artist>.GetAllAsync();
-               
-               // var statistics = await Crud<ArtistStatistics>.GetAllAsync();//no entra
-               
-                // Validación básica
-                if (playlists == null || songs == null || artists == null /*|| statistics == null*/)
-                {
-                    throw new Exception("Una de las listas es null.");
-                }
-                else
-                {
-                    
-                    var topPlaylists = playlists
-                        .Where(p => p.Songs != null && p.Songs.Any())
-                        .Where(p =>
-                            p.Songs
-                            .Where(c => c.Artist != null)
-                            .GroupBy(c => c.Artist.CountryId)
-                            .Any(g => g.Count() > 5)
-                        )
-                        .ToList();
-
-                  /*  var popularArtists = artists
-                        .Where(a => statistics.Any(e => e.ArtistId == a.Id && e.TotalPlays > 10))
-                        .ToList();
-
-                    ViewBag.TopPlaylists = topPlaylists;
-                    ViewBag.PopularArtists = popularArtists;*/
-
-                    return View();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"❌ ERROR EN PanelController: {ex.Message}");
-                return RedirectToAction("Error", "Home", new { area = "" }); // o View("Error")
-            }
+            var paises = await Crud<Country>.GetAllAsync();
+            return View(paises);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CancionesPorPais(int paisId)
+        {
+            using var httpClient = new HttpClient();
+
+            // ✅ URL actualizada según tu mensaje
+            var response = await httpClient.GetAsync($"https://localhost:7031/api/Countries/{paisId}/songs");
+
+            if (!response.IsSuccessStatusCode)
+                return NotFound($"No se pudo obtener canciones del país con ID {paisId}.");
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var canciones = JsonSerializer.Deserialize<List<Song>>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return View(canciones);
+        }
     }
 }

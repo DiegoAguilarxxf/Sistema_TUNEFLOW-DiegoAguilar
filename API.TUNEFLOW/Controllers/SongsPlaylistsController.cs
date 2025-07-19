@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Media;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Modelos.Tuneflow.Usuario.Produccion;
+using Modelos.Tuneflow.User.Production;
 
 namespace API.TUNEFLOW.Controllers
 {

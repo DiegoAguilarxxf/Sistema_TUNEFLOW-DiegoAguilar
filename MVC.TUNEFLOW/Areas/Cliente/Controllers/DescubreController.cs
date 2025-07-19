@@ -1,75 +1,62 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using API.Consumer; // Asegúrate de tener tu clase Crud<T> aquí
+using Modelos.Tuneflow.Media; // Modelo de canciones
+using System.Threading.Tasks;
+using MVC.TUNEFLOW.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
     [Area("Cliente")]
+    [Authorize]
     public class DescubreController : Controller
     {
-        public IActionResult Index()
+        // No necesitas _crud como instancia si todo es estático
+        private readonly HttpClient _httpClient;
+
+        public DescubreController(HttpClient httpClient)
         {
-            return View();
+            _httpClient = httpClient;
+            Crud<Song>.EndPoint = "https://localhost:7031/api/Songs";
         }
 
-        public IActionResult Details(int id)
-        {
-            return View();
-        }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Index()
         {
             try
             {
+                var canciones = await Crud<Song>.GetAllAsync();
+                var generos = canciones
+                    .Where(c => !string.IsNullOrEmpty(c.Genre))
+                    .Select(c => c.Genre)
+                    .Distinct()
+                    .ToList();
+
+                return View(generos);
+            }
+            catch (Exception ex)
+            {
+                return View("Error", new ErrorViewModel { ErrorMessage = ex.Message });
+            }
+        }
+
+        public async Task<IActionResult> Genre(string genre)
+        {
+            if (string.IsNullOrEmpty(genre))
+            {
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
-        }
 
-        public IActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, IFormCollection collection)
-        {
             try
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+                var canciones = await Crud<Song>.GetCancionesPorPalabrasClave(genre);
 
-        public IActionResult Delete(int id)
-        {
-            return View();
-        }
+                ViewBag.Genre = genre;
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
+                return View(canciones);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View("Error", new ErrorViewModel { ErrorMessage = ex.Message });
             }
         }
     }

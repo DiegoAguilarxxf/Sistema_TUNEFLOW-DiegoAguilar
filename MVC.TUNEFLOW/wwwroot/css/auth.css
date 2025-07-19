@@ -1,52 +1,78 @@
-﻿/* =======================
-   🎧 TuneFlow - Auth CSS Mejorado Profesional
-   ======================= */
-
-/* 🎨 Variables globales para colores, bordes y transiciones */
+﻿/* ===========================================
+   VARIABLES GLOBALES
+   =========================================== */
 :root {
+    /* Colores principales */
     --primary: #6c63ff;
     --primary-dark: #5851db;
+    --primary-light: #8b85ff;
+    /* Geometría y transiciones */
     --radius: 12px;
     --transition: 0.3s ease;
-    /* Nuevas variables para la animación de estrellas */
-    --star-color: rgba(255, 255, 255, 0.7); /* Blanco suave */
+    --star-color: rgba(255, 255, 255, 0.7);
     --star-size-min: 1px;
     --star-size-max: 3px;
     --star-duration: 20s;
+    /* Sombras */
+    --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 15px 40px rgba(0, 0, 0, 0.2);
+    /* Breakpoints */
+    --mobile: 480px;
+    --tablet: 768px;
+    --desktop: 1024px;
+    --large: 1200px;
+    /* Espaciado responsive */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
 }
 
     /* Variables para tema claro */
     :root[data-theme='light'] {
-        --bg: #f2f2f2;
+        --bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         --card-bg: rgba(255, 255, 255, 0.95);
-        --text-color: #1a1a1a;
-        --input-bg: transparent;
-        --border-color: #ccc;
-        --input-focus: rgba(108, 99, 255, 0.3);
-        --footer-bg: #dedff3;
+        --card-bg-solid: #ffffff;
+        --text-color: #2c3e50;
+        --text-secondary: #7f8c8d;
+        --input-bg: rgba(255, 255, 255, 0.9);
+        --border-color: #e1e8ed;
+        --border-focus: var(--primary);
+        --input-focus: rgba(108, 99, 255, 0.15);
+        --footer-bg: #ecf0f1;
+        --star-color: rgba(108, 99, 255, 0.6);
     }
 
     /* Variables para tema oscuro */
     :root[data-theme='dark'] {
-        --bg: #0f0f0f;
-        --card-bg: rgba(25, 25, 25, 0.95);
-        --text-color: #eaeaea;
-        --input-bg: transparent;
-        --border-color: #444;
-        --input-focus: rgba(108, 99, 255, 0.2);
-        --footer-bg: #252540;
-        --star-color: rgba(255, 255, 255, 0.3); /* Estrellas más sutiles en oscuro */
+        --bg: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        --card-bg: rgba(30, 30, 40, 0.95);
+        --card-bg-solid: #1e1e28;
+        --text-color: #ecf0f1;
+        --text-secondary: #95a5a6;
+        --input-bg: rgba(30, 30, 40, 0.9);
+        --border-color: #34495e;
+        --border-focus: var(--primary-light);
+        --input-focus: rgba(139, 133, 255, 0.2);
+        --footer-bg: #2c3e50;
+        --star-color: rgba(255, 255, 255, 0.3);
     }
 
-/*
---------------------------------------------
-REGLAS GLOBALES Y CORRECCIÓN DE SCROLL HORIZONTAL
---------------------------------------------
-*/
+/* ===========================================
+   RESET Y CONFIGURACION GLOBAL
+   =========================================== */
+* {
+    box-sizing: border-box !important;
+}
+
 html {
     height: 100% !important;
     min-height: 100vh !important;
-    overflow-x: hidden !important; /* Asegura que NO haya scroll horizontal en el HTML */
+    overflow-x: hidden !important;
+    scroll-behavior: smooth !important;
+    font-size: 16px;
 }
 
 body {
@@ -54,30 +80,26 @@ body {
     min-height: 100vh !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow-x: hidden !important; /* Asegura que NO haya scroll horizontal en el BODY */
-    position: relative; /* Necesario para posicionar las estrellas */
-    background-color: var(--bg); /* Asegura que el color de fondo del body se aplique */
-    font-family: 'Inter', sans-serif;
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    transition: background-color var(--transition), color var(--transition);
+    overflow-x: hidden !important;
+    position: relative !important;
+    background: var(--bg) !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    color: var(--text-color) !important;
+    transition: background var(--transition), color var(--transition) !important;
+    line-height: 1.6 !important;
 }
 
-
-/*
---------------------------------------------
-ESTILOS DEL PRELOADER (FORZANDO PANTALLA COMPLETA AL MÁXIMO)
---------------------------------------------
-*/
+/* ===========================================
+   PRELOADER
+   =========================================== */
 #preloader {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background-color: #000000 !important; /* Fondo negro */
-    z-index: 2147483647 !important; /* El z-index MÁXIMO posible */
+    background-color: #000000 !important;
+    z-index: 2147483647 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -88,8 +110,8 @@ ESTILOS DEL PRELOADER (FORZANDO PANTALLA COMPLETA AL MÁXIMO)
 }
 
 .p {
-    font-family: 'Inter', sans-serif; /* Mantenemos Inter */
-    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(12px, 2vw, 14px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,15 +122,13 @@ ESTILOS DEL PRELOADER (FORZANDO PANTALLA COMPLETA AL MÁXIMO)
 }
 
     .p img {
-        height: 40px;
+        height: clamp(30px, 5vw, 40px);
         margin-bottom: 10px;
     }
 
-/*
---------------------------------------------
-ESTILOS PARA LAS ANIMACIONES POST-CARGA
---------------------------------------------
-*/
+/* ===========================================
+   ANIMACIONES POST CARGA
+   =========================================== */
 .text, .img, .fade-in, .opacity-contact, .fade-up, .scale, .new-release, .music-indicator, .menu-bar-line {
     opacity: 0;
 }
@@ -127,167 +147,429 @@ ESTILOS PARA LAS ANIMACIONES POST-CARGA
     transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-
-/* ========== ESTILOS GENERALES DEL BODY Y CONTENEDORES ========== */
-
-/* auth-body ya está definido arriba para evitar redundancia */
-
+/* ===========================================
+   LAYOUT PRINCIPAL
+   =========================================== */
 .auth-wrapper {
-    display: flex;
-    min-height: 100vh;
-    width: 100vw; /* Asegura que no se desborde */
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden; /* ¡Importante! Evitar el scroll horizontal aquí también */
+    min-height: 100vh !important;
+    width: 100vw !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    background: var(--bg) !important;
 }
 
-/* Barra lateral ancha para navegación o branding */
-.auth-sidebar {
-    width: 140px;
-    background-color: var(--primary);
-    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
-    flex-shrink: 0; /* Evita que se encoja cuando el espacio es limitado */
-}
-
-/* Contenido principal al lado derecho de la sidebar */
 .auth-main-content {
     flex: 1;
     display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: center;
-    padding: 4rem 3rem; /* Espaciado amplio para comodidad visual */
+    padding: var(--spacing-lg);
     position: relative;
-    background-color: var(--bg);
-    transition: background-color var(--transition);
-    min-width: 0; /* Permite que el flex item se encoja */
-    box-sizing: border-box; /* Asegura que padding no aumente el ancho */
+    z-index: 2;
+    background: transparent;
+    backdrop-filter: none;
+    border: none;
+    box-shadow: none;
 }
 
-/* ========== CONTENIDO DE BIENVENIDA ========== */
+/* ===========================================
+   CONTENIDO DE BIENVENIDA
+   =========================================== */
 .welcome-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    width: 100%;
-    max-width: 500px;
-    padding-top: 2rem;
-    box-sizing: border-box; /* Asegura que padding no aumente el ancho */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    max-width: min(600px, 90vw) !important;
+    width: 100% !important;
+    padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2rem) !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: clamp(16px, 3vw, 24px) !important;
+    border: none !important;
+    box-shadow: none !important;
+    position: relative !important;
+    overflow: visible !important;
+    animation: welcomeSlideIn 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin: 0 auto !important;
 }
 
-/* ========== FORMULARIO MEJORADO Y MODERNO ========== */
-.auth-content {
-    display: flex;
-    flex-direction: column;
-    width: 100%; /* Ocupa todo el ancho disponible en su contenedor */
-    max-width: 480px; /* Limita el ancho máximo del formulario */
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    border-radius: var(--radius);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    padding: 3.5rem 2.5rem;
-    animation: fadeIn 0.4s ease;
-    margin: 2.5rem auto; /* Centra el formulario horizontalmente */
-    box-sizing: border-box; /* Crucial para evitar desbordamiento con padding */
-}
-
-.form-title {
-    font-size: 2rem;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.form-group {
-    position: relative;
-    margin-bottom: 2.4rem;
-}
-
-    .form-group input {
-        width: 100%;
-        padding: 1.2rem 0.5rem 0.5rem 0.5rem;
-        background: none;
-        border: none;
-        border-bottom: 2px solid var(--border-color);
-        font-size: 1.05rem;
-        color: var(--text-color);
-        transition: all var(--transition);
+    .welcome-content::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+        pointer-events: none;
+        z-index: -1;
     }
 
-        .form-group input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 2px 0 var(--primary);
+@keyframes welcomeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ===========================================
+   IMAGENES Y LOGOS
+   =========================================== */
+.logo-img {
+    max-width: 100%;
+    height: auto;
+    width: clamp(250px, 50vw, 450px);
+    margin-bottom: var(--spacing-lg);
+    filter: drop-shadow(0 8px 25px rgba(0, 0, 0, 0.1));
+    transition: all var(--transition);
+    animation: logoFloat 3s ease-in-out infinite;
+}
+
+.hero-img {
+    max-width: 100%;
+    height: auto;
+    width: clamp(200px, 40vw, 350px);
+    margin-top: var(--spacing-lg);
+    filter: drop-shadow(0 8px 25px rgba(0, 0, 0, 0.1));
+    transition: all var(--transition);
+    animation: heroGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes logoFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes heroGlow {
+    from {
+        filter: drop-shadow(0 8px 25px rgba(0, 0, 0, 0.1));
+    }
+
+    to {
+        filter: drop-shadow(0 12px 35px rgba(108, 99, 255, 0.2));
+    }
+}
+
+.dynamic-logo:hover,
+.dynamic-hero:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 12px 35px rgba(108, 99, 255, 0.3));
+}
+
+/* ===========================================
+   BOTONES
+   =========================================== */
+/* ===========================================
+   BOTÓN INICIO - MÁS PEQUEÑO Y CENTRADO
+   =========================================== */
+.btn-inicio {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    color: white !important;
+    padding: clamp(0.6rem, 1.5vw, 0.8rem) clamp(1.2rem, 2.5vw, 1.5rem) !important;
+    border: none !important;
+    border-radius: var(--radius) !important;
+    font-weight: 600 !important;
+    font-size: clamp(0.85rem, 1.8vw, 0.95rem) !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    cursor: pointer !important;
+    transition: all var(--transition) !important;
+    box-shadow: 0 6px 20px rgba(108, 99, 255, 0.3) !important;
+    margin: clamp(1rem, 2vw, 1.5rem) auto !important;
+    position: relative !important;
+    overflow: hidden !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    min-width: clamp(120px, 20vw, 140px) !important;
+    max-width: clamp(140px, 25vw, 160px) !important;
+    width: auto !important;
+    text-align: center !important;
+}
+
+    .btn-inicio::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+        transition: left 0.6s ease !important;
+    }
+
+    .btn-inicio:hover::before {
+        left: 100% !important;
+    }
+
+    .btn-inicio:hover {
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%) !important;
+        box-shadow: 0 8px 25px rgba(108, 99, 255, 0.5) !important;
+        transform: translateY(-2px) !important;
+        color: white !important;
+        text-decoration: none !important;
+    }
+
+    .btn-inicio:active {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4) !important;
+    }
+
+
+/* ===========================================
+   FORMULARIOS Y CONTAINERS
+   =========================================== */
+.container.mt-5 {
+    background: var(--card-bg) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-radius: var(--radius) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: var(--shadow-heavy) !important;
+    padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem) !important;
+    margin: clamp(2rem, 5vh, 4rem) auto !important;
+    max-width: min(1200px, 95vw) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    width: 100%;
+}
+
+    .container.mt-5::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: linear-gradient(135deg, rgba(108, 99, 255, 0.05) 0%, transparent 50%, rgba(108, 99, 255, 0.02) 100%) !important;
+        pointer-events: none !important;
+    }
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container .row {
+    margin: 0 !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* ===========================================
+   COLUMNA DE IMAGEN EN FORMULARIOS
+   =========================================== */
+.col-md-6.d-none.d-md-block {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: var(--spacing-lg) !important;
+}
+
+    .col-md-6.d-none.d-md-block img {
+        max-width: 100% !important;
+        height: auto !important;
+        border-radius: var(--radius) !important;
+        box-shadow: var(--shadow-medium) !important;
+        transition: transform var(--transition), box-shadow var(--transition) !important;
+        filter: drop-shadow(0 8px 25px rgba(0, 0, 0, 0.15)) !important;
+    }
+
+        .col-md-6.d-none.d-md-block img:hover {
+            transform: scale(1.05) !important;
+            box-shadow: var(--shadow-heavy) !important;
         }
 
-    .form-group label {
-        position: absolute;
-        left: 0.5rem;
-        top: 1.2rem;
-        pointer-events: none;
-        transition: 0.3s ease all;
-        color: #999;
-        background-color: var(--card-bg);
-        padding: 0 6px;
-        border-radius: 4px;
-    }
-
-    .form-group input:focus + label,
-    .form-group input:not(:placeholder-shown) + label {
-        top: -0.8rem;
-        font-size: 0.85rem;
-        color: var(--primary);
-    }
-
-input::placeholder {
-    color: transparent;
+/* ===========================================
+   ESTILOS DE FORMULARIO
+   =========================================== */
+.col-md-6:not(.d-none) {
+    padding: var(--spacing-lg) !important;
+    position: relative !important;
+    z-index: 2 !important;
 }
 
-/* ========== BOTONES ========== */
-
-/* Botón de inicio genérico, pero también aplicable al botón de submit */
-.btn-inicio {
-    padding: 0.5rem 1.2rem;
-    font-size: 1rem;
-    min-width: 160px;
+.col-md-6 h1 {
+    font-size: clamp(1.8rem, 4vw, 2.5rem) !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    margin-bottom: clamp(2rem, 4vh, 3rem) !important;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    position: relative !important;
+    text-shadow: none !important;
 }
 
-/* Botón de submit y btn-primary: ¡Ahora con width: auto y important! */
-button[type="submit"],
+form {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.mb-3 {
+    position: relative !important;
+    margin-bottom: clamp(1.5rem, 3vh, 2rem) !important;
+}
+
+label {
+    font-weight: 600 !important;
+    color: var(--text-color) !important;
+    font-size: clamp(0.9rem, 2vw, 0.95rem) !important;
+    margin-bottom: 0.8rem !important;
+    display: block !important;
+    transition: color var(--transition) !important;
+}
+
+.form-control,
+.form-select {
+    width: 100% !important;
+    padding: clamp(0.8rem, 2vw, 1rem) clamp(1rem, 2vw, 1.2rem) !important;
+    background: var(--input-bg) !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: var(--radius) !important;
+    font-size: clamp(0.9rem, 2vw, 1rem) !important;
+    color: var(--text-color) !important;
+    transition: all var(--transition) !important;
+    box-shadow: none !important;
+    font-family: inherit !important;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        background: var(--input-bg) !important;
+        border-color: var(--border-focus) !important;
+        box-shadow: 0 0 0 0.25rem var(--input-focus) !important;
+        color: var(--text-color) !important;
+        outline: none !important;
+        transform: translateY(-2px) !important;
+    }
+
+    .form-control:hover,
+    .form-select:hover {
+        border-color: var(--primary) !important;
+        transform: translateY(-1px) !important;
+    }
+
+.form-select {
+    cursor: pointer !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+}
+
+input[type="date"] {
+    cursor: pointer !important;
+}
+
+/* ===========================================
+   VALIDACION Y ERRORES
+   =========================================== */
+.text-danger {
+    color: #e74c3c !important;
+    font-size: clamp(0.8rem, 1.5vw, 0.85rem) !important;
+    margin-top: 0.5rem !important;
+    font-weight: 500 !important;
+}
+
+.validation-summary-errors {
+    background: rgba(231, 76, 60, 0.1) !important;
+    border: 1px solid #e74c3c !important;
+    border-radius: var(--radius) !important;
+    padding: 1rem !important;
+    margin-bottom: 2rem !important;
+}
+
+/* ===========================================
+   BOTON PRINCIPAL PARA FORMULARIOS
+   =========================================== */
 .btn-primary {
-    width: auto !important; /* Ajusta el ancho al contenido */
-    min-width: 180px !important; /* Ancho mínimo para que no sea diminuto */
-    max-width: 100% !important; /* Asegura que no se desborde en pantallas pequeñas */
-    background: var(--primary);
-    color: white;
-    padding: 0.75rem 1.1rem;
-    border: none;
-    border-radius: var(--radius);
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color var(--transition), box-shadow var(--transition);
-    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
-    margin-top: 1.5rem;
-    /* Para centrar el botón si su ancho es menor que el contenedor */
-    display: block; /* Necesario para que margin: auto funcione para el centrado */
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: 100% !important;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    color: white !important;
+    padding: clamp(1rem, 2.5vw, 1.2rem) clamp(1.5rem, 3vw, 2rem) !important;
+    border: none !important;
+    border-radius: var(--radius) !important;
+    font-weight: 700 !important;
+    font-size: clamp(1rem, 2vw, 1.1rem) !important;
+    cursor: pointer !important;
+    transition: all var(--transition) !important;
+    box-shadow: 0 8px 25px rgba(108, 99, 255, 0.3) !important;
+    margin-top: var(--spacing-lg) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    font-family: inherit !important;
+    text-decoration: none !important;
 }
 
-    button[type="submit"]:hover,
-    .btn-primary:hover {
-        background-color: var(--primary-dark);
-        box-shadow: 0 4px 16px rgba(108, 99, 255, 0.6);
+    .btn-primary::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+        transition: left 0.6s ease !important;
     }
 
-/* ========== FOOTER PROFESIONAL Y FUNCIONAL (Responsive Mejorado) ========== */
+    .btn-primary:hover::before {
+        left: 100% !important;
+    }
 
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%) !important;
+        box-shadow: 0 12px 35px rgba(108, 99, 255, 0.5) !important;
+        transform: translateY(-3px) !important;
+        border-color: transparent !important;
+        color: white !important;
+        text-decoration: none !important;
+    }
+
+    .btn-primary:active {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4) !important;
+    }
+
+    .btn-primary:focus {
+        box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25) !important;
+    }
+
+/* ===========================================
+   FOOTER PROFESIONAL
+   =========================================== */
 footer.auth-footer {
-    background-color: var(--bg);
+    background-color: var(--footer-bg);
     color: var(--text-color);
     text-align: center;
-    padding: 2rem 1rem;
+    padding: clamp(1.5rem, 3vh, 2rem) 1rem;
     margin-top: auto;
     border-top: 1px solid var(--border-color);
     display: flex;
@@ -295,27 +577,28 @@ footer.auth-footer {
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    box-sizing: border-box; /* Asegura que el padding no cause desbordamiento */
-    width: 100%; /* Ocupa todo el ancho disponible */
+    box-sizing: border-box;
+    width: 100%;
+    transition: background-color var(--transition);
 }
 
 .footer-logo {
-    width: 130px;
-    height: 130px;
+    width: clamp(100px, 15vw, 130px);
+    height: clamp(100px, 15vw, 130px);
     object-fit: contain;
     flex-shrink: 0;
     margin-right: 1rem;
 }
 
 .auth-footer .footer-description {
-    font-size: 0.95rem;
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
     line-height: 1.6;
     max-width: 500px;
     margin: 0 auto;
     padding: 0.5rem;
     flex-grow: 1;
     text-align: center;
-    box-sizing: border-box; /* Asegura que el padding no cause desbordamiento */
+    box-sizing: border-box;
 }
 
 .theme-switch-container {
@@ -372,66 +655,29 @@ input:checked + .slider {
     }
 
 .switch-label {
-    font-size: 0.9rem;
+    font-size: clamp(0.85rem, 2vw, 0.9rem);
     color: var(--text-color);
 }
 
-
-/* ========== IMÁGENES DINÁMICAS (Asegurando responsive) ========== */
-
-.dynamic-logo,
-.dynamic-hero {
-    max-width: 100%; /* Asegura que no se desborden */
-    height: auto; /* Mantiene la proporción */
-    transition: opacity 0.3s ease;
-}
-
-.logo-img {
-    width: 680px;
-    max-width: 90%; /* Limita el ancho máximo relativo al contenedor */
-}
-
-.hero-img {
-    width: 400px;
-    max-width: 90%; /* Limita el ancho máximo relativo al contenedor */
-}
-
-/* ========== ANIMACIÓN SUAVE ========== */
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/*
---------------------------------------------
-ANIMACIÓN DE ESTRELLAS SUAVES EN EL FONDO
---------------------------------------------
-*/
+/* ===========================================
+   ANIMACION DE ESTRELLAS
+   =========================================== */
 .stars {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none; /* Crucial para que no bloquee interacciones */
-    z-index: -1; /* Para que esté detrás de todo el contenido */
-    overflow: hidden; /* Evita que las estrellas individuales causen scroll */
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
 }
 
-/* Estrellas individuales (generadas con JavaScript) */
 .star {
     position: absolute;
     background-color: var(--star-color);
     border-radius: 50%;
-    opacity: 0; /* Inicia ocultas */
+    opacity: 0;
     animation: twinkle var(--star-duration) infinite alternate ease-in-out;
 }
 
@@ -447,123 +693,171 @@ ANIMACIÓN DE ESTRELLAS SUAVES EN EL FONDO
     }
 }
 
+/* ===========================================
+   UTILIDADES Y ANIMACIONES
+   =========================================== */
+.fade-in {
+    animation: fadeIn 0.8s ease-out !important;
+}
 
-/* ========== ESTILOS RESPONSIVOS MEJORADOS ========== */
-
-@media (max-width: 768px) {
-    .auth-sidebar {
-        display: none;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
 
-    .logo-img {
-        width: 180px; /* Ligeramente más pequeñas en móviles */
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-control:focus,
+.form-select:focus {
+    animation: inputFocus 0.3s ease-out !important;
+}
+
+@keyframes inputFocus {
+    from {
+        transform: scale(0.98);
     }
 
-    .hero-img {
-        width: 250px; /* Ligeramente más pequeñas en móviles */
+    to {
+        transform: scale(1);
+    }
+}
+
+.form-control::placeholder {
+    color: var(--text-secondary) !important;
+    opacity: 0.7 !important;
+    transition: opacity var(--transition) !important;
+}
+
+.form-control:focus::placeholder {
+    opacity: 0.4 !important;
+}
+
+/* ===========================================
+   TEMA OSCURO ESPECIFICO
+   =========================================== */
+[data-theme='dark'] .form-control,
+[data-theme='dark'] .form-select {
+    background: var(--input-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+    [data-theme='dark'] .form-control:focus,
+    [data-theme='dark'] .form-select:focus {
+        background: var(--input-bg) !important;
+        border-color: var(--border-focus) !important;
+        color: var(--text-color) !important;
+        box-shadow: 0 0 0 0.25rem var(--input-focus) !important;
+    }
+
+[data-theme='dark'] label {
+    color: var(--text-color) !important;
+}
+
+[data-theme='dark'] .text-danger {
+    color: #ff6b6b !important;
+}
+
+/* ===========================================
+   RESPONSIVE DESIGN
+   =========================================== */
+
+/* Dispositivos muy pequeños (0-320px) */
+@media screen and (max-width: 320px) {
+    :root {
+        --spacing-xs: 0.25rem;
+        --spacing-sm: 0.5rem;
+        --spacing-md: 0.75rem;
+        --spacing-lg: 1rem;
+        --spacing-xl: 1.5rem;
+    }
+
+    .welcome-content {
+        padding: 1.5rem 1rem;
+        margin: 0.5rem;
+    }
+
+    .btn-inicio {
+        width: 100%;
+        margin: 1rem 0;
+    }
+}
+
+/* Mobile Small (321-480px) */
+@media screen and (min-width: 321px) and (max-width: 480px) {
+    .auth-wrapper {
+        padding: 1rem;
     }
 
     .auth-main-content {
-        padding: 1.5rem 1rem; /* Más reducido para pantallas muy pequeñas */
+        padding: 1rem;
     }
 
-    .auth-content {
-        padding: 2rem 1rem; /* Ajusta padding del formulario */
-        margin: 1rem auto; /* Reduce el margen, centra */
+    .welcome-content {
+        padding: 2rem 1.5rem;
+        border-radius: 16px;
     }
 
-    .form-title {
-        font-size: 1.8rem; /* Título un poco más pequeño */
-        margin-bottom: 2rem;
+    .container.mt-5 {
+        margin: 1rem !important;
+        padding: 1.5rem !important;
     }
 
-    .form-group {
-        margin-bottom: 1.8rem; /* Menos espacio entre inputs */
+    .col-md-6:not(.d-none) {
+        padding: 0.5rem !important;
     }
 
-    button[type="submit"],
-    .btn-primary {
-        min-width: 100% !important; /* Que el botón ocupe todo el ancho disponible */
-        font-size: 0.95rem; /* Fuente ligeramente más pequeña */
-        padding: 0.6rem 1rem;
+    .btn-inicio {
+        width: 100%;
+    }
+}
+
+/* Mobile Large (481-767px) */
+@media screen and (min-width: 481px) and (max-width: 767px) {
+    .welcome-content {
+        max-width: 85vw;
     }
 
-    /* Footer responsive para pantallas pequeñas */
+    .footer-logo {
+        margin-bottom: 1rem;
+    }
+
     footer.auth-footer {
         flex-direction: column;
         text-align: center;
         gap: 1.5rem;
     }
+}
 
-    .footer-left, .theme-switch-container {
-        width: 100%;
-        justify-content: center;
+/* Tablet (768-1023px) */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .welcome-content {
+        max-width: 75vw;
+        padding: 2.5rem 2rem;
     }
 
-    .footer-logo {
-        margin-right: 0;
-        margin-bottom: 0.5rem; /* Espacio debajo del logo cuando está apilado */
+    .container.mt-5 {
+        max-width: 90vw !important;
+        padding: 3rem 2rem !important;
     }
 
-    .auth-footer .footer-description {
-        order: 1;
-        flex-grow: 0;
-        font-size: 0.85rem; /* Descripción más pequeña en móviles */
-    }
-
-    .footer-left {
-        order: 2;
-    }
-
-    .theme-switch-container {
-        order: 3;
+    .col-md-6.d-none.d-md-block {
+        display: flex !important;
     }
 }
 
-/* Media query adicional para tabletas (horizontal) y pantallas medianas */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .auth-main-content {
-        padding: 3rem 2rem;
+/* Desktop y superiores (1024px+) */
+@media screen and (min-width: 1024px) {
+    .welcome-content {
+        max-width: 600px;
     }
 
-    .auth-content {
-        padding: 3rem 2rem;
-        max-width: 450px;
+    .container.mt-5 {
+        max-width: 1200px !important;
     }
-
-    .auth-sidebar {
-        width: 100px; /* Sidebar un poco más pequeña */
-    }
-
-    .logo-img {
-        width: 450px;
-    }
-
-    .hero-img {
-        width: 320px;
-    }
-
-    /* Footer */
-    footer.auth-footer {
-        padding: 1.5rem 1rem;
-    }
-
-    .footer-logo {
-        width: 100px;
-        height: 100px;
-    }
-
-    .auth-footer .footer-description {
-        font-size: 0.9rem;
-    }
-}
-
-/* ========== ESTILOS PERSONALIZADOS PARA BOOTSTRAP CONTAINERS ========== */
-
-.container.mt-5 {
-    margin-top: 4rem !important; /* Ligeramente menos margen para mejor ajuste */
-    margin-bottom: 4rem !important;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    box-sizing: border-box; /* Asegura que padding no aumente el ancho */
 }

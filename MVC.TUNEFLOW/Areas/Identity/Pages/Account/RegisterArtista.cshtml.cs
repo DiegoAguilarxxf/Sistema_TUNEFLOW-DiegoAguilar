@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using Modelos.Tuneflow.Modelos;
-using Modelos.Tuneflow.Usuario.Perfiles;
-using Modelos.Tuneflow.Usuario.Produccion;
+using Modelos.Tuneflow.Models;
+using Modelos.Tuneflow.User.Profiles;
+using Modelos.Tuneflow.User.Production;
 using NuGet.Protocol.Plugins;
 
 namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
@@ -109,7 +109,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("Se creó cuenta para artista.");
 
-                    var artist = new Modelos.Tuneflow.Usuario.Produccion.Artist
+                    var artist = new Modelos.Tuneflow.User.Production.Artist
                     {
                         FirstName = Input.FirstName,
                         LastName = Input.LastName,
@@ -128,7 +128,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                         UserId = user.Id // Asignar el ID del usuario recién creado
                     };
 
-                    var newArtist = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artist>.CreateAsync(artist);
+                    var newArtist = await Crud<Modelos.Tuneflow.User.Production.Artist>.CreateAsync(artist);
 
                     var profile = new Profile
                     {

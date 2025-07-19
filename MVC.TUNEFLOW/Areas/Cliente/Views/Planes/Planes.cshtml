@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Modelos.Tuneflow.User.Consumer.SubscriptionType>
+
+@{
+    ViewData["Title"] = "Planes";
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
+}
+
+
+<div class="planes-page">
+    <div class="panel-container">
+        <h1 class="text-center my-4">Elige tu plan</h1>
+
+        <div class="plan-container">
+            @foreach (var item in Model)
+            {
+                <div class="plan-card">
+                    <h3 class="plan-name">@item.Name</h3>
+                    <div class="plan-price">$@item.Price / mes</div>
+                    <div class="plan-members">👥 Hasta @item.MemberLimit usuarios</div>
+
+                    <div class="d-flex flex-column gap-2">
+                        <a href="/Cliente/Pagos/Create" class="btn-adquirir">Adquirir</a>
+                        <a href="/Cliente/Planes/Details/@item.Id" class="btn-detalles">Detalles</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Media;
 using System.Diagnostics;
 using System.Security.Claims;
+using Modelos.Tuneflow.User.Consumer;
+
+
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -20,7 +23,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 
                 return RedirectToAction("Login", "Account");
                 }
-            var client = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.GetClientePorUsuarioId(userId);
+            var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
          
           
             if (client == null)
@@ -55,7 +58,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            var client = await Crud<Modelos.Tuneflow.Usuario.Consumidor.Client>.GetClientePorUsuarioId(userId);
+            var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
 
             if (client == null)
             {

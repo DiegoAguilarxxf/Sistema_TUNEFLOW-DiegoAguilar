@@ -1,0 +1,84 @@
+﻿@using System.Text.Json
+@model IEnumerable<Modelos.Tuneflow.Media.Song>
+
+
+@{
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
+    ViewData["Title"] = "Canciones por País";
+
+    string FormatearTiempo(int segundos)
+    {
+        var minutos = segundos / 60;
+        var seg = segundos % 60;
+        return $"{minutos}:{seg.ToString("D2")}";
+    }
+}
+
+<div class="buscar-container">
+    <h2 class="text-center mb-4">🎧 Canciones del País Seleccionado</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning text-center">No se encontraron canciones disponibles para este país.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Portada</th>
+                        <th>Título</th>
+                        <th>Género</th>
+                        <th>Artista</th>
+                        <th>Explícito</th>
+                        <th>Duración</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="reproductor-portada">
+                                    <img src="@item.ImagePath" alt="Portada de @item.Title" style="height: 60px; width: 60px; object-fit: cover; border-radius: 6px;" />
+                                </div>
+                            </td>
+                            <td>@item.Title</td>
+                            <td>@item.Genre</td>
+                            <td>
+                                @if (item.Artist != null && !string.IsNullOrEmpty(item.Artist.StageName))
+                                {
+                                    <a href="/Artista/Perfil/@item.Artist.StageName">@item.Artist.StageName</a>
+                                }
+                                else
+                                {
+                                    <span>Desconocido</span>
+                                }
+                            </td>
+                            <td>@(item.ExplicitContent ? "Sí" : "No")</td>
+                            <td>@FormatearTiempo(item.Duration) min</td>
+                            <td>
+
+                                <button class="btn btn-sm btn-success"
+                                        onclick='reproducirCancion(
+        @item.Id,
+        @Html.Raw(JsonSerializer.Serialize(item.Title)),
+        @Html.Raw(JsonSerializer.Serialize(item.FilePath)),
+        @Html.Raw(JsonSerializer.Serialize(item.ImagePath)),
+        @ViewBag.IdCliente,
+        0,
+        true,
+        @Html.Raw(item.Artist != null && !string.IsNullOrEmpty(item.Artist.StageName) ? JsonSerializer.Serialize(item.Artist.StageName) : "\"Desconocido\"")
+    )'>
+                                    ▶ Reproducir
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

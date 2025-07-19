@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Media;
-using Modelos.Tuneflow.Usuario.Produccion;
+using Modelos.Tuneflow.User.Production;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
@@ -13,6 +13,7 @@ using System;
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
     [Area("Artista")]
+    [Authorize]
     public class ArtistaController : Controller
     {
         private readonly IDbConnection _db;
@@ -33,7 +34,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 
             using (var multi = _db.QueryMultiple(sql, new { Id = id }))
             {
-                var artista = multi.Read<Modelos.Tuneflow.Usuario.Produccion.Artist>().FirstOrDefault();
+                var artista = multi.Read<Modelos.Tuneflow.User.Production.Artist>().FirstOrDefault();
                 if (artista != null)
                 {
                     artista.Songs = multi.Read<Song>().ToList();
@@ -125,7 +126,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         [HttpGet("Artist/Profile/{nombreArtistico}")]
         public async Task<IActionResult> ArtistaPorNombre(string nombreArtistico)
         {
-            var artistas = await Crud<Modelos.Tuneflow.Usuario.Produccion.Artist>.GetAllAsync();
+            var artistas = await Crud<Modelos.Tuneflow.User.Production.Artist>.GetAllAsync();
             var encontrado = artistas.FirstOrDefault(a => a.StageName == nombreArtistico);
 
             if (encontrado == null)
