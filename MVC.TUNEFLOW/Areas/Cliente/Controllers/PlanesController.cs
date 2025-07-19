@@ -2,87 +2,27 @@
 using Microsoft.AspNetCore.Mvc;
 using API.Consumer;
 using Modelos.Tuneflow.User.Consumer;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
     [Area("Cliente")]
+    [Authorize]
     public class PlanesController : Controller
     {
-        // GET: PlanesController
-        public ActionResult Planes()
+        public async Task<ActionResult> Planes()
         {
-            var planes = Crud<SubscriptionType>.GetAllAsync();
+            var planes = await Crud<SubscriptionType>.GetAllAsync();
             return View(planes);
         }
 
         // GET: PlanesController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
+            var planes = await Crud<SubscriptionType>.GetByIdAsync(id);
+            return View(planes);
         }
 
-        // GET: PlanesController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: PlanesController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: PlanesController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: PlanesController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: PlanesController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: PlanesController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        
     }
 }

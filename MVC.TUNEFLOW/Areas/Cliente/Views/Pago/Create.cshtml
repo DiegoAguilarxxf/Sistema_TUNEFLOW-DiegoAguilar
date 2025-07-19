@@ -1,0 +1,44 @@
+﻿@model Modelos.Tuneflow.Payments.Payment
+
+@{
+    ViewData["Title"] = "Pagar";
+}
+<div class="panel-container">
+<h1>Pago</h1>
+
+<h4>Ingrese su método de pago</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="PaymentDate" class="control-label"></label>
+                <input asp-for="PaymentDate" class="form-control" />
+                <span asp-validation-for="PaymentDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+                <div class="form-group mb-3">
+                    <label asp-for="PaymentMethod"></label>
+                    <select asp-for="PaymentMethod" class="form-control" required>
+                        <option value="">-- Seleccione método de pago --</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Tarjeta">Tarjeta</option>
+                    </select>
+                    <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Regresar</a>
+</div>
+</div>

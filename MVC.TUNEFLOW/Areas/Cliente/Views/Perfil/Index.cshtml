@@ -14,16 +14,23 @@
                 <div>
                     <h4 class="mb-0 text-white">Perfil</h4>
                     <h2 class="mb-0 text-white fs-2 fw-bold">
-                        @(
-                            Model.Client != null
+                        @{
+                            // Mostrar nombre del cliente o stage name del artista
+                            string nombre = Model.Client != null
                             ? $"{Model.Client.FirstName} {Model.Client.LastName}"
-                            : Model.Artist?.StageName ?? "Desconocido"
-                            )
+                            : Model.Artist?.StageName ?? "Desconocido";
+                        }
+                        @nombre
                     </h2>
                 </div>
             </div>
 
-            <a href="@Url.Action("Edit", "Perfil", new { id = Model.Id })" class="btn btn-primary">
+            @* Usamos tag helpers para respetar el área y generar la URL correctamente *@
+            <a asp-area="Cliente"
+               asp-controller="Perfil"
+               asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-primary">
                 Editar
             </a>
         </div>

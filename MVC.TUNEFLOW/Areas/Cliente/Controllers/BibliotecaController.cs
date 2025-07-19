@@ -3,10 +3,12 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Media;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
     [Area("Cliente")]
+    [Authorize]
     public class BibliotecaController : Controller
     {
         // GET: BibliotecaController

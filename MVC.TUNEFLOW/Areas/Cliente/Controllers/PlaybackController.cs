@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
+
+    [Area("Cliente")]
+    [Authorize]
     public class PlaybackController : Controller
     {
         // GET: PlayBackController

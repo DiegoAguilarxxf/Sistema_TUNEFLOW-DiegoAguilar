@@ -1,7 +1,7 @@
-using API.Consumer; // Para tu clase Crud que interactúa con la API
+using API.Consumer; // Para tu clase Crud que interactï¿½a con la API
 using API.TUNEFLOW.Controllers; // Posiblemente se refiere a controladores de tu API interna o compartida
-using Microsoft.AspNetCore.Identity; // Para la gestión de usuarios y autenticación
-using Microsoft.EntityFrameworkCore; // Para interactuar con la base de datos a través de Entity Framework Core
+using Microsoft.AspNetCore.Identity; // Para la gestiï¿½n de usuarios y autenticaciï¿½n
+using Microsoft.EntityFrameworkCore; // Para interactuar con la base de datos a travï¿½s de Entity Framework Core
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Models;
 using Modelos.Tuneflow.Payments;
@@ -23,16 +23,16 @@ namespace MVC.TUNEFLOW
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // --- Configuración de EndPoints para el cliente API ---
+            // --- Configuraciï¿½n de EndPoints para el cliente API ---
             // Es crucial que estos EndPoints apunten a la URL correcta de tu API de backend.
             // Si tu API (API.TUNEFLOW) no se ejecuta en 'https://localhost:7031',
-            // debes ajustar estos EndPoints a la URL real donde está alojada.
+            // debes ajustar estos EndPoints a la URL real donde estï¿½ alojada.
             Crud<Administrator>.EndPoint = "https://localhost:7031/api/Administrators";
             Crud<Album>.EndPoint = "https://localhost:7031/api/Albums";
             Crud<Song>.EndPoint = "https://localhost:7031/api/Songs";
             Crud<FavoriteSong>.EndPoint = "https://localhost:7031/api/FavoriteSongs";
             Crud<Artist>.EndPoint = "https://localhost:7031/api/Artists";
-            Crud<Client>.EndPoint = "https://localhost:7031/api/Clients"; // Aquí tenías una duplicación, se mantiene una.
+            Crud<Client>.EndPoint = "https://localhost:7031/api/Clients"; // Aquï¿½ tenï¿½as una duplicaciï¿½n, se mantiene una.
             Crud<ArtistStatistics>.EndPoint = "https://localhost:7031/api/StatisticsArtists";
             Crud<SongPlaylist>.EndPoint = "https://localhost:7031/api/MusicsPlaylists";
             Crud<Payment>.EndPoint = "https://localhost:7031/api/Payments";
@@ -43,19 +43,19 @@ namespace MVC.TUNEFLOW
             Crud<SubscriptionType>.EndPoint = "https://localhost:7031/api/SubscriptionsTypes";
             Crud<Playlist>.EndPoint = "https://localhost:7031/api/Playlists";
             Crud<Country>.EndPoint = "https://localhost:7031/api/Countries";
-            // Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.EndPoint = "https://localhost:7031/api/Clientes"; // Esta línea estaba duplicada y es redundante. Se eliminó o se consolidó con la anterior.
+            // Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.EndPoint = "https://localhost:7031/api/Clientes"; // Esta lï¿½nea estaba duplicada y es redundante. Se eliminï¿½ o se consolidï¿½ con la anterior.
 
             builder.Services.AddTransient<IDbConnection>(sp =>
     new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-            // --- Configuración de DbContext para la Autenticación (Identity) ---
+            // --- Configuraciï¿½n de DbContext para la Autenticaciï¿½n (Identity) ---
             // Usa ApplicationDbContext para gestionar los usuarios de Identity.
-            // Es CRUCIAL que esta cadena de conexión apunte a la misma base de datos de Supabase.
+            // Es CRUCIAL que esta cadena de conexiï¿½n apunte a la misma base de datos de Supabase.
             var identityConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             if (string.IsNullOrEmpty(identityConnectionString))
             {
-                throw new InvalidOperationException("La cadena de conexión 'DefaultConnection' para Identity no se encontró.");
+                throw new InvalidOperationException("La cadena de conexiï¿½n 'DefaultConnection' para Identity no se encontrï¿½.");
             }
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -72,15 +72,15 @@ namespace MVC.TUNEFLOW
                 });
             });
 
-            // --- Configuración de DbContext para TUNEFLOW (modelos de tu aplicación) ---
+            // --- Configuraciï¿½n de DbContext para TUNEFLOW (modelos de tu aplicaciï¿½n) ---
             // Usas un segundo DbContext llamado TUNEFLOWContext.
-            // Si este contexto también se conecta a la base de datos de Supabase,
-            // la estrategia de reintentos también es fundamental aquí.
-            // Asegúrate de que "DefaultConnection" sea la cadena correcta si ambos contextos usan la misma DB.
+            // Si este contexto tambiï¿½n se conecta a la base de datos de Supabase,
+            // la estrategia de reintentos tambiï¿½n es fundamental aquï¿½.
+            // Asegï¿½rate de que "DefaultConnection" sea la cadena correcta si ambos contextos usan la misma DB.
             var tuneflowConnectionString = builder.Configuration.GetConnectionString("DefaultConnection"); // Asumo que es la misma que la de Identity.
             if (string.IsNullOrEmpty(tuneflowConnectionString))
             {
-                throw new InvalidOperationException("La cadena de conexión 'DefaultConnection' para TUNEFLOWContext no se encontró.");
+                throw new InvalidOperationException("La cadena de conexiï¿½n 'DefaultConnection' para TUNEFLOWContext no se encontrï¿½.");
             }
 
             builder.Services.AddDbContext<TUNEFLOWContext>(options =>
@@ -97,51 +97,51 @@ namespace MVC.TUNEFLOW
                 });
             });
 
-            // --- Configuración de ASP.NET Core Identity ---
-            // Añade los servicios de Identity, configurando el usuario predeterminado (IdentityUser)
-            // y añadiendo soporte para roles. Los datos de Identity se almacenarán en ApplicationDbContext.
+            // --- Configuraciï¿½n de ASP.NET Core Identity ---
+            // Aï¿½ade los servicios de Identity, configurando el usuario predeterminado (IdentityUser)
+            // y aï¿½adiendo soporte para roles. Los datos de Identity se almacenarï¿½n en ApplicationDbContext.
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>() // Permite el uso de roles de usuario
                 .AddEntityFrameworkStores<ApplicationDbContext>(); // Conecta Identity con tu DbContext
 
-            // Añade soporte para controladores MVC con vistas
+            // Aï¿½ade soporte para controladores MVC con vistas
             builder.Services.AddControllersWithViews();
 
-            // Añade soporte para Razor Pages (comúnmente usado con Identity UI)
+            // Aï¿½ade soporte para Razor Pages (comï¿½nmente usado con Identity UI)
             builder.Services.AddRazorPages();
 
             var app = builder.Build();
 
-            // --- Configuración del Pipeline de Solicitudes HTTP ---
+            // --- Configuraciï¿½n del Pipeline de Solicitudes HTTP ---
             // Configurar el pipeline de solicitudes HTTP.
             if (app.Environment.IsDevelopment())
             {
-                // En desarrollo, usa el endpoint de migraciones para aplicar cambios automáticamente (si está configurado)
+                // En desarrollo, usa el endpoint de migraciones para aplicar cambios automï¿½ticamente (si estï¿½ configurado)
                 app.UseMigrationsEndPoint();
             }
             else
             {
-                // En producción, configura el manejo de errores global
+                // En producciï¿½n, configura el manejo de errores global
                 app.UseExceptionHandler("/Home/Error");
-                // Configura HSTS para forzar conexiones HTTPS, recomendado para producción
+                // Configura HSTS para forzar conexiones HTTPS, recomendado para producciï¿½n
                 app.UseHsts();
             }
 
             // Forzar el uso de HTTPS
             app.UseHttpsRedirection();
-            // Habilitar el servicio de archivos estáticos (CSS, JS, imágenes, etc.)
+            // Habilitar el servicio de archivos estï¿½ticos (CSS, JS, imï¿½genes, etc.)
             app.UseStaticFiles();
 
             // Habilitar el enrutamiento
             app.UseRouting();
 
-            // Habilitar la autenticación (middleware para procesar credenciales de usuario)
+            // Habilitar la autenticaciï¿½n (middleware para procesar credenciales de usuario)
             app.UseAuthentication();
-            // Habilitar la autorización (middleware para aplicar políticas de acceso)
+            // Habilitar la autorizaciï¿½n (middleware para aplicar polï¿½ticas de acceso)
             app.UseAuthorization();
 
-            // --- Mapeo de Rutas para Controladores y Áreas ---
-            // Mapeo de rutas para áreas (ej: /Admin/Panel)
+            // --- Mapeo de Rutas para Controladores y ï¿½reas ---
+            // Mapeo de rutas para ï¿½reas (ej: /Admin/Panel)
             app.MapControllerRoute(
                 name: "areas",
                 pattern: "{area:exists}/{controller=Panel}/{action=Panel}/{id?}");
@@ -154,7 +154,7 @@ namespace MVC.TUNEFLOW
             // Mapeo de Razor Pages (usado por Identity UI)
             app.MapRazorPages();
 
-            // Iniciar la aplicación
+            // Iniciar la aplicaciï¿½n
             app.Run();
         }
     }

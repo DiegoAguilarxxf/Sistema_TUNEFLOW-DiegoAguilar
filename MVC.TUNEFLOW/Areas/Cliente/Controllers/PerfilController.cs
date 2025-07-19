@@ -14,28 +14,44 @@ using System.Text.RegularExpressions;
 namespace MVC.TUNEFLOW.Areas.Client.Controllers
 {
     [Area("Cliente")]
+    [Authorize]
     public class PerfilController : Controller
     {
         // GET: PerfilController
         public async Task<IActionResult> Index()
         {
+            // Obtener el ID del usuario autenticado
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Console.WriteLine($"UserId: {userId}");
 
+            // Si no está autenticado, redirige a Login
             if (string.IsNullOrEmpty(userId))
             {
                 return RedirectToAction("Login", "Account");
             }
-            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
 
+            // Obtener cliente asociado al usuario
+            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
             if (cliente == null)
             {
+                Console.WriteLine($"❌ No se encontró cliente para userId: {userId}");
                 return RedirectToAction("Index", "Buscar");
             }
 
+            // Obtener perfil asociado al cliente
             var perfil = await Crud<Profile>.GetPerfilPorClienteId(cliente.Id);
+            if (perfil == null)
+            {
+                Console.WriteLine($"❌ No se encontró perfil para clienteId: {cliente.Id}");
+                return RedirectToAction("Create", "Perfil"); // Puedes cambiar a donde deseas redirigir
+            }
 
+            Console.WriteLine($"✅ Perfil encontrado para clienteId: {cliente.Id}");
+
+            // Mostrar vista con el perfil
             return View(perfil);
         }
+
 
         // GET: PerfilController/Details/5
         public ActionResult Details(int id)

@@ -3,10 +3,12 @@ using API.Consumer; // Asegúrate de tener tu clase Crud<T> aquí
 using Modelos.Tuneflow.Media; // Modelo de canciones
 using System.Threading.Tasks;
 using MVC.TUNEFLOW.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
     [Area("Cliente")]
+    [Authorize]
     public class DescubreController : Controller
     {
         // No necesitas _crud como instancia si todo es estático

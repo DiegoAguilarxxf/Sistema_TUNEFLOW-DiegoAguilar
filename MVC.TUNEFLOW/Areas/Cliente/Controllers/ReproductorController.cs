@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Media;
-using API.Consumer;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
     [Area("Cliente")]
+    [Authorize]
     public class ReproductorController : Controller
     {
         private readonly HttpClient _httpClient;
@@ -22,56 +22,44 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             try
             {
-                var cancion = await Crud<Song>.GetByIdAsync(id);
+                var cancion = await _httpClient.GetFromJsonAsync<Song>($"songs/{id}");
                 if (cancion == null)
                     return NotFound();
 
-                return PartialView("Reproductor", cancion); // Vista con HTML5 audio player
+                return PartialView("_Reproductor", cancion);
             }
             catch (Exception ex)
             {
-                return Content($"Error: {ex.Message}");
+                return Content($"Error al obtener la canción: {ex.Message}");
             }
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reproducir(int songId)
         {
-            try
+            if (!User.Identity.IsAuthenticated)
             {
-                if (!User.Identity.IsAuthenticated)
-                {
-                    TempData["Error"] = "Debes iniciar sesión para reproducir.";
-                    return RedirectToAction("GetCancionData", new { id = songId });
-                }
-
-                // Obtiene el ID del usuario desde las claims
-                var clientIdString = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-
-                if (string.IsNullOrEmpty(clientIdString) || !int.TryParse(clientIdString, out int clientId))
-                {
-                    TempData["Error"] = "No se pudo obtener el ID del usuario.";
-                    return RedirectToAction("GetCancionData", new { id = songId });
-                }
-
-                var response = await _httpClient.PostAsync($"reproductor/play?songId={songId}&clientId={clientId}", null);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    TempData["Mensaje"] = "🎶 Reproducción registrada con éxito.";
-                }
-                else
-                {
-                    TempData["Error"] = "❌ Error al registrar la reproducción.";
-                }
-
+                TempData["Error"] = "Debes iniciar sesión para reproducir.";
                 return RedirectToAction("GetCancionData", new { id = songId });
             }
-            catch (Exception ex)
-            {
-                return Content($"Error: {ex.Message}");
-            }
-        }
 
+            var clientIdString = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            if (string.IsNullOrEmpty(clientIdString) || !int.TryParse(clientIdString, out int clientId))
+            {
+                TempData["Error"] = "No se pudo obtener el ID del usuario.";
+                return RedirectToAction("GetCancionData", new { id = songId });
+            }
+
+            var response = await _httpClient.PostAsync($"reproductor/play?songId={songId}&clientId={clientId}", null);
+
+            if (response.IsSuccessStatusCode)
+                TempData["Mensaje"] = "🎶 Reproducción registrada con éxito.";
+            else
+                TempData["Error"] = "❌ Error al registrar la reproducción.";
+
+            return RedirectToAction("GetCancionData", new { id = songId });
+        }
     }
 }

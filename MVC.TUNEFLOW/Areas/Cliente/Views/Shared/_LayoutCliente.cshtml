@@ -39,6 +39,13 @@
                     <a class="nav-link" asp-area="Cliente" asp-controller="Favoritos" asp-action="Index">Favoritos</a>
                     <a class="nav-link" asp-area="Cliente" asp-controller="Perfil" asp-action="Index">Perfil</a>
                     <a class="nav-link" asp-area="Cliente" asp-controller="Playlist" asp-action="Index">Mis playlists</a>
+                    <form method="post" asp-area="Identity" asp-page="/Account/Logout" id="logoutForm" class="mt-3">
+                        <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none; background: none;"
+                                onclick="return confirm('¿Estás seguro que quieres cerrar sesión?');">
+                            Cerrar sesión
+                        </button>
+                    </form>
+
                 </nav>
             </div>
 
@@ -61,7 +68,7 @@
         </div>
     </div>
 
-    @await Html.PartialAsync("~/Areas/Cliente/Views/Reproductor/Reproductor.cshtml")
+    @await Html.PartialAsync("~/Areas/Cliente/Views/Shared/_Reproductor.cshtml")
 
     <script src="~/js/reproductor.js"></script>
 

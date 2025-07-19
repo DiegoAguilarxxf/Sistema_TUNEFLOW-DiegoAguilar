@@ -1,26 +1,11 @@
-﻿const toggle = document.getElementById('theme-toggle');
-const html = document.documentElement;
-const switchLabel = document.querySelector('.switch-label');
+﻿// --- VARIABLES Y ELEMENTOS DOM ---
+const STORAGE_KEY = 'historialCanciones';
+const STORAGE_INDEX = 'indiceActual';
 
-function setTheme(theme) {
-    html.setAttribute('data-theme', theme);
-    window.currentTheme = theme;
-    if (toggle) toggle.checked = (theme === 'dark');
-    if (switchLabel) switchLabel.textContent = theme === 'dark' ? 'Modo Oscuro' : 'Modo Claro';
-}
+const portadaGrande = document.getElementById('portadaGrande');
+const contenedorLetra = document.getElementById('contenedorLetra'); // Debes crear este div en HTML para la letra
+const textoLetra = document.getElementById('textoLetra'); // Dentro de contenedorLetra
 
-function loadTheme() {
-    const saved = window.currentTheme || 'dark';
-    setTheme(saved);
-}
-
-if (toggle) {
-    toggle.addEventListener('change', () => {
-        setTheme(toggle.checked ? 'dark' : 'light');
-    });
-}
-
-// 🎵 Elementos del reproductor
 const audioPlayer = document.getElementById('audioPlayer');
 const cancionActual = document.getElementById('cancionActual');
 const portadaActual = document.getElementById('portadaActual');
@@ -32,35 +17,142 @@ const reproductor = document.getElementById('reproductor');
 const togglePlayerBtn = document.getElementById('togglePlayerBtn');
 const iconoPlayPause = document.getElementById('icono-play-pause');
 
+let historialCanciones = [];
+let indiceActual = -1;
+let mostrandoLetra = false;
 let estaReproduciendo = false;
+
 let cancionEnReproduccion = {
     id: '',
     titulo: '',
+    artista: '',
     url: '',
     portada: '',
     tiempo: 0,
     idCliente: 0
 };
 
-// ✅ Restaurar canción desde sessionStorage
-document.addEventListener('DOMContentLoaded', () => {
-    loadTheme();
+// --- FUNCIONES DE HISTORIAL ---
 
-    const guardada = sessionStorage.getItem('ultimaCancion');
-    if (guardada) {
-        const c = JSON.parse(guardada);
-        reproducirCancion(c.id, c.titulo, c.url, c.portada, c.idCliente, c.tiempo, false);
+function cargarHistorial() {
+    const guardado = localStorage.getItem(STORAGE_KEY);
+    if (guardado) {
+        historialCanciones = JSON.parse(guardado);
     }
-});
+    const indiceGuardado = localStorage.getItem(STORAGE_INDEX);
+    if (indiceGuardado !== null) {
+        indiceActual = parseInt(indiceGuardado, 10);
+    }
+}
 
-// 🔊 Control de volumen
+function guardarHistorial() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(historialCanciones));
+    localStorage.setItem(STORAGE_INDEX, indiceActual.toString());
+}
+
+function reproducirDesdeHistorial(indice) {
+    if (indice < 0 || indice >= historialCanciones.length) return;
+    const cancion = historialCanciones[indice];
+    indiceActual = indice;
+    guardarHistorial();
+    reproducirCancion(cancion.id, cancion.titulo, cancion.url, cancion.portada, cancion.idCliente, 0, true, cancion.artista);
+}
+
+function agregarYReproducir(cancion) {
+    // Evitar duplicar canción si ya es la actual
+    if (
+        indiceActual >= 0 &&
+        historialCanciones[indiceActual]?.id === cancion.id
+    ) {
+        reproducirCancion(cancion.id, cancion.titulo, cancion.url, cancion.portada, cancion.idCliente, 0, true, cancion.artista);
+        return;
+    }
+
+    // Si navegamos en medio del historial y agregamos nueva canción, cortamos adelante
+    if (indiceActual < historialCanciones.length - 1) {
+        historialCanciones = historialCanciones.slice(0, indiceActual + 1);
+    }
+
+    historialCanciones.push(cancion);
+    indiceActual = historialCanciones.length - 1;
+    guardarHistorial();
+
+    reproducirCancion(cancion.id, cancion.titulo, cancion.url, cancion.portada, cancion.idCliente, 0, true, cancion.artista);
+}
+
+function anteriorCancion() {
+    if (indiceActual > 0) {
+        reproducirDesdeHistorial(indiceActual - 1);
+    }
+}
+
+function siguienteCancion() {
+    if (indiceActual < historialCanciones.length - 1) {
+        reproducirDesdeHistorial(indiceActual + 1);
+    }
+}
+
+// --- FUNCIONES DEL REPRODUCTOR ---
+
+function formatearTiempo(segundos) {
+    if (isNaN(segundos) || !segundos) return '0:00';
+    const m = Math.floor(segundos / 60);
+    const s = Math.floor(segundos % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
+
+function actualizarIconoPlayPause() {
+    if (!iconoPlayPause) return;
+    if (estaReproduciendo) {
+        iconoPlayPause.src = "/img/icons/pausa.png";
+        iconoPlayPause.alt = "Pause";
+    } else {
+        iconoPlayPause.src = "/img/icons/play.png";
+        iconoPlayPause.alt = "Play";
+    }
+}
+
+async function reproducirCancion(id, titulo, url, portada, idCliente, tiempo = 0, autoPlay = true, artista = '') {
+    cancionEnReproduccion = { id, titulo, url, portada, tiempo, idCliente, artista };
+
+    if (portadaGrande) portadaGrande.src = portada;
+    if (cancionActual) cancionActual.textContent = titulo;
+    if (portadaActual) portadaActual.src = portada;
+
+    if (audioPlayer) {
+        if (audioPlayer.src !== url) {
+            audioPlayer.src = url;
+        }
+        audioPlayer.currentTime = tiempo || 0;
+
+        if (autoPlay) {
+            try {
+                await audioPlayer.play();
+                estaReproduciendo = true;
+                actualizarIconoPlayPause();
+            } catch (err) {
+                console.error('Error al reproducir:', err);
+            }
+        }
+    }
+
+    document.documentElement.style.setProperty('--portada-fondo', `url('${portada}')`);
+    sessionStorage.setItem('ultimaCancion', JSON.stringify(cancionEnReproduccion));
+
+    // Ocultar letra si estaba visible al cambiar canción
+    if (mostrandoLetra) {
+        toggleLetra(false);
+    }
+}
+
+// --- EVENTOS DEL REPRODUCTOR ---
+
 if (volumenControl) {
     volumenControl.addEventListener('input', () => {
         if (audioPlayer) audioPlayer.volume = volumenControl.value;
     });
 }
 
-// ⏩ Barra de progreso
 if (barraProgreso) {
     barraProgreso.addEventListener('input', () => {
         if (audioPlayer && audioPlayer.duration) {
@@ -70,7 +162,6 @@ if (barraProgreso) {
     });
 }
 
-// 🔁 Eventos del reproductor
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', () => {
         if (audioPlayer.duration) {
@@ -99,64 +190,8 @@ if (audioPlayer) {
     });
 }
 
-// 🕐 Formato de tiempo
-function formatearTiempo(segundos) {
-    if (isNaN(segundos) || !segundos) return '0:00';
-    const m = Math.floor(segundos / 60);
-    const s = Math.floor(segundos % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-}
+// --- FUNCION TOGGLE PLAY/PAUSE ---
 
-// ▶ Cambiar ícono de Play/Pause
-function actualizarIconoPlayPause() {
-    if (iconoPlayPause) {
-        if (estaReproduciendo) {
-            iconoPlayPause.src = "~/img/icons/paus.png";
-            iconoPlayPause.alt = "Pause";
-        } else {
-            iconoPlayPause.src = "~/img/icons/play.png";
-            iconoPlayPause.alt = "Play";
-        }
-    }
-}
-
-// ▶ Función para reproducir canción (con idCliente)
-async function reproducirCancion(id, titulo, url, portada, idCliente, tiempo = 0, autoPlay = true) {
-    cancionEnReproduccion = { id, titulo, url, portada, tiempo, idCliente };
-
-    if (cancionActual) cancionActual.textContent = titulo;
-    if (portadaActual) portadaActual.src = portada;
-
-    if (audioPlayer) {
-        if (audioPlayer.src !== url) {
-            audioPlayer.src = url;
-        }
-        audioPlayer.currentTime = tiempo || 0;
-
-        if (autoPlay) {
-            try {
-                await audioPlayer.play();
-                estaReproduciendo = true;
-                actualizarIconoPlayPause();
-            } catch (err) {
-                console.error('Error al reproducir:', err);
-            }
-        }
-    }
-
-    if (typeof ComprobarEsCancionfavorita === 'function') {
-        try {
-            const esFavorita = await ComprobarEsCancionfavorita(id, idCliente);
-            actualizarBotonFavorito(esFavorita);
-        } catch (err) {
-            console.error('Error al comprobar favorita:', err);
-        }
-    }
-
-    sessionStorage.setItem('ultimaCancion', JSON.stringify(cancionEnReproduccion));
-}
-
-// 🔁 Toggle Play/Pause
 function togglePlay() {
     if (!audioPlayer || !audioPlayer.src) return;
 
@@ -174,236 +209,98 @@ function togglePlay() {
     }
 }
 
-// Funciones placeholders (puedes implementar según necesidad)
-function siguienteCancion() { }
-function anteriorCancion() { }
-function descargarCancion() { }
-function verLetra() { }
+// --- FUNCIONALIDAD LETRA ---
 
-// Añadir o quitar favorito con idCliente
-async function añadirFavorito() {
-    if (!cancionEnReproduccion || !cancionEnReproduccion.id) {
-        alert("No hay canción en reproducción.");
+async function obtenerLetra(artista, titulo) {
+    try {
+        const url = `https://api.lyrics.ovh/v1/${encodeURIComponent(artista)}/${encodeURIComponent(titulo)}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('No encontrada');
+        const data = await res.json();
+        return data.lyrics;
+    } catch (error) {
+        console.error('Error al obtener la letra:', error);
+        return 'No se encontró la letra para esta canción.';
+    }
+}
+
+function toggleLetra(estado) {
+    mostrandoLetra = estado;
+    if (mostrandoLetra) {
+        if (portadaGrande) portadaGrande.style.display = 'none';
+        if (contenedorLetra) contenedorLetra.style.display = 'block';
+    } else {
+        if (contenedorLetra) contenedorLetra.style.display = 'none';
+        if (portadaGrande) portadaGrande.style.display = 'block';
+    }
+}
+
+async function verLetra() {
+    if (!mostrandoLetra) {
+        toggleLetra(true);
+        textoLetra.textContent = 'Cargando letra...';
+
+        const artista = cancionEnReproduccion.artista || 'Desconocido';
+        const titulo = cancionEnReproduccion.titulo || 'Desconocida';
+
+        const letra = await obtenerLetra(artista, titulo);
+        textoLetra.textContent = letra;
+    } else {
+        toggleLetra(false);
+    }
+}
+
+// --- FUNCION DESCARGAR CANCION ---
+
+function descargarCancion() {
+    if (!cancionEnReproduccion.url) {
+        alert('No hay canción para descargar.');
         return;
     }
 
-    const { id, idCliente } = cancionEnReproduccion;
+    const enlace = document.createElement('a');
+    enlace.href = cancionEnReproduccion.url;
 
-    const esFavorita = await ComprobarEsCancionfavorita(id, idCliente);
-    const idPlaylistFavoritos = await ExtraerPlaylistDeFavortos(idCliente);
+    const extension = cancionEnReproduccion.url.split('.').pop().split('?')[0];
+    const nombreArchivo = `${cancionEnReproduccion.titulo || 'cancion'}.${extension}`;
 
-    if (!idPlaylistFavoritos) {
-        alert("No se encontró la playlist de favoritos.");
-        return;
-    }
-
-    if (esFavorita) {
-        const idMusicaPlaylist = await ObtenerIdDeMusicaPlaylist(id, idPlaylistFavoritos);
-        const idCancionFavorita = await ObtenerIdDeCancionFavorita(id, idCliente);
-
-        if (idMusicaPlaylist) {
-            const urlEliminarMusicaPlaylist = `https://localhost:7031/api/MusicasPlaylists/${idMusicaPlaylist}`;
-            try {
-                const res = await fetch(urlEliminarMusicaPlaylist, {
-                    method: "DELETE",
-                    credentials: "include"
-                });
-
-                if (res.ok && res.status === 204) {
-                    console.log("✅ Canción eliminada de playlist correctamente.");
-                    actualizarBotonFavorito(false);
-                    alert("🎵 Canción eliminada de la playlist.");
-                } else {
-                    const data = await res.json();
-                    console.log("✅ Respuesta:", data);
-                }
-            } catch (err) {
-                console.error("❌ Error de red al eliminar canción de playlist:", err);
-                alert("Error de red.");
-            }
-        }
-
-        if (idCancionFavorita) {
-            const urlEliminarCancionFavorita = `https://localhost:7031/api/CancionesFavoritas/${idCancionFavorita}`;
-            try {
-                const res = await fetch(urlEliminarCancionFavorita, {
-                    method: "DELETE",
-                    credentials: "include"
-                });
-
-                if (res.ok && res.status === 204) {
-                    console.log("✅ Canción eliminada de favoritos correctamente.");
-                    alert("🎵 Canción eliminada de tus Favoritos");
-                } else {
-                    const data = await res.json();
-                    console.log("✅ Respuesta:", data);
-                }
-            } catch (err) {
-                console.error("❌ Error de red al eliminar canción favorita:", err);
-                alert("Error de red.");
-            }
-        }
-
-    } else {
-        // Añadir a playlist favoritos
-        const urlAgregarPlaylist = "https://localhost:7031/api/MusicasPlaylists";
-        const bodyPlaylistFavoritos = {
-            PlaylistId: idPlaylistFavoritos,
-            CancionId: id
-        };
-
-        try {
-            const res = await fetch(urlAgregarPlaylist, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify(bodyPlaylistFavoritos)
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                console.log("✅ Canción añadida a la playlist:", data);
-                alert("🎵 Añadida a la playlist correctamente.");
-            } else {
-                console.error("❌ Error al añadir a la playlist:", res.status);
-                alert("Error al añadir a la playlist.");
-            }
-        } catch (err) {
-            console.error("❌ Error de red al añadir a la playlist:", err);
-            alert("Error de red.");
-        }
-
-        // Añadir a tabla CancionesFavoritas
-        const urlAgregarFavorito = "https://localhost:7031/api/CancionesFavoritas";
-        const bodyCancionFavorita = {
-            ClienteId: idCliente,
-            CancionId: id,
-            FechaAgregado: new Date().toISOString()
-        };
-
-        try {
-            const res = await fetch(urlAgregarFavorito, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify(bodyCancionFavorita)
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                console.log("✅ Canción añadida a favoritos:", data);
-                alert("🎵 Añadida a Favoritos correctamente.");
-            } else {
-                console.error("❌ Error al añadir a favoritos:", res.status);
-                alert("Error al añadir a Favoritos.");
-            }
-        } catch (err) {
-            console.error("❌ Error de red al añadir a favoritos:", err);
-            alert("Error de red.");
-        }
-        actualizarBotonFavorito(true);
-    }
+    enlace.download = nombreArchivo;
+    document.body.appendChild(enlace);
+    enlace.click();
+    document.body.removeChild(enlace);
 }
 
-// Actualizar botón de favorito
-function actualizarBotonFavorito(esFavorito) {
-    const btnFavorito = document.getElementById('btnFavorito');
-    if (!btnFavorito) return;
+// --- EXPANDIR/MINIMIZAR REPRODUCTOR ---
 
-    if (esFavorito) {
-        btnFavorito.classList.add('favorito');
-        btnFavorito.title = 'Quitar de Favoritos';
-    } else {
-        btnFavorito.classList.remove('favorito');
-        btnFavorito.title = 'Agregar a Favoritos';
-    }
-}
+if (togglePlayerBtn) {
+    togglePlayerBtn.addEventListener('click', () => {
+        reproductor.classList.toggle('expanded');
+        reproductor.classList.toggle('reducido');
 
-// Comprobar si canción es favorita
-async function ComprobarEsCancionfavorita(idCancion, idCliente) {
-    if (!idCancion || !idCliente) return false;
-
-    const url = `https://localhost:7031/api/CancionesFavoritas/es-favorita?idCliente=${idCliente}&idCancion=${idCancion}`;
-
-    try {
-        const res = await fetch(url, { credentials: "include" });
-        if (res.ok) {
-            const data = await res.json();
-            return data === true;
+        if (reproductor.classList.contains('expanded')) {
+            document.documentElement.style.setProperty('--portada-fondo', `url('${cancionEnReproduccion.portada}')`);
+            togglePlayerBtn.textContent = '⬇';
+        } else {
+            document.documentElement.style.setProperty('--portada-fondo', 'none');
+            togglePlayerBtn.textContent = '⬆';
         }
-        return false;
-    } catch (err) {
-        console.error('Error al comprobar favorita:', err);
-        return false;
-    }
-}
-
-// Obtener playlist favoritos
-async function ExtraerPlaylistDeFavortos(idCliente) {
-    if (!idCliente) return null;
-
-    const url = `https://localhost:7031/api/Playlists/obtener-favoritos?idCliente=${idCliente}`;
-
-    try {
-        const res = await fetch(url, { credentials: "include" });
-        if (res.ok) {
-            const data = await res.json();
-            return data.id || null;
-        }
-        return null;
-    } catch (err) {
-        console.error('Error al obtener playlist favoritos:', err);
-        return null;
-    }
-}
-
-// Obtener Id de música en playlist
-async function ObtenerIdDeMusicaPlaylist(idCancion, idPlaylist) {
-    if (!idCancion || !idPlaylist) return null;
-
-    const url = `https://localhost:7031/api/MusicasPlaylists/obtener-id?idCancion=${idCancion}&idPlaylist=${idPlaylist}`;
-
-    try {
-        const res = await fetch(url, { credentials: "include" });
-        if (res.ok) {
-            const data = await res.json();
-            return data.id || null;
-        }
-        return null;
-    } catch (err) {
-        console.error('Error al obtener id música playlist:', err);
-        return null;
-    }
-}
-
-// Obtener Id canción favorita
-async function ObtenerIdDeCancionFavorita(idCancion, idCliente) {
-    if (!idCancion || !idCliente) return null;
-
-    const url = `https://localhost:7031/api/CancionesFavoritas/obtener-id?idCliente=${idCliente}&idCancion=${idCancion}`;
-
-    try {
-        const res = await fetch(url, { credentials: "include" });
-        if (res.ok) {
-            const data = await res.json();
-            return data.id || null;
-        }
-        return null;
-    } catch (err) {
-        console.error('Error al obtener id canción favorita:', err);
-        return null;
-    }
-}
-
-// Evento click en botón favorito
-const btnFavorito = document.getElementById('btnFavorito');
-if (btnFavorito) {
-    btnFavorito.addEventListener('click', async () => {
-        await añadirFavorito();
     });
 }
 
-// Evento click para Play/Pause
-if (togglePlayerBtn) {
-    togglePlayerBtn.addEventListener('click', togglePlay);
-}
+// --- CARGAR HISTORIAL Y ÚLTIMA CANCION AL INICIO ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    cargarHistorial();
+
+    if (indiceActual >= 0 && historialCanciones[indiceActual]) {
+        const c = historialCanciones[indiceActual];
+        reproducirCancion(c.id, c.titulo, c.url, c.portada, c.idCliente, c.tiempo, false, c.artista);
+    } else {
+        // Si no hay historial, cargar última canción en sessionStorage
+        const guardada = sessionStorage.getItem('ultimaCancion');
+        if (guardada) {
+            const c = JSON.parse(guardada);
+            agregarYReproducir(c);
+        }
+    }
+});

@@ -9,10 +9,12 @@ using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.User.Profiles;
 using Modelos.Tuneflow.Media;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
     [Area("Cliente")]
+    [Authorize]
     public class PlaylistController : Controller
     {
         private readonly string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co";

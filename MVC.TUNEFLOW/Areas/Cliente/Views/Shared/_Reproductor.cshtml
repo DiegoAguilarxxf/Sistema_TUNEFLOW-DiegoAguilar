@@ -3,6 +3,9 @@
     <div id="portadaGrandeContainer" class="portada-expandida">
         <img id="portadaGrande" src="~/img/placeholder.png" alt="Portada Grande" />
     </div>
+    <div id="contenedorLetra" style="display: none; padding: 1rem;">
+        <pre id="textoLetra" style="white-space: pre-wrap; font-family: 'Monument', sans-serif; color: white; text-shadow: 1px 1px 3px black; font-size: 1rem;"></pre>
+    </div>
 
     <div class="d-flex align-items-center w-100 position-relative">
         <!-- Portada -->
@@ -57,7 +60,9 @@
             </button>
 
             <!-- Control de volumen solo en expandido -->
-            <input type="range" class="form-range btn-expandido ms-2" id="volumenControl" min="0" max="1" step="0.01" value="0.5" style="width: 100px;" />
+            <!-- Volumen fuera de btn-expandido -->
+            <input type="range" class="form-range ms-2" id="volumenControl" min="0" max="1" step="0.01" value="0.5" style="width: 100px;" />
+
         </div>
 
         <!-- Botón expandir/minimizar -->
