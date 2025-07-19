@@ -170,17 +170,6 @@ body {
     border: none;
     box-shadow: none;
 }
-/* =====================================
-   CORRECCIONES DE FORMULARIO
-   ===================================== */
-
-/* Centrado completo de auth-wrapper */
-.auth-wrapper {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: var(--spacing-lg);
-}
 
 /* ===========================================
    CONTENIDO DE BIENVENIDA
@@ -277,27 +266,27 @@ body {
 /* ===========================================
    BOTONES
    =========================================== */
-/* BOTÓN AJUSTADO */
 .btn-inicio {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
-    padding: 0.6rem 1.5rem !important;
+    padding: clamp(0.8rem, 2vw, 1rem) clamp(2rem, 4vw, 2.5rem);
     border: none;
-    border-radius: 10px !important;
-    font-weight: 600;
-    font-size: 1rem !important;
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: clamp(1rem, 2vw, 1.1rem);
     text-decoration: none;
-    display: inline-block !important;
+    display: inline-block;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
-    margin: 1.5rem 0 !important;
-    min-width: 100px !important;
-    text-align: center;
+    transition: all var(--transition);
+    box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+    margin: var(--spacing-lg) 0;
+    position: relative;
+    overflow: hidden;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    min-width: clamp(160px, 30vw, 200px);
+    width: auto;
 }
-
 
     .btn-inicio::before {
         content: '';

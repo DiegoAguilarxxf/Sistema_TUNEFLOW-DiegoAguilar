@@ -9,7 +9,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
     public class PlanesController : Controller
     {
         // GET: PlanesController
-        public ActionResult Index()
+        public ActionResult Planes()
         {
             var planes = Crud<SubscriptionType>.GetAllAsync();
             return View(planes);
