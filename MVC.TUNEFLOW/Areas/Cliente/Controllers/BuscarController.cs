@@ -65,8 +65,41 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 return RedirectToAction("Index", "Buscar");
             }
 
-            ViewBag.IdClient = client.Id;
+            ViewBag.IdCliente = client.Id;
             Console.WriteLine($"ViewBag: {ViewBag.IdClient}");
+
+            return View("Index", songs);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> Search(string nameSong)
+        {
+            Console.WriteLine($"Buscar llamado con parámetro: '{nameSong}'");
+            if (string.IsNullOrWhiteSpace(nameSong))
+            {
+                Console.WriteLine("Error: parámetro vacío");
+                return View("Index", new List<Song>());
+            }
+
+            var songs = await Crud<Song>.GetCancionesPorPalabrasClave(nameSong);
+            Console.WriteLine($"Buscar llamado con parámetro: '{nameSong}'");
+            Console.WriteLine($"Número de canciones recibidas en controlador: {songs?.Count ?? 0}");
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+            if (client == null)
+            {
+                return RedirectToAction("Index", "Buscar");
+            }
+
+            ViewBag.IdCliente = client.Id;
+            Console.WriteLine($"ViewBag: {ViewBag.IdCliente}");
 
             return View("Index", songs);
         }

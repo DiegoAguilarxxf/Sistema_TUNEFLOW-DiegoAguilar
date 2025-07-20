@@ -130,6 +130,8 @@ async function reproducirCancion(id, titulo, url, portada, idCliente, tiempo = 0
                 await audioPlayer.play();
                 estaReproduciendo = true;
                 actualizarIconoPlayPause();
+                const esFavorito = comprobarIsFavorito();
+                actualizarBotonFavorito(esFavorito);
             } catch (err) {
                 console.error('Error al reproducir:', err);
             }
@@ -304,3 +306,193 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+//Funcionalidad de Favoritos
+
+async function funcionFavorito() {
+    const estaFavorito = await comprobarIsFavorito();
+    console.log("entro a la funcion Favorito");
+
+    const respuestaIdPlaylistFavoritos = await fetch(`https://localhost:7031/api/Playlists/FavoritesPlaylist/${cancionEnReproduccion.idCliente}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    let idMeGustas = 0;
+    if (respuestaIdPlaylistFavoritos.ok) {
+        const data = await respuestaIdPlaylistFavoritos.json();
+        console.log("Respuesta de la API:", data);
+        idMeGustas = data;
+    }
+    console.log(`Id de la playlist Me Gustas: ${idMeGustas}`);
+    if (estaFavorito) {
+        eliminarFavorito(idMeGustas);
+    } else {
+        agregarFavorito(cancionEnReproduccion.id, cancionEnReproduccion.idCliente, idMeGustas);
+    }
+}
+
+function actualizarBotonFavorito(esFavorito) {
+    const img = document.getElementById('imgFavorito');
+
+    if (!img) return;
+
+    if (esFavorito) {
+        img.src = '/img/icons/me-gusta-add.png'; // imagen si es favorito
+    } else {
+        img.src = '/img/icons/me-gusta.png'; // imagen si no es favorito
+    }
+}
+async function comprobarIsFavorito() {
+    try {
+
+        const response = await fetch(`https://localhost:7031/api/FavoriteSongs/IsFavorite/${cancionEnReproduccion.id}/${cancionEnReproduccion.idCliente}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Es favorita");
+            return true;
+
+        } else if (response.status === 404) {
+            console.log("No es favorita");
+            return false;
+        } else {
+            throw new Error('Error inesperado');
+            return false;
+        }
+
+    } catch (error) {
+        console.error('Error al comprobar si es favorito:', error);
+        return false;
+    }
+}
+
+async function agregarFavorito(idCancion, idCliente, idMeGustas) {
+    try {
+        if (idCancion == null || idCliente == null) {
+            throw new Error('Error inesperado');
+        }
+
+        const favoriteSong = {
+            id: 0,
+            clientId: cancionEnReproduccion.idCliente,
+            songId: cancionEnReproduccion.id,
+            dateAdded: new Date().toISOString()  // fecha actual en formato ISO
+        };
+
+        const response = await fetch(`https://localhost:7031/api/FavoriteSongs`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(favoriteSong)
+        });
+
+        if (!response.ok) throw new Error('Error al agregar favorito');
+
+        const favoritoCreado = await response.json(); 
+
+        if (favoritoCreado && favoritoCreado.id) {
+            console.log('Favorito agregado con ID:', favoritoCreado.id);
+            alert('Canción agregada a Favoritos.');
+            actualizarBotonFavorito(true);
+
+            const bodySongPlaylist = {
+                "id": 0,
+                "songId": cancionEnReproduccion.id,
+                "playlistId": idMeGustas
+            };
+        
+            const respuestaAgregarPlaylist = await fetch(`https://localhost:7031/api/SongsPlaylists`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodySongPlaylist)
+
+            });
+
+            if (!respuestaAgregarPlaylist.ok) throw new Error('Error al agregar canción a la playlist de favoritos');
+
+            return true;
+        } else {
+            console.log('No se recibió el objeto favorito correctamente');
+            return false;
+        }
+
+    } catch (error) {
+        return true;
+    }
+}
+
+async function eliminarFavorito(idMeGustas) {
+    const favoriteId = await obtenerIdFavorito();
+
+    console.log(`Id de favoritesSongs: ${favoriteId}`);
+    if (favoriteId != null && favoriteId !== false) {
+        try {
+            const response = await fetch(`https://localhost:7031/api/FavoriteSongs/${favoriteId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                console.log('Canción eliminada de favoritos.');
+                alert('Canción eliminada de favoritos.');
+                actualizarBotonFavorito(false);
+
+                const respuestaEcontrarSongPlaylist = await fetch(`https://localhost:7031/api/SongsPlaylists/ExistSongPlaylist/${cancionEnReproduccion.id}/${idMeGustas}`)
+
+                if (respuestaEcontrarSongPlaylist.ok) {
+                    const data = await respuestaEcontrarSongPlaylist.json();
+
+                    var responseEliminacion = await fetch(`https://localhost:7031/api/SongsPlaylists/${data}`, {
+                        method: "DELETE",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!responseEliminacion) throw new Error("Error en la eliminacion ´de la musica de la playlist");
+                    
+                }
+            } else {
+                console.error('Error al eliminar favorito:', response.status);
+            }
+        } catch (error) {
+            console.error('Error en la solicitud DELETE:', error);
+        }
+    } else {
+        console.log("No es favorito o no se pudo obtener el ID.");
+    }
+}
+
+async function obtenerIdFavorito() {
+    try {
+
+        const response = await fetch(`https://localhost:7031/api/FavoriteSongs/IsFavorite/${cancionEnReproduccion.id}/${cancionEnReproduccion.idCliente}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data.id;
+
+        } else if (response.status === 404) {
+            return null;
+        } else {
+            throw new Error('Error inesperado');
+        }
+
+    } catch (error) {
+        console.error('Error al comprobar si es favorito:', error);
+        return null;
+    }
+}
