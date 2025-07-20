@@ -8,224 +8,227 @@
 
 <style>
     .artist-header {
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-        padding: 3rem 2rem;
-        position: relative;
-        overflow: hidden;
+    display: flex; /* nuevo */
+    justify-content: space-between; /* nuevo */
+    align-items: center; /* nuevo */
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
     }
 
-        .artist-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 1;
-        }
+    .artist-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    }
 
     .artist-info {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        align-items: center;
-        gap: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
     }
 
     .artist-avatar {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        border: 4px solid rgba(255, 255, 255, 0.8);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        object-fit: cover;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    object-fit: cover;
     }
 
     .artist-details h4 {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 1rem;
-        font-weight: 500;
-        margin: 0 0 0.5rem 0;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     }
 
     .artist-details h1 {
-        color: white;
-        font-size: 3rem;
-        font-weight: 700;
-        margin: 0 0 1rem 0;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     }
 
     .artist-meta {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
     }
 
     .artist-badge {
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        color: white;
-        font-size: 0.9rem;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     }
 
     .verified-badge {
-        background: rgba(34, 197, 94, 0.8);
+    background: rgba(34, 197, 94, 0.8);
     }
 
     .content-section {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
     }
 
     .biography-section {
-        background: #f8fafc;
-        border-radius: 12px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e2e8f0;
     }
 
     .section-title {
-        font-size: 1.8rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     }
 
     .albums-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 3rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
     }
 
     .album-card {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        cursor: pointer;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
     }
 
-        .album-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-        }
+    .album-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
 
     .album-cover {
-        width: 100%;
-        aspect-ratio: 1;
-        object-fit: cover;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
     }
 
     .album-info {
-        padding: 1rem;
+    padding: 1rem;
     }
 
     .album-title {
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 0.25rem;
-        font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
     }
 
     .album-artist {
-        color: #64748b;
-        font-size: 0.85rem;
+    color: #64748b;
+    font-size: 0.85rem;
     }
 
     .songs-table {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-        .songs-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    .songs-table table {
+    width: 100%;
+    border-collapse: collapse;
+    }
 
-        .songs-table th {
-            background: #f1f5f9;
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: #475569;
-            border-bottom: 2px solid #e2e8f0;
-        }
+    .songs-table th {
+    background: #f1f5f9;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #475569;
+    border-bottom: 2px solid #e2e8f0;
+    }
 
-        .songs-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #f1f5f9;
-            vertical-align: middle;
-        }
+    .songs-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    }
 
-        .songs-table tr:hover {
-            background: #fafafa;
-        }
+    .songs-table tr:hover {
+    background: #fafafa;
+    }
 
     .song-cover {
-        width: 50px;
-        height: 50px;
-        border-radius: 6px;
-        object-fit: cover;
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
+    object-fit: cover;
     }
 
     .play-button {
-        background: linear-gradient(135deg, #10b981, #059669);
-        border: none;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     }
 
-        .play-button:hover {
-            background: linear-gradient(135deg, #059669, #047857);
-            transform: scale(1.05);
-        }
+    .play-button:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: scale(1.05);
+    }
 
     .loading, .no-content {
-        text-align: center;
-        padding: 2rem;
-        color: #64748b;
-        font-style: italic;
+    text-align: center;
+    padding: 2rem;
+    color: #64748b;
+    font-style: italic;
     }
 </style>
 <style>
     /* Estilos para tablets */
     .responsive-tablet {
-        display: none;
+    display: none;
     }
 
     /* Estilos para móviles */
     .responsive-mobile {
-        display: none;
+    display: none;
     }
 </style>
 
@@ -233,8 +236,8 @@
 <div class="artist-header">
     <div class="artist-info">
         <img src="@(Model.ProfileImage ?? "/images/default-avatar.png")"
-             alt="@Model.Artist.StageName"
-             class="artist-avatar" />
+        alt="@Model.Artist.StageName"
+        class="artist-avatar" />
         <div class="artist-details">
             <h4>Perfil</h4>
             <h1>@Model.Artist.StageName</h1>
@@ -257,6 +260,20 @@
             </div>
         </div>
     </div>
+
+    <!-- Botón Seguir -->
+    @{
+        bool seguido = ViewBag.Seguido != null && (bool)ViewBag.Seguido;
+    }
+
+    @if (!seguido)
+    {
+        <a href="/Cliente/Seguimiento/Seguir/@Model.Artist.Id"
+           class="btn btn-success"
+           style="padding: 0.5rem 1rem; border-radius: 8px; position: relative; z-index: 3;">
+            Seguir
+        </a>
+    }
 </div>
 
 <!-- Contenido Principal -->

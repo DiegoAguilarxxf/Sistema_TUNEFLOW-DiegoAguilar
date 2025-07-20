@@ -7,6 +7,7 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.User.Production;
 
 namespace API.TUNEFLOW.Controllers
@@ -38,7 +39,7 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Seguimientos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Follow>> GetSeguimiento(int id)
+        public async Task<ActionResult<Follow>> GetSeguimientoById(int id)
         {
             var follow = connection.QuerySingle<Follow>(@"SELECT * FROM ""Follows"" WHERE ""Id"" = @Id", new { Id = id });
 
@@ -48,6 +49,24 @@ namespace API.TUNEFLOW.Controllers
             }
 
             return follow;
+        }
+
+        [HttpGet("ObtenerIsFollowed/{idClient}/{idArtist}")]
+        public async Task<ActionResult<int>> GetIdSeguimientoExist(int idClient, int idArtist)
+        {
+            var sql = @"SELECT ""Id"" FROM ""Follows"" WHERE ""ClientId"" = @IdClient AND ""ArtistId""=@IdArtist";
+
+            var followId = connection.QuerySingleOrDefault<int?>(sql, new { IdClient = idClient, IdArtist = idArtist });
+
+            if (followId.HasValue)
+            {
+                return Ok(followId.Value);
+            }
+            else
+            {
+                return Ok(0); // o -1, o NotFound() si prefieres
+            }
+
         }
 
         // PUT: api/Seguimientos/5
@@ -68,15 +87,19 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Seguimientos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Follow PostSeguimiento([FromBody]Follow follow)
+        public ActionResult<Follow>  PostSeguimiento([FromBody]Follow follow)
         {
-            connection.Execute(@"INSERT INTO ""Follows"" (""ClientId"", ""ArtistId"") VALUES (@ClientId, @ArtistId)", new
+            var sql = @"INSERT INTO ""Follows"" (""ClientId"", ""ArtistId"") 
+                VALUES (@ClientId, @ArtistId) RETURNING ""Id""";
+
+            var idResult = connection.ExecuteScalar<int>(sql, new
             {
                 ClientId = follow.ClientId,
                 ArtistId = follow.ArtistId
             });
+            follow.Id = idResult;
 
-            return follow;
+            return CreatedAtAction(nameof(GetSeguimientoById), new { id = idResult }, follow);
         }
 
         // DELETE: api/Seguimientos/5

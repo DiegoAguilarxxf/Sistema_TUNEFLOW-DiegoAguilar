@@ -23,7 +23,17 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             var artista = await Crud<Artist>.GetByIdAsync(id);
             var profile = await Crud<Profile>.GetPerfilPorArtistaId(artista.Id);
             ViewBag.IdCliente = idCliente; // Pasar el ID del cliente a la vista
-            return View(profile);
+            var seguido = await Crud<Follow>.GetFollowByIdClient(idCliente, id);
+            if(seguido != 0)
+            {
+                ViewBag.Seguido = true;
+            }
+            else
+            {
+                ViewBag.Seguido = false;
+            }
+            Console.WriteLine($"Estado de Seguido: {ViewBag.Seguido}");
+                return View(profile);
         }
 
         // GET: PerfilController/Details/5

@@ -361,5 +361,29 @@ namespace API.Consumer
             }
         }
 
+        public static async Task<int> GetFollowByIdClient(int idCliente, int idArtista)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/ObtenerIsFollowed/{idCliente}/{idArtista}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var follow = JsonConvert.DeserializeObject<int>(json);
+                    return follow;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontró el seguimiento");
+                    return 0;
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return 0;
+                }
+            }
+        }
+
     }
 }
