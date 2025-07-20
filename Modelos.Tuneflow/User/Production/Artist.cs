@@ -14,7 +14,6 @@ namespace Modelos.Tuneflow.User.Production
     {
         public string StageName { get; set; }
         public string MusicGenre { get; set; }
-        public string Biography { get; set; }
         [ForeignKey(nameof(Country))] public int CountryId { get; set; }
         public bool Verified { get; set; } // Indica si el artista ha sido verificado por la plataforma.
         public string UserId { get; set; } // Identificador único del usuario artista, puede ser un GUID o un ID de base de datos.

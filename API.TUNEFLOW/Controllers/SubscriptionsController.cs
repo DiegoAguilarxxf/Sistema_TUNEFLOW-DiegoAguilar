@@ -79,14 +79,15 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<Subscription> PostSuscripcion([FromBody] Subscription subscription)
         {
-            var sql = @"INSERT INTO ""Subscriptions"" (""StartDate"", ""SubscriptionTypeId"") 
-                VALUES (@StartDate, @SubscriptionTypeId) 
+            var sql = @"INSERT INTO ""Subscriptions"" (""StartDate"", ""SubscriptionTypeId"",""NumberMembers"") 
+                VALUES (@StartDate, @SubscriptionTypeId, @NumberMembers) 
                 RETURNING ""Id"";";
 
             int idDevuelto = connection.ExecuteScalar<int>(sql, new
             {
                 StartDate = subscription.StartDate,
-                SubscriptionTypeId = subscription.SubscriptionTypeId
+                SubscriptionTypeId = subscription.SubscriptionTypeId,
+                NumberMembers = subscription.NumberMembers
             });
 
             subscription.Id = idDevuelto;

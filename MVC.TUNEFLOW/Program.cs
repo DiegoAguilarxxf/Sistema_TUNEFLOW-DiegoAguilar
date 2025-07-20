@@ -33,10 +33,10 @@ namespace MVC.TUNEFLOW
             Crud<FavoriteSong>.EndPoint = "https://localhost:7031/api/FavoriteSongs";
             Crud<Artist>.EndPoint = "https://localhost:7031/api/Artists";
             Crud<Client>.EndPoint = "https://localhost:7031/api/Clients"; // Aqu� ten�as una duplicaci�n, se mantiene una.
-            Crud<ArtistStatistics>.EndPoint = "https://localhost:7031/api/StatisticsArtists";
+            Crud<ArtistStatistics>.EndPoint = "https://localhost:7031/api/ArtistsStatistics";
             Crud<SongPlaylist>.EndPoint = "https://localhost:7031/api/MusicsPlaylists";
             Crud<Payment>.EndPoint = "https://localhost:7031/api/Payments";
-            Crud<Profile>.EndPoint = "https://localhost:7031/api/Profiles";
+            Crud<Profile>.EndPoint = "https://localhost:7031/api/Profiles"; 
             Crud<Playback>.EndPoint = "https://localhost:7031/api/Playbacks";
             Crud<Follow>.EndPoint = "https://localhost:7031/api/Follows";
             Crud<Subscription>.EndPoint = "https://localhost:7031/api/Subscriptions";
@@ -109,6 +109,8 @@ namespace MVC.TUNEFLOW
 
             // A�ade soporte para Razor Pages (com�nmente usado con Identity UI)
             builder.Services.AddRazorPages();
+
+            builder.Services.AddHttpClient();
 
             var app = builder.Build();
 

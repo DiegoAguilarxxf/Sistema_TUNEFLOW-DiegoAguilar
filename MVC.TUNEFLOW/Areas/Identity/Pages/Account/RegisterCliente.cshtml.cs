@@ -116,7 +116,8 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
             var subscription = new Subscription
             {
                 StartDate = DateTime.UtcNow,
-                SubscriptionTypeId= 1 // Básica por defecto
+                SubscriptionTypeId = 1, // Básica por defecto
+                NumberMembers = 0
             };
 
             var newSubscription = await Crud<Subscription>.CreateAsync(subscription);

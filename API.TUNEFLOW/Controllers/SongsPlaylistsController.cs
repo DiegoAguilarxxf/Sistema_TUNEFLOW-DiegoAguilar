@@ -74,7 +74,7 @@ namespace API.TUNEFLOW.Controllers
             var sql = @"
                             SELECT 
                                 c.""Id"", c.""Title"", c.""Duration"", c.""Genere"", c.""ArtistId"", c.""AlbumId"",
-                                c.""FilePath"", c.""ExplicitContent"", c.""ImagePath"",
+                                c.""FilePath"", c.""ExplicitContent"", c.""ImagePath"",c.""Available"",
 
                                 a.""Id"", a.""StageName"", a.""MusicGenre"", a.""Biography"",
                                 a.""CountryId"", a.""Virified"", a.""UserId"",

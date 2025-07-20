@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Modelos.Tuneflow.User.Production;
+using Modelos.Tuneflow.User.Profiles;
+using API.Consumer;
+using Modelos.Tuneflow.Media;
 
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
@@ -8,16 +13,32 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
     [Authorize]
     public class PerfilController : Controller
     {
-        // GET: PerfilController
-        public ActionResult Index()
+
+        [Authorize(Roles = "cliente,artista")]
+        public async Task<ActionResult> Index(int id, int idCliente)
         {
-            return View();
+            //string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var artista = await Crud<Artist>.GetArtistaPorUsuarioId(userId);
+            Console.WriteLine($"Al perfil ingresó el id: {id}"); // Para depuración
+            var artista = await Crud<Artist>.GetByIdAsync(id);
+            var profile = await Crud<Profile>.GetPerfilPorArtistaId(artista.Id);
+            ViewBag.IdCliente = idCliente; // Pasar el ID del cliente a la vista
+            return View(profile);
         }
 
         // GET: PerfilController/Details/5
         public ActionResult Details(int id)
         {
             return View();
+        }
+
+        [HttpGet]
+        [Route("Artista/Perfil/ObtenerCancionesPorArtista")]
+        public async Task<ActionResult> ObtenerCancionesPorArtista(int id)
+        {
+            var songs = await Crud<Song>.GetCancionesPorArtistaId(id);
+
+            return Json(songs);
         }
 
         // GET: PerfilController/Create

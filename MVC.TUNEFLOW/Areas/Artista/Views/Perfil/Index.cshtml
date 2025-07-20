@@ -1,89 +1,438 @@
-﻿@model Modelos.Tuneflow.User.Production.Artist
-
+﻿@model Modelos.Tuneflow.User.Profiles.Profile
 @{
-    Layout = "~/Areas/Artista/Views/Shared/_LayoutCliente.cshtml";
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
     ViewData["Title"] = "Perfil del Artista";
 }
 
-<div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center; justify-content: space-between;">
-    <div style="display: flex; align-items: center; gap: 1.5rem;">
-        <img src="@Model.ProfileImage" alt="Foto Perfil Artista"
-             style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid white;" />
-        <div>
-            <h4 style="color: white; margin: 0;">Artista</h4>
-            <h2 style="color: white; margin: 0; font-size: 2rem; font-weight: bold;">
-                @Model.StageName
-            </h2>
+<link href="~/css/artist-profile.css" rel="stylesheet" />
+
+<style>
+    .artist-header {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+        padding: 3rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .artist-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+    .artist-info {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .artist-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        object-fit: cover;
+    }
+
+    .artist-details h4 {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0 0 0.5rem 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .artist-details h1 {
+        color: white;
+        font-size: 3rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .artist-meta {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .artist-badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .verified-badge {
+        background: rgba(34, 197, 94, 0.8);
+    }
+
+    .content-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .biography-section {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .albums-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .album-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .album-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+    .album-cover {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+    }
+
+    .album-info {
+        padding: 1rem;
+    }
+
+    .album-title {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+    }
+
+    .album-artist {
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+
+    .songs-table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .songs-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .songs-table th {
+            background: #f1f5f9;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .songs-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .songs-table tr:hover {
+            background: #fafafa;
+        }
+
+    .song-cover {
+        width: 50px;
+        height: 50px;
+        border-radius: 6px;
+        object-fit: cover;
+    }
+
+    .play-button {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .play-button:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: scale(1.05);
+        }
+
+    .loading, .no-content {
+        text-align: center;
+        padding: 2rem;
+        color: #64748b;
+        font-style: italic;
+    }
+</style>
+<style>
+    /* Estilos para tablets */
+    .responsive-tablet {
+        display: none;
+    }
+
+    /* Estilos para móviles */
+    .responsive-mobile {
+        display: none;
+    }
+</style>
+
+<!-- Header del Artista -->
+<div class="artist-header">
+    <div class="artist-info">
+        <img src="@(Model.ProfileImage ?? "/images/default-avatar.png")"
+             alt="@Model.Artist.StageName"
+             class="artist-avatar" />
+        <div class="artist-details">
+            <h4>Perfil</h4>
+            <h1>@Model.Artist.StageName</h1>
+            <div class="artist-meta">
+                @if (Model.Artist.Verified)
+                {
+                    <span class="artist-badge verified-badge">
+                        ✓ Verificado
+                    </span>
+                }
+                <span class="artist-badge">
+                    🎵 @Model.Artist.MusicGenre
+                </span>
+                @if (Model.Artist.Country != null)
+                {
+                    <span class="artist-badge">
+                        🌍 @Model.Artist.Country.Name
+                    </span>
+                }
+            </div>
         </div>
     </div>
 </div>
 
-<h3 style="margin-top: 2rem;">Canciones</h3>
+<!-- Contenido Principal -->
+<div class="content-section">
+    <!-- Biografía -->
+    @if (!string.IsNullOrEmpty(Model.Biography))
+    {
+        <div class="biography-section">
+            <h3 class="section-title">
+                📖 Acerca del artista
+            </h3>
+            <p style="color: #475569; line-height: 1.6; margin: 0;">@Model.Biography</p>
+        </div>
+    }
 
-<div id="cancionesContainer">
-    <p>Cargando canciones...</p>
+    <!-- Álbumes Principales -->
+    @if (Model.Artist.Albums != null && Model.Artist.Albums.Any())
+    {
+        <div style="margin-bottom: 3rem;">
+            <h3 class="section-title">
+                💿 Álbumes Principales
+            </h3>
+            <div class="albums-grid" id="albumsGrid">
+                @foreach (var album in Model.Artist.Albums.Take(4))
+                {
+                    <div class="album-card" onclick="verAlbum(@album.Id)">
+                        <img src="@(album.CoverPath ?? "/images/default-album.png")"
+                             alt="@album.Title"
+                             class="album-cover" />
+                        <div class="album-info">
+                            <div class="album-title">@album.Title</div>
+                            <div class="album-artist">@Model.Artist.StageName</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Lista de Canciones -->
+    <div>
+        <h3 class="section-title">
+            🎵 Canciones Populares
+        </h3>
+        <div class="songs-table">
+            <div id="cancionesContainer">
+                <div class="loading">
+                    <p>🎼 Cargando canciones...</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
+    // Función para manejar responsive design sin CSS media queries
+    function handleResponsiveDesign() {
+        const width = window.innerWidth;
+        const artistInfo = document.querySelector('.artist-info');
+        const albumsGrid = document.getElementById('albumsGrid');
+        const contentSection = document.querySelector('.content-section');
+        const artistTitle = document.querySelector('.artist-details h1');
+
+        if (width <= 768) {
+            // Estilos móviles
+            if (artistInfo) {
+                artistInfo.style.flexDirection = 'column';
+                artistInfo.style.textAlign = 'center';
+            }
+            if (artistTitle) {
+                artistTitle.style.fontSize = '2rem';
+            }
+            if (albumsGrid) {
+                albumsGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+            }
+            if (contentSection) {
+                contentSection.style.padding = '1rem';
+            }
+        } else {
+            // Estilos desktop
+            if (artistInfo) {
+                artistInfo.style.flexDirection = 'row';
+                artistInfo.style.textAlign = 'left';
+            }
+            if (artistTitle) {
+                artistTitle.style.fontSize = '3rem';
+            }
+            if (albumsGrid) {
+                albumsGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
+            }
+            if (contentSection) {
+                contentSection.style.padding = '2rem';
+            }
+        }
+    }
+
     async function cargarCanciones() {
-        const artistaId = @Html.Raw(Model.Id);
-        const idCliente = @Html.Raw(ViewBag.IdCliente ?? 0); // Por si no se define aún
+        const artistaId = @Html.Raw(Model.Artist.Id);
+        const idCliente = @Html.Raw(ViewBag.IdCliente ?? 0);
 
         try {
-            const response = await fetch(`/Artista/ObtenerCancionesPorArtista?artistaId=${artistaId}`);
+            const response = await fetch(`/Artista/Perfil/ObtenerCancionesPorArtista?id=${artistaId}`);
             if (!response.ok) throw new Error('No se pudieron cargar las canciones');
 
             const canciones = await response.json();
             const contenedor = document.getElementById('cancionesContainer');
 
             if (canciones.length === 0) {
-                contenedor.innerHTML = "<p>No hay canciones para este artista.</p>";
+                contenedor.innerHTML = '<div class="no-content"><p>🎵 No hay canciones disponibles para este artista.</p></div>';
                 return;
             }
 
-            let tabla = `<table class="table">
-                <thead>
-                    <tr>
-                        <th>Imagen</th>
-                        <th>Título</th>
-                        <th>Género</th>
-                        <th>Duración</th>
-                        <th>Explícito</th>
-                        <th>Reproducir</th>
-                    </tr>
-                </thead>
-                <tbody>`;
+            let tabla = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Canción</th>
+                            <th>Género</th>
+                            <th>Duración</th>
+                            <th>Explícito</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
 
-            canciones.forEach(c => {
-                tabla += `<tr>
-                    <td><img src="${c.rutaImagen}" style="max-height: 80px;" /></td>
-                    <td>${c.titulo}</td>
-                    <td>${c.genero}</td>
-                    <td>${Math.floor(c.duracion / 60)}:${(c.duracion % 60).toString().padStart(2, '0')}</td>
-                    <td>${c.contenidoExplicito ? 'Sí' : 'No'}</td>
-                    <td>
-                        <button class="btn btn-sm btn-success" type="button"
-                            onclick="reproducirCancion(
-                                ${c.id},
-                                '${c.titulo.replace(/'/g, "\\'")}',
-                                '${c.rutaArchivo}',
-                                '${c.rutaImagen}',
-                                ${idCliente}
-                            )">
-                            ▶ Reproducir
-                        </button>
-                    </td>
-                </tr>`;
-            });
+                canciones.forEach(c => {
+                    const duracion = `${Math.floor(c.duration / 60)}:${(c.duration % 60).toString().padStart(2, '0')}`;
+                    tabla += `
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <img src="${c.imagePath || '/images/default-song.png'}"
+                                         class="song-cover" alt="${c.title}" />
+                                    <div>
+                                        <div style="font-weight: 600; color: #1e293b;">${c.title}</div>
+                                        <div style="font-size: 0.85rem; color: #64748b;">@Model.Artist.StageName</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color: #64748b;">${c.genre}</td>
+                            <td style="color: #64748b;">${duracion}</td>
+                            <td>${c.explicitContent ? '<span style="color: #ef4444;">🔞 Explícito</span>' : '<span style="color: #10b981;">✓ Limpio</span>'}</td>
+                            <td>
+                                <button class="play-button" type="button"
+                                    onclick="reproducirCancion(
+                                        ${c.id},
+                                        '${c.title.replace(/'/g, "\\'")}',
+                                        '${c.filePath}',
+                                        '${c.imagePath || '/images/default-song.png'}',
+                                        ${idCliente}
+                                    )">
+                                    ▶ Reproducir
+                                </button>
+                            </td>
+                        </tr>`;
+                });
 
             tabla += "</tbody></table>";
             contenedor.innerHTML = tabla;
 
         } catch (error) {
-            document.getElementById('cancionesContainer').innerHTML = "<p>Error cargando canciones.</p>";
+            document.getElementById('cancionesContainer').innerHTML =
+                '<div class="no-content"><p>❌ Error al cargar las canciones.</p></div>';
             console.error(error);
         }
     }
 
-    window.onload = cargarCanciones;
+    function verAlbum(albumId) {
+        window.location.href = `/Album/Details/${albumId}`;
+    }
+
+    // Event listeners
+    window.addEventListener('load', function() {
+        cargarCanciones();
+        handleResponsiveDesign();
+    });
+
+    window.addEventListener('resize', handleResponsiveDesign);
 </script>

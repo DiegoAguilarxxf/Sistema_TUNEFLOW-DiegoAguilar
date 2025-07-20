@@ -32,7 +32,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 return RedirectToAction("Index", "Buscar");
                 }
             
-            ViewBag.IdClient = client.Id;
+            ViewBag.IdCliente = client.Id;
             Console.WriteLine($"ViewBag: {ViewBag.IdClient}");
             
             return View(new List<Song>());

@@ -1,44 +1,129 @@
-﻿<tbody>
-    @if (Model.Songs != null && Model.Songs.Any())
-    {
-        int index = 1;
-        foreach (var cancion in Model.Songs)
+﻿@model Modelos.Tuneflow.Playlists.Playlist
+
+@{
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
+    ViewData["Title"] = Model.Title;
+}
+
+<style>
+    .playlist-header {
+        background: linear-gradient(to bottom, #1db954, #121212);
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        color: white;
+    }
+
+    .playlist-cover {
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .playlist-info {
+        margin-left: 2rem;
+    }
+
+    .playlist-title {
+        font-size: 3rem;
+        font-weight: bold;
+    }
+
+    .btn-play-all {
+        margin-top: 1rem;
+        font-size: 1.5rem;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .song-row:hover {
+        background-color: #282828;
+    }
+</style>
+
+<!-- CABECERA -->
+<div class="playlist-header mb-4">
+    <img src="@Model.PlaylistCover" alt="Portada" class="playlist-cover" />
+    <div class="playlist-info">
+        <div class="text-uppercase text-muted">Playlist</div>
+        <div class="playlist-title">@Model.Title</div>
+
+        <button class="btn btn-success btn-play-all" onclick="reproducirTodas()">
+            ▶ Reproducir
+        </button>
+    </div>
+</div>
+
+<!-- TABLA DE CANCIONES -->
+<table class="table table-dark table-borderless align-middle">
+    <thead class="text-muted border-bottom">
+        <tr>
+            <th>#</th>
+            <th>Título</th>
+            <th>Artista</th>
+            <th>🔞</th>
+            <th>Duración</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Songs != null && Model.Songs.Any())
+        {
+            int index = 1;
+            foreach (var cancion in Model.Songs)
+            {
+                <tr class="song-row">
+                    <td>@index</td>
+                    <td class="d-flex align-items-center gap-3">
+                        <img src="@cancion.ImagePath" alt="@cancion.Title"
+                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                        <div>
+                            <div class="fw-bold">@cancion.Title</div>
+                            <div class="text-muted small">@cancion.Genre</div>
+                        </div>
+                    </td>
+                    <td>@(cancion.Artist?.StageName ?? "Desconocido")</td>
+                    <td>@(cancion.ExplicitContent ? "Sí" : "No")</td>
+                    <td>@cancion.TimeInMinutes(cancion.Duration)</td>
+                    <td>
+                        <button class="btn btn-sm btn-success" onclick="reproducirCancion('@cancion.Id')">
+                            ▶
+                        </button>
+
+                        <form method="post"
+                              action="@Url.Action("DeleteSong", "Playlist", new { playlistId = Model.Id, songId = cancion.Id })"
+                              style="display:inline;"
+                              onsubmit="return confirm('¿Quieres eliminar esta canción de la playlist?');">
+                            <button type="submit" class="btn btn-sm btn-danger ms-1">
+                                🗑️
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                index++;
+            }
+        }
+        else
         {
             <tr>
-                <td>@index</td>
-                <td class="d-flex align-items-center gap-3">
-                    <img src="@cancion.ImagePath" alt="@cancion.Title" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-                    <div>
-                        <strong>@cancion.Title</strong><br />
-                        <small class="text-muted">@cancion.Genre</small>
-                    </div>
-                </td>
-                <td>@(cancion.Artist?.StageName ?? "Desconocido")</td>
-                <td>@(cancion.ExplicitContent ? "Sí" : "No")</td>
-                <td>@cancion.TimeInMinutes(cancion.Duration)</td>
-                <td>
-                    <!-- Botón Reproducir -->
-                    <button class="btn btn-success btn-sm" type="button" onclick="reproducirCancion('@cancion.Id')">
-                        ▶
-                    </button>
-
-                    <!-- Botón Eliminar -->
-                    <form method="post" action="@Url.Action("DeleteSong", "Playlist", new { playlistId = Model.Id, songId = cancion.Id })"
-                          style="display:inline" onsubmit="return confirm('¿Quieres eliminar esta canción de la playlist?');">
-                        <button type="submit" class="btn btn-danger btn-sm ms-1">
-                            🗑️
-                        </button>
-                    </form>
+                <td colspan="6" class="text-center text-muted">
+                    Esta playlist no tiene canciones.
                 </td>
             </tr>
-            index++;
         }
+    </tbody>
+</table>
+
+<!-- SCRIPTS DE REPRODUCCIÓN (Ejemplo) -->
+<script>
+    function reproducirCancion(id) {
+        console.log("Reproducir canción ID:", id);
+        // lógica de reproducción
     }
-    else
-    {
-        <tr>
-            <td colspan="6" class="text-center text-muted">Esta playlist no tiene canciones.</td>
-        </tr>
+
+    function reproducirTodas() {
+        console.log("Reproducir todas las canciones");
+        // lógica para reproducir toda la playlist
     }
-</tbody>
-v>
+</script>

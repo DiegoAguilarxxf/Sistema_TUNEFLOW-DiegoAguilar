@@ -42,13 +42,24 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<Artist> GetArtistaById(int id)
         {
-            var artista = connection.QuerySingleOrDefault<Artist>(@"SELECT * FROM ""Artistas"" WHERE ""Id"" = @Id", new { Id = id });
+            var artista = connection.QuerySingleOrDefault<Artist>(@"SELECT * FROM ""Artists"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (artista == null)
             {
                 return NotFound();
             }
 
+            return artista;
+        }
+
+        [HttpGet("UsuarioArtista/{idUser}")]
+        public ActionResult<Artist> GetArtistaByUsuarioId(string idUser)
+        {
+            var artista = connection.QuerySingleOrDefault<Artist>(@"SELECT * FROM ""Artists"" WHERE ""UserId"" = @UserId", new { UserId = idUser });
+            if (artista == null)
+            {
+                return NotFound();
+            }
             return artista;
         }
 
@@ -59,15 +70,13 @@ namespace API.TUNEFLOW.Controllers
         {
            connection.Execute(@"UPDATE ""Artistas"" SET 
                 ""StageName"" = @StageName, 
-                ""MusicGenre"" = @MusicGenre, 
-                ""Biography"" = @Biography, 
+                ""MusicGenre"" = @MusicGenre,  
                 ""CountryId"" = @CountryId, 
                 ""Verified"" = @Verified
                 WHERE ""Id"" = @Id", new
            {
                artist.StageName,
                artist.MusicGenre,
-               artist.Biography,
                artist.CountryId,
                artist.Verified,
                Id = id
@@ -80,17 +89,17 @@ namespace API.TUNEFLOW.Controllers
         public ActionResult<Artist> PostArtista([FromBody]Artist artist)
         {
 
-            var sql = @"INSERT INTO ""Artistas"" 
-                (""StageName"",""MusicGenre"",""Biography"",""CountryId"",""Verified"",""FirstName"",""LastName"",""Email"",""Password"",""Phone"",""BirthDate"",""AccountType"",""IsActive"",""RegistrationDate"",""UserId"") 
-                VALUES (@StageName, @MusicGenere, @Biography, @CountryId, @Verified, @FirstName, @LastName, @Email, @Password, @Phone, @BirthDate, @AccountType, @IsActive, @RegistrationDate, @UserId) RETURNING ""Id"";";
+            var sql = @"INSERT INTO ""Artists"" 
+                (""StageName"",""MusicGenre"",""CountryId"",""Verified"",""UserId"",""FirstName"",""LastName"",""Email"",""Password"",""Phone"",""BirthDate"",""AccountType"",""IsActive"",""RegistrationDate"") 
+                VALUES (@StageName, @MusicGenre, @CountryId, @Verified,@UserId, @FirstName, @LastName, @Email, @Password, @Phone, @BirthDate, @AccountType, @IsActive, @RegistrationDate) RETURNING ""Id"";";
                 
             var idreturned = connection.ExecuteScalar<int>(sql,new
                 {
                     StageName = artist.StageName,
                     MusicGenre = artist.MusicGenre,
-                    Biography = artist.Biography,
                     CountryId = artist.CountryId,
                     Verified = artist.Verified,
+                    UserId = artist.UserId,
                     FirstName = artist.FirstName,
                     LastName= artist.LastName,
                     Email = artist.Email,
@@ -99,8 +108,7 @@ namespace API.TUNEFLOW.Controllers
                     BirthDate = artist.BirthDate,
                     AccountType = artist.AccountType,
                     IsActive = artist.IsActive,
-                    RegistrationDate = artist.RegistrationDate,
-                    UserId = artist.UserId
+                    RegistrationDate = artist.RegistrationDate
             });
 
             artist.Id = idreturned;

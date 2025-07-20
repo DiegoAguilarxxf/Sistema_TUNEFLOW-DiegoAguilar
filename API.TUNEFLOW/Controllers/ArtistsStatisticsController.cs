@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.User.Administration;
+using Modelos.Tuneflow.User.Consumer;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -38,7 +39,7 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/EstadisticasArtistas/5
         [HttpGet("{id}")]
-        public ActionResult<ArtistStatistics> GetEstadisticasArtista(int id)
+        public ActionResult<ArtistStatistics> GetEstadisticasArtistaById(int id)
         {
             var artistStatistics = connection.QuerySingle<ArtistStatistics>(@"SELECT * FROM ""ArtistsStatistics"" WHERE ""Id"" = @Id", new { Id = id });
 
@@ -76,11 +77,12 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/EstadisticasArtistas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public ArtistStatistics PostEstadisticasArtista([FromBody]ArtistStatistics artistStatistics)
+        public ActionResult<ArtistStatistics> PostEstadisticasArtista([FromBody]ArtistStatistics artistStatistics)
         {
-            connection.Execute(@"INSERT INTO ""ArtistsStatistics"" 
-                (""ArtistId"", ""TotalPLays"", ""TotalFollowers"", ""PublishedSongs"", ""PublishedAlbums"") 
-                VALUES (@ArtistId, @TotalPlays, @TotalFollowers, @PublishedSongs, @PublishedAlbums)", new
+            var sql = @"INSERT INTO ""ArtistsStatistics"" 
+                (""ArtistId"", ""TotalPlays"", ""TotalFollowers"", ""PublishedSongs"", ""PublishedAlbums"") 
+                VALUES (@ArtistId, @TotalPlays, @TotalFollowers, @PublishedSongs, @PublishedAlbums) RETURNING ""Id"";";
+            var idReturned = connection.ExecuteScalar<int>(sql, new
             {
                 ArtistId = artistStatistics.ArtistId,
                 TotalPlays = artistStatistics.TotalPlays,
@@ -88,8 +90,9 @@ namespace API.TUNEFLOW.Controllers
                 PublishedSongs = artistStatistics.PublishedSongs,
                 PublishedAlbums = artistStatistics.PublishedAlbums
             });
+            artistStatistics.Id = idReturned;
 
-            return artistStatistics;
+            return CreatedAtAction(nameof(GetEstadisticasArtistaById), new { id = idReturned }, artistStatistics);
         }
 
         // DELETE: api/EstadisticasArtistas/5

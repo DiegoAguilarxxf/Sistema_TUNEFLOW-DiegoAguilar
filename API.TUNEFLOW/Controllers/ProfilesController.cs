@@ -76,7 +76,7 @@ namespace API.TUNEFLOW.Controllers
 
             if (profile.ArtistId != null && profile.ArtistId != 0)
             {
-                var artistSql = @"SELECT ""StageName"" FROM ""Artists"" WHERE ""Id"" = @Id";
+                var artistSql = @"SELECT * FROM ""Artists"" WHERE ""Id"" = @Id";
                 profile.Artist = connection.QueryFirstOrDefault<Artist>(artistSql, new { Id = profile.ArtistId });
             }
 

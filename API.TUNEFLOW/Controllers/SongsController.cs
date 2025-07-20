@@ -76,26 +76,39 @@ namespace API.TUNEFLOW.Controllers
                             SELECT 
                                 c.""Id"", c.""Title"", c.""Duration"", c.""Genre"", c.""FilePath"", c.""ExplicitContent"", c.""ImagePath"",
                                 al.""Title"" AS AlbumTitle,
-                                ar.""StageName"" AS StageName
+                                ar.""Id"" AS Id, ar.""StageName""
                             FROM ""Songs"" c
                             LEFT JOIN ""Albums"" al ON c.""AlbumId"" = al.""Id""
                             LEFT JOIN ""Artists"" ar ON c.""ArtistId"" = ar.""Id""
                             WHERE c.""Title"" ILIKE @Title";
 
-            var songs = connection.Query<Song, string, string, Song>(
+            var songs = connection.Query<Song, string, Artist, Song>(
                 sql,
-                (song, albumTitle, stageName) =>
+                (song, albumTitle, artist) =>
                 {
                     song.Album = new Album { Title = albumTitle };
-                    song.Artist = new Artist { StageName = stageName };
+                    song.Artist = artist;
                     return song;
                 },
                 new { Title = $"%{title}%" },
-                splitOn: "AlbumTitle,StageName"
+                splitOn: "AlbumTitle,Id"
             ).ToList();
 
             if (!songs.Any())
                 return NotFound("No se encontraron canciones con ese título.");
+
+            return Ok(songs);
+        }
+
+        [HttpGet("PorArtista/{id}")]
+        public ActionResult<IEnumerable<Song>> ObtenerCancionesPorArtista(int id)
+        {
+            string sql = @"SELECT * FROM ""Songs"" WHERE ""ArtistId"" = @ArtistId";
+
+            var songs = connection.Query<Song>(sql, new { ArtistId = id }).ToList();
+
+            if (!songs.Any())
+                return NotFound("No hay canciones para ese artista");
 
             return Ok(songs);
         }

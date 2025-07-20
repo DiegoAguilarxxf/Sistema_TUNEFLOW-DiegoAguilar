@@ -1,6 +1,7 @@
 ﻿using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.User.Administration;
 using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.User.Production;
 using Modelos.Tuneflow.User.Profiles;
 using Modelos.Tuneflow.Playlists;
 using Newtonsoft.Json;
@@ -199,12 +200,58 @@ namespace API.Consumer
                 }
             }
         }
+        public static async Task<Artist> GetArtistaPorUsuarioId(string idUsuario)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/UsuarioArtista/{idUsuario}");
+                Console.WriteLine($"{EndPoint}/UsuarioArtista/{idUsuario}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("JSON recibido: " + json);
+
+                    try
+                    {
+                        var artista = JsonConvert.DeserializeObject<Artist>(json);
+                        return artista;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error de deserialización: " + ex.Message);
+                        throw;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("La API devolvió: " + response.StatusCode);
+                    return null;
+                }
+            }
+        }
 
         public static async Task<Profile> GetPerfilPorClienteId(int id)
         {
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync($"{EndPoint}/Usuario/Obtencion/{id}");
+                var response = await client.GetAsync($"{EndPoint}/User/ByClient/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<Profile>(json);
+                }
+                else
+                {
+                    return new Profile();
+                }
+            }
+        }
+        public static async Task<Profile> GetPerfilPorArtistaId(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/User/ByArtist/{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -246,8 +293,32 @@ namespace API.Consumer
         {
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync($"{EndPoint}/CancionesPorPlaylist/{idPlaylist}");
+                var response = await client.GetAsync($"{EndPoint}/SongsForPlaylist/{idPlaylist}");
 
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var canciones = JsonConvert.DeserializeObject<List<Song>>(json);
+                    return canciones;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron canciones");
+                    return new List<Song>();
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return new List<Song>();
+                }
+            }
+        }
+
+        public static async Task<List<Song>> GetCancionesPorArtistaId(int idArtista)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/PorArtista/{idArtista}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();

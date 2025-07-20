@@ -10,6 +10,8 @@ using Modelos.Tuneflow.User.Profiles;
 using Modelos.Tuneflow.Media;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using MVC.TUNEFLOW.Services;
+using Modelos.Tuneflow.User;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -17,16 +19,24 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
     [Authorize]
     public class PlaylistController : Controller
     {
-        private readonly string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co";
-        private readonly string supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
-        private readonly string bucket = "imagenesplaylistusuarios";
-        private readonly string directory = "PortadasPlaylists";
+
+        private readonly SupabaseStorageService _supabaseService;
+
+        public PlaylistController()
+        {
+            string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co";
+            string supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o";
+            string bucket = "imagenesplaylistusuarios";
+            string directory = "PortadasPlaylists";
+            
+
+
+            _supabaseService = new SupabaseStorageService(supabaseUrl, supabaseAnonKey, bucket, directory);
+        }
 
         public async Task<IActionResult> Index()
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
-
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
             if (client == null) return RedirectToAction("Index", "Buscar");
 
@@ -49,24 +59,24 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             try
             {
-                string url = await SubirImagenAsync(ImageCover);
-
-                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
-
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
-                if (client == null) return RedirectToAction("Index", "Buscar");
-
+                string urlImagen = await _supabaseService.SubirArchivoAsync(ImageCover);
+                if (string.IsNullOrEmpty(urlImagen))
+                {
+                    ModelState.AddModelError("", "Error al subir la imagen de portada.");
+                    return View();
+                }
                 var playlist = new Playlist
                 {
                     Title = Title,
                     Description = Description,
                     CreationDate = DateTime.UtcNow,
                     ClientId = client.Id,
-                    PlaylistCover = url
-                };
+                    PlaylistCover = urlImagen
 
-                await Crud<Playlist>.CreateAsync(playlist);
+                };
+                Crud<Playlist>.CreateAsync(playlist);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception e)
@@ -89,29 +99,27 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             try
             {
                 var playlist = await Crud<Playlist>.GetByIdAsync(id);
-                if (playlist == null) return NotFound();
-
-                if (ImageCover != null)
-                {
-                    // Eliminar la anterior si existía
-                    if (!string.IsNullOrEmpty(playlist.PlaylistCover))
-                    {
-                        string filePath = playlist.PlaylistCover.Replace($"{supabaseUrl}/storage/v1/object/public/{bucket}/", "");
-                        await EliminarArchivoSupabaseAsync(supabaseUrl, supabaseAnonKey, bucket, filePath);
-                    }
-
-                    playlist.PlaylistCover = await SubirImagenAsync(ImageCover);
-                }
+                var urlEliminar = playlist.PlaylistCover;
+                var eliminado = await _supabaseService.EliminarArchivoAsync(urlEliminar);
+                playlist.PlaylistCover = await _supabaseService.SubirArchivoAsync(ImageCover);
 
                 playlist.Title = Title;
                 playlist.Description = Description;
 
-                await Crud<Playlist>.UpdateAsync(id, playlist);
-                return RedirectToAction(nameof(Index));
+                var actualizado = await Crud<Playlist>.UpdateAsync(playlist.Id,playlist);
+                if (actualizado)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Error al actualizar la playlist.");
+                    return View(playlist);
+                }
             }
             catch (Exception e)
             {
-                ModelState.AddModelError("", "Error al editar la playlist: " + e.Message);
+                ModelState.AddModelError("", "Error al actualizar la playlist: " + e.Message);
                 return View();
             }
         }
@@ -129,21 +137,18 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             try
             {
                 var playlist = await Crud<Playlist>.GetByIdAsync(id);
-                if (playlist == null) return NotFound();
-
-                // Eliminar imagen
-                if (!string.IsNullOrEmpty(playlist.PlaylistCover))
+                var eliminadoSupa = await _supabaseService.EliminarArchivoAsync(playlist.PlaylistCover);
+                if (!eliminadoSupa)
                 {
-                    string filePath = playlist.PlaylistCover.Replace($"{supabaseUrl}/storage/v1/object/public/{bucket}/", "");
-                    await EliminarArchivoSupabaseAsync(supabaseUrl, supabaseAnonKey, bucket, filePath);
+                    ModelState.AddModelError("", "Error al eliminar la imagen de portada.");
+                    return View(playlist);
                 }
-
-                await Crud<Playlist>.DeleteAsync(id);
+                var eliminado = await Crud<Playlist>.DeleteAsync(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error eliminando playlist: {e.Message}");
+                ModelState.AddModelError("", "Error al eliminar la playlist: " + e.Message);
                 return View();
             }
         }
@@ -192,59 +197,6 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             {
                 Console.WriteLine($"Error en AddToPlaylist: {ex.Message}");
                 return StatusCode(500, new { status = "error", message = "Error interno del servidor" });
-            }
-        }
-
-        // Utilidades
-
-        private async Task<string> SubirImagenAsync(IFormFile ImageCover)
-        {
-            if (ImageCover == null || ImageCover.Length == 0) return "";
-
-            var fileNameClean = Path.GetFileNameWithoutExtension(ImageCover.FileName);
-            fileNameClean = Regex.Replace(fileNameClean, @"[^a-zA-Z0-9_\-]", "");
-            var extension = Path.GetExtension(ImageCover.FileName);
-            var fileName = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{fileNameClean}{extension}";
-            var filePath = $"{directory}/{fileName}";
-
-            using (var clients = new HttpClient())
-            {
-                clients.BaseAddress = new Uri(supabaseUrl);
-                clients.DefaultRequestHeaders.Add("apikey", supabaseAnonKey);
-                clients.DefaultRequestHeaders.Add("Authorization", $"Bearer {supabaseAnonKey}");
-
-                using var memori = new MemoryStream();
-                await ImageCover.CopyToAsync(memori);
-                var content = new ByteArrayContent(memori.ToArray());
-                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(ImageCover.ContentType);
-
-                var response = await clients.PutAsync($"/storage/v1/object/{bucket}/{filePath}", content);
-                if (!response.IsSuccessStatusCode)
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-                    throw new Exception("Error al subir imagen a Supabase: " + error);
-                }
-            }
-
-            return $"{supabaseUrl}/storage/v1/object/public/{bucket}/{filePath}";
-        }
-
-        private async Task<bool> EliminarArchivoSupabaseAsync(string supabaseUrl, string apiKey, string bucket, string filePath)
-        {
-            try
-            {
-                using var client = new HttpClient();
-                client.BaseAddress = new Uri(supabaseUrl);
-                client.DefaultRequestHeaders.Add("apikey", apiKey);
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
-
-                var response = await client.DeleteAsync($"/storage/v1/object/{bucket}/{filePath}");
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error eliminando archivo: {ex.Message}");
-                return false;
             }
         }
     }

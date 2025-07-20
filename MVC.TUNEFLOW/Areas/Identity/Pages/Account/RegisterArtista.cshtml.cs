@@ -14,6 +14,7 @@ using Modelos.Tuneflow.Models;
 using Modelos.Tuneflow.User.Profiles;
 using Modelos.Tuneflow.User.Production;
 using NuGet.Protocol.Plugins;
+using Modelos.Tuneflow.User.Administration;
 
 namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 {
@@ -119,7 +120,6 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                         CountryId = Input.CountryId,
                         StageName = Input.StageName,
                         MusicGenre = Input.MusicGenre,
-                        Biography = Input.Biography,
                         AccountType = "Artista",
                         IsActive = true,
                         RegistrationDate = DateTime.UtcNow,
@@ -135,11 +135,22 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                         ClientId = 0, // No aplica para artistas
                         ArtistId = newArtist.Id, // Asignar el ID del artista recién creado
                         ProfileImage = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/ImagenDefault.jpeg",
-                        Biography = "Apasionado de la Música",
+                        Biography = Input.Biography,
                         CreationDate= DateTime.UtcNow,
                     };
 
                     var newProfile = await Crud<Profile>.CreateAsync(profile);
+
+                    var estadisticas = new ArtistStatistics
+                    {
+                        ArtistId = newArtist.Id,
+                        TotalPlays = 0,
+                        TotalFollowers = 0,
+                        PublishedSongs = 0,
+                        PublishedAlbums = 0
+                    };
+                    
+                    var newestadisticas = await Crud<ArtistStatistics>.CreateAsync(estadisticas);
 
                     await _userManager.AddToRoleAsync(user, "artista");
 

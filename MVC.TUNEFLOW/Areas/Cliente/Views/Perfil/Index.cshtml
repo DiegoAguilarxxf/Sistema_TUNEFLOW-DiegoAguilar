@@ -26,13 +26,7 @@
             </div>
 
             @* Usamos tag helpers para respetar el área y generar la URL correctamente *@
-            <a asp-area="Cliente"
-               asp-controller="Perfil"
-               asp-action="Edit"
-               asp-route-id="@Model.Id"
-               class="btn btn-primary">
-                Editar
-            </a>
+            <a href="/Cliente/Perfil/Edit/@Model.Id" class="btn btn-primary">Editar</a>
         </div>
     </div>
 </div>

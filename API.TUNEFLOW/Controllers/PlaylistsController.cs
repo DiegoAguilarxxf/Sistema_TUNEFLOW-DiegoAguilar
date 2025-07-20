@@ -87,12 +87,15 @@ namespace API.TUNEFLOW.Controllers
             ""Title"" = @Title,
             ""Description"" = @Description,
             ""CreationDate"" = @CreationDate,
-            ""ClientId"" = @ClientId", new
+            ""ClientId"" = @ClientId,
+            ""PlaylistCover"" = @PlaylistCover WHERE ""Id"" = @Id", new
             {
                 Title = playlist.Title,
                 Description = playlist.Description,
                 CreationDate = playlist.CreationDate,
-                ClientId = playlist.ClientId
+                ClientId = playlist.ClientId,
+                PlaylistCover = playlist.PlaylistCover,
+                Id = id
             });
 
         }
