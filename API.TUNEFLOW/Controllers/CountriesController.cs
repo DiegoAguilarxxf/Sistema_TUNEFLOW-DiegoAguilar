@@ -92,11 +92,11 @@ namespace API.TUNEFLOW.Controllers
         {
             // Consulta que une Songs con Artists y filtra por CountryId del artista
             var sql = @"
-        SELECT s.*
-        FROM ""Songs"" s
-        INNER JOIN ""Artists"" a ON s.""ArtistId"" = a.""Id""
-        WHERE a.""CountryId"" = @PaisId
-    ";
+                    SELECT s.*
+                    FROM ""Songs"" s
+                    INNER JOIN ""Artists"" a ON s.""ArtistId"" = a.""Id""
+                    WHERE a.""CountryId"" = @PaisId
+                ";
 
             var canciones = connection.Query<Song>(sql, new { PaisId = paisId });
             return canciones;

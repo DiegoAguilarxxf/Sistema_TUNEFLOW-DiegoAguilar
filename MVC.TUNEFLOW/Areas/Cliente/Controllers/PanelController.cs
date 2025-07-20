@@ -6,6 +6,7 @@ using System.Text.Json;
 using Modelos.Tuneflow.Media;
 using System.Security.Claims;
 using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.User.Production;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -26,6 +27,17 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         [HttpGet]
         public async Task<IActionResult> CancionesPorPais(int paisId)
         {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+
+                return RedirectToAction("Login", "Account");
+            }
+            var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+            ViewBag.IdCliente = client.Id;
+
             using var httpClient = new HttpClient();
 
             // ✅ URL actualizada según tu mensaje
@@ -41,6 +53,11 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 PropertyNameCaseInsensitive = true
             });
 
+            foreach (var cancion in canciones)
+            {
+                var artista = await Crud<Artist>.GetByIdAsync(cancion.ArtistId);
+                cancion.Artist = artista;
+            }
             return View(canciones);
         }
     }

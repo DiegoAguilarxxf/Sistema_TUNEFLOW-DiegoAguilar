@@ -75,12 +75,12 @@
 
         <div>
             <label for="Description" class="form-label">Descripción</label>
-            <textarea class="form-control" id="Description" name="Description" rows="4">@Model.Description</textarea>
+            <textarea class="form-control" id="Description" name="Description" rows="4" required>@Model.Description</textarea>
         </div>
 
         <div>
             <label for="ImageCover" class="form-label">Portada de la Playlist</label>
-            <input type="file" class="form-control" id="ImageCover" name="ImageCover" accept="image/*" />
+            <input type="file" class="form-control" id="ImageCover" name="ImageCover" accept="image/*" required />
 
             @if (!string.IsNullOrEmpty(Model.PlaylistCover))
             {

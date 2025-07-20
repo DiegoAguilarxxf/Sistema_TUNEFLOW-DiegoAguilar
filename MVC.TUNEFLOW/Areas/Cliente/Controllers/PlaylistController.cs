@@ -128,6 +128,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             }
         }
 
+        [HttpPost]
         public async Task<ActionResult> Delete(int id)
         {
             try
@@ -137,15 +138,15 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 if (!eliminadoSupa)
                 {
                     ModelState.AddModelError("", "Error al eliminar la imagen de portada.");
-                    return View(playlist);
+                    return View("Create", playlist);
                 }
                 var eliminado = await Crud<Playlist>.DeleteAsync(id);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Playlist", new { area = "Cliente" });
             }
             catch (Exception e)
             {
                 ModelState.AddModelError("", "Error al eliminar la playlist: " + e.Message);
-                return View();
+                return RedirectToAction("Index", "Playlist", new { area = "Cliente" });
             }
         }
 

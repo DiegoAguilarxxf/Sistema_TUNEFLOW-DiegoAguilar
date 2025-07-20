@@ -50,7 +50,7 @@
                             <td>
                                 @if (item.Artist != null && !string.IsNullOrEmpty(item.Artist.StageName))
                                 {
-                                    <a href="/Artista/Perfil/@item.Artist.StageName">@item.Artist.StageName</a>
+                                    <a href="/Artista/Perfil/Index?id=@item.Artist.Id&idCliente=@ViewBag.IdCliente">@item.Artist.StageName</a>
                                 }
                                 else
                                 {
@@ -61,17 +61,13 @@
                             <td>@FormatearTiempo(item.Duration) min</td>
                             <td>
 
-                                <button class="btn btn-sm btn-success"
-                                        onclick='reproducirCancion(
-        @item.Id,
-        @Html.Raw(JsonSerializer.Serialize(item.Title)),
-        @Html.Raw(JsonSerializer.Serialize(item.FilePath)),
-        @Html.Raw(JsonSerializer.Serialize(item.ImagePath)),
-        @ViewBag.IdCliente,
-        0,
-        true,
-        @Html.Raw(item.Artist != null && !string.IsNullOrEmpty(item.Artist.StageName) ? JsonSerializer.Serialize(item.Artist.StageName) : "\"Desconocido\"")
-    )'>
+                                <button class="btn btn-sm btn-success" onclick="reproducirCancion(
+                                            @item.Id,
+                                            '@item.Title',
+                                            '@item.FilePath',
+                                            '@item.ImagePath',
+                                            @ViewBag.IdCliente
+                                        )">
                                     ▶ Reproducir
                                 </button>
                             </td>
