@@ -3,42 +3,212 @@
 @{
     ViewData["Title"] = "Pagar";
 }
+
+<style>
+    body {
+        background-color: #121212;
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .panel-container {
+        max-width: 600px;
+        margin: 50px auto;
+        background-color: #1E1E1E;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.8);
+    }
+
+    h1, h4 {
+        text-align: center;
+        color: #ffffff;
+    }
+
+    label {
+        color: #b3b3b3;
+    }
+
+    .form-control {
+        background-color: #2a2a2a;
+        color: #fff;
+        border: 1px solid #444;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .form-control:focus {
+        background-color: #2a2a2a;
+        color: #fff;
+        border-color: #1db954; /* Spotify green */
+        box-shadow: 0 0 0 0.2rem rgba(29, 185, 84, 0.25);
+    }
+
+    .btn-primary {
+        background-color: #1db954;
+        border: none;
+        width: 100%;
+        padding: 12px;
+        font-weight: bold;
+        border-radius: 8px;
+    }
+
+    .btn-primary:hover {
+        background-color: #1ed760;
+    }
+
+    a {
+        color: #1db954;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .text-danger {
+        color: #ff4c4c;
+    }
+</style>
+
 <div class="panel-container">
-<h1>Pago</h1>
+    <h1>Pago</h1>
+    <h4>Ingrese su método de pago</h4>
+    <hr />
+    <form asp-area="Cliente" asp-controller="Pago" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
 
-<h4>Ingrese su método de pago</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="PaymentDate" class="control-label"></label>
-                <input asp-for="PaymentDate" class="form-control" />
-                <span asp-validation-for="PaymentDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Amount" class="control-label"></label>
-                <input asp-for="Amount" class="form-control" />
-                <span asp-validation-for="Amount" class="text-danger"></span>
-            </div>
-                <div class="form-group mb-3">
-                    <label asp-for="PaymentMethod"></label>
-                    <select asp-for="PaymentMethod" class="form-control" required>
-                        <option value="">-- Seleccione método de pago --</option>
-                        <option value="Transferencia">Transferencia</option>
-                        <option value="Tarjeta">Tarjeta</option>
-                    </select>
-                    <span asp-validation-for="PaymentMethod" class="text-danger"></span>
-                </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+        <input name="ClientId" type="hidden" value="@ViewBag.ClienteId" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="PaymentMethod"></label>
+            <select id="tipoPago" name="PaymentMethod" class="form-control" required>
+                <option value="">-- Seleccione método de pago --</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Tarjeta">Tarjeta</option>
+            </select>
+            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+        </div>
+
+        <input name="PaymentDate" type="hidden" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+        <!-- Visible y solo lectura -->
+        <div class="form-group">
+            <label>Fecha de pago</label>
+            <input type="text" class="form-control" value="@DateTime.Now.ToString("dd/MM/yyyy")" readonly />
+        </div>
+
+        <input type="hidden" name="Amount" value="@ViewBag.Precio" />
+
+        <!-- Campo visible solo para mostrar, pero no editable -->
+        <div class="form-group">
+            <label>Monto</label>
+            <input type="text" class="form-control" value="@ViewBag.Precio" readonly />
+        </div>
+
+        <div class="form-group" id="campoTarjeta" style="display:none;">
+            <label for="numeroTransaccion">Ingrese su número de tarjeta</label>
+            <input type="text" name="numeroTransaccion" class="form-control" maxlength="19" placeholder="XXXX XXXX XXXX XXXX" required />
+        </div>
+        <div class="form-group" id="campoTransaccion" style="display:none;">
+            <label for="numeroTransaccion">Ingrese su número de Transferencia</label>
+            <input type="text" name="numeroTransaccion" class="form-control" maxlength="19" placeholder="XXXX XXXX XXXX XXXX" required />
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Pagar" class="btn btn-primary" />
+        </div>
+    </form>
+
+    <a href="/Cliente/Planes/Planes">← Regresar</a>
 </div>
 
-<div>
-    <a asp-action="Index">Regresar</a>
-</div>
-</div>
+<script>
+    const tipoPagoSelect = document.getElementById('tipoPago');
+    const campoTarjeta = document.getElementById('campoTarjeta');
+    const campoPaypal = document.getElementById('campoTransaccion');
+
+    tipoPagoSelect.addEventListener('change', function() {
+            if (this.value === 'Tarjeta') {
+                campoTarjeta.style.display = 'block';
+                campoPaypal.style.display = 'none';
+                campoTarjeta.querySelector('input').setAttribute('required', 'required');
+                campoPaypal.querySelector('input').removeAttribute('required');
+            } else if (this.value === 'Transferencia') {
+                campoTarjeta.style.display = 'none';
+                campoPaypal.style.display = 'block';
+                campoPaypal.querySelector('input').setAttribute('required', 'required');
+                campoTarjeta.querySelector('input').removeAttribute('required');
+            } else {
+                campoTarjeta.style.display = 'none';
+                campoPaypal.style.display = 'none';
+                campoTarjeta.querySelector('input').removeAttribute('required');
+                campoPaypal.querySelector('input').removeAttribute('required');
+            }
+    });
+
+    document.querySelectorAll('input[name="numeroTransaccion"]').forEach(input => {
+        input.addEventListener('input', function () {
+            // Eliminar todo lo que no sea dígito
+            let rawValue = this.value.replace(/\D/g, '');
+
+            // Insertar espacios cada 4 dígitos
+            let formattedValue = rawValue.replace(/(.{4})/g, '$1 ').trim();
+
+            this.value = formattedValue;
+        });
+    });
+
+    document.querySelector('form').addEventListener('submit', function(e) {
+        let inputVisible;
+
+        if (campoTarjeta.style.display === 'block') {
+            inputVisible = campoTarjeta.querySelector('input');
+            const valor = inputVisible.value;
+
+            if (!/^[0-9\s]+$/.test(valor)) {
+                e.preventDefault();
+                alert('Por favor, ingrese solo números y espacios.');
+                inputVisible.focus();
+                return;
+            }
+
+            if (!validarLuhn(valor)) {
+                e.preventDefault();
+                alert('Número de tarjeta inválido según el algoritmo de Luhn.');
+                inputVisible.focus();
+                return;
+            }
+        } else if (campoPaypal.style.display === 'block') {
+            inputVisible = campoPaypal.querySelector('input');
+            // Aquí puedes poner otra validación para transferencia si quieres
+        }
+    });
+
+    function validarLuhn(numero) {
+        // Quitar espacios
+        numero = numero.replace(/\s+/g, '');
+
+        if (!/^\d+$/.test(numero)) return false; // Solo dígitos
+
+        let suma = 0;
+        let doble = false;
+
+        // Recorremos desde el final hacia el principio
+        for (let i = numero.length - 1; i >= 0; i--) {
+            let digito = parseInt(numero.charAt(i));
+
+            if (doble) {
+                digito *= 2;
+                if (digito > 9) digito -= 9;
+            }
+            suma += digito;
+            doble = !doble;
+        }
+
+        return (suma % 10) === 0;
+    }
+</script>

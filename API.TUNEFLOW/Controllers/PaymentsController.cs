@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Payments;
+using Modelos.Tuneflow.User.Consumer;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -39,9 +40,9 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Pagos/5
         [HttpGet("{id}")]
-        public ActionResult<Payment> GetPago(int id)
+        public ActionResult<Payment> GetPagoById(int id)
         {
-            var payment = connection.QuerySingle<Payment>(@"SELECT * FROM ""Payments"" WHERE ""Id"" = @Id", new { Id = id });
+            var payment = connection.QuerySingleOrDefault<Payment>(@"SELECT * FROM ""Payments"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (payment == null)
             {
@@ -74,16 +75,21 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Pagos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Payment PostPago([FromBody]Payment payment)
-        { connection.Execute(@"INSERT INTO ""Payments"" (""ClientId"", ""PaymentDate"", ""Amount"", ""PaymentMethod"") 
-                VALUES (@ClientId, @PaymentDate, @Amount, @PaymentMethod) RETURNING ""Id""", new
+        public ActionResult<Payment> PostPago([FromBody]Payment payment)
         {
-            ClientId = payment.ClientId,
-            PaymentDate = payment.PaymentDate,
-            Amount = payment.Amount,
-            PaymentMethod = payment.PaymentMethod
-        });
-            return payment;
+            var sql = @"INSERT INTO ""Payments"" (""ClientId"", ""PaymentDate"", ""Amount"", ""PaymentMethod"") 
+                VALUES (@ClientId, @PaymentDate, @Amount, @PaymentMethod) RETURNING ""Id""";
+            
+            var idDevuelto = connection.ExecuteScalar<int>(sql,new
+            {
+                ClientId = payment.ClientId,
+                PaymentDate = payment.PaymentDate,
+                Amount = payment.Amount,
+                PaymentMethod = payment.PaymentMethod
+            });
+
+            payment.Id = idDevuelto; // Set the Id of the newly created payment
+            return CreatedAtAction(nameof(GetPagoById), new { id = idDevuelto }, payment);
         }
 
         // DELETE: api/Pagos/5

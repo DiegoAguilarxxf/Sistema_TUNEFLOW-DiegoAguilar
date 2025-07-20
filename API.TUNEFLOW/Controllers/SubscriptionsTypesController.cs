@@ -41,7 +41,7 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<SubscriptionType> GetTipoSuscripcion(int id)
         {
-            var subscriptionType = connection.QuerySingle<SubscriptionType>(@"SELECT * FROM ""SubscriptionsTypes"" WHERE ""Id"" = @Id", new { Id = id });
+            var subscriptionType = connection.QuerySingleOrDefault<SubscriptionType>(@"SELECT * FROM ""SubscriptionsTypes"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (subscriptionType == null)
             {

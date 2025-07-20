@@ -53,26 +53,31 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/Suscripciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutSuscripcion(int id, [FromBody] Subscription subscription)
+        public IActionResult PutSuscripcion(int id, [FromBody] Subscription subscription)
         {
-            connection.Execute(@"UPDATE ""Subscriptions"" SET 
+            var affectedRows = connection.Execute(@"UPDATE ""Subscriptions"" SET 
                 ""StartDate"" = @StartDate,
-                ""EndDate"" = @EndDate,
                 ""JoinCode"" = @JoinCode,
-                ""SubscriptionType"" = @SubscriptionType,
-            WHERE ""Id"" = @Id",
+                ""SubscriptionTypeId"" = @SubscriptionTypeId,
+                ""NumberMembers"" = @NumberMembers
+                 WHERE ""Id"" = @Id",
              new
              {
                  Id = id,
                  StartDate = subscription.StartDate,
-                 EndDate = subscription.EndDate,
                  JoinCode= subscription.JoinCode,
-                 SubscriptionType = subscription.SubscriptionType
+                 SubscriptionTypeId = subscription.SubscriptionTypeId,
+                 NumberMembers = subscription.NumberMembers
              }
 
-  );
+            );
 
-           }
+            if (affectedRows == 0)
+                return NotFound(); // No se encontró la suscripción con ese ID
+
+            return NoContent(); // Actualización exitosa, sin contenido que devolver
+
+        }
 
         // POST: api/Suscripciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
