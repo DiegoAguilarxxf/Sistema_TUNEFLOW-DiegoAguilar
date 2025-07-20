@@ -41,7 +41,7 @@
                             <td>
                                 @if (item.Artist != null)
                                 {
-                                    <a href="/Artista/Perfil/@item.Artist.StageName">@item.Artist.StageName</a>
+                                    <a href="/Artista/Perfil/Index?id=@item.Artist.Id&idCliente=@ViewBag.IdCliente">@item.Artist.StageName</a>
                                 }
                                 else
                                 {

@@ -126,14 +126,6 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
         public async Task<ActionResult> Delete(int id)
         {
-            var playlist = await Crud<Playlist>.GetByIdAsync(id);
-            return View(playlist);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int id)
-        {
             try
             {
                 var playlist = await Crud<Playlist>.GetByIdAsync(id);

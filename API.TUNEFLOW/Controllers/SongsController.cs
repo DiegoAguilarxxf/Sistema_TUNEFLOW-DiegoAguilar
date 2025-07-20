@@ -39,21 +39,21 @@ namespace API.TUNEFLOW.Controllers
                             SELECT 
                                 c.""Id"", c.""Title"", c.""Duration"", c.""Genre"", c.""FilePath"", c.""ExplicitContent"", c.""ImagePath"",
                                 al.""Title"" AS AlbumTitle,
+                                ar.""Id"" AS ArtistId,
                                 ar.""StageName"" AS StageName
                             FROM ""Songs"" c
                             LEFT JOIN ""Albums"" al ON c.""AlbumId"" = al.""Id""
                             LEFT JOIN ""Artists"" ar ON c.""ArtistId"" = ar.""Id""";
 
-            var songs = connection.Query<Song, string, string, Song>(
+            var songs = connection.Query<Song, string, int, string, Song>(
                 sql,
-                (song, albumTitle, stageName) =>
+                (song, albumTitle, artistId, stageName) =>
                 {
                     song.Album = new Album { Title = albumTitle };
-                    song.Artist = new Artist { StageName = stageName };
+                    song.Artist = new Artist { Id = artistId, StageName = stageName };
                     return song;
                 },
-
-                splitOn: "AlbumTitle,StageName"
+                splitOn: "AlbumTitle,ArtistId,StageName"
             ).ToList();
 
             if (!songs.Any())
@@ -113,6 +113,18 @@ namespace API.TUNEFLOW.Controllers
             return Ok(songs);
         }
 
+        [HttpGet("PorGenero/{genero}")]
+        public ActionResult<IEnumerable<Song>> ObtenerCancionesPorGenero(string genero)
+        {
+            string sql = @"SELECT * FROM ""Songs"" WHERE ""Genre"" = @Genre";
+
+            var songs = connection.Query<Song>(sql, new { Genre = genero }).ToList();
+
+            if (!songs.Any())
+                return NotFound("No hay canciones para ese artista");
+
+            return Ok(songs);
+        }
 
         // PUT: api/Canciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Media;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -14,6 +15,16 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         // GET: BibliotecaController
         public async Task<IActionResult> Index()
         {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+
+                return RedirectToAction("Login", "Account");
+            }
+            var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+            ViewBag.IdCliente = client.Id;
             Debug.WriteLine("Entrando a Index");
 
             // Obtiene todas las canciones sin filtro

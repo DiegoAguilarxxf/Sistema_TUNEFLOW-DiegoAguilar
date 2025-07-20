@@ -49,7 +49,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 return View("Index", new List<Song>());
             }
           
-            var songs = await Crud<Song>.GetCancionesPorPalabrasClave(nameSong);
+            var songs = await Crud<Song>.GetCancionesPorgenero(nameSong);
             Console.WriteLine($"Buscar llamado con parámetro: '{nameSong}'");
             Console.WriteLine($"Número de canciones recibidas en controlador: {songs?.Count ?? 0}");
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
