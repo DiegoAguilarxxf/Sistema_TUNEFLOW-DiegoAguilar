@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Models;
+using Modelos.Tuneflow.User.Profiles;
 
 namespace Modelos.Tuneflow.User.Production
 {
@@ -18,10 +19,10 @@ namespace Modelos.Tuneflow.User.Production
         public bool Verified { get; set; } // Indica si el artista ha sido verificado por la plataforma.
         public string UserId { get; set; } // Identificador único del usuario artista, puede ser un GUID o un ID de base de datos.
         public Country? Country { get; set; }
+        public Profile? Profile { get; set; } // Relación con el perfil del artista
         public List<Song>? Songs { get; set; }
         public List<Album>? Albums { get; set; }
        // public Profile? Profile { get; set; } // Relación con el perfil del artista
-        public string? ProfileImage { get; set; } // URL o ruta de la imagen del perfil del artista
     }
 
 }

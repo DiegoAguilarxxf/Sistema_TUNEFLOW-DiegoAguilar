@@ -289,6 +289,31 @@ namespace API.Consumer
             }
         }
 
+        public static async Task<List<Follow>> GetFollowsPorClienteId(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/FollowsByCliemnte/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var follows = JsonConvert.DeserializeObject<List<Follow>>(json);
+                    return follows;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron playlist");
+                    return new List<Follow>();
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return new List<Follow>();
+                }
+            }
+        }
+
         public static async Task<List<Song>> GetCancionesPorPlaylist(int idPlaylist)
         {
             using (var client = new HttpClient())

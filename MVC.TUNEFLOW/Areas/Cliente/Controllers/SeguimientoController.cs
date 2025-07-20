@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.User.Production;
+using Modelos.Tuneflow.User.Profiles;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -14,9 +15,17 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
     public class SeguimientoController : Controller
     {
         // GET: SeguimientoController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            var follows = await Crud<Follow>.GetFollowsPorClienteId(client.Id);
+            foreach(var follow in follows)
+            {
+                var profile = await Crud<Profile>.GetPerfilPorArtistaId(follow.ArtistId);
+                follow.Artist.Profile = profile;
+            }
+            return View(follows);
         }
 
         public async Task<ActionResult> Seguir(int id)

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.User.Production;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -49,6 +50,31 @@ namespace API.TUNEFLOW.Controllers
             }
 
             return follow;
+        }
+
+        [HttpGet("FollowsByCliemnte/{idCliente}")]
+        public ActionResult<IEnumerable<Follow>> GetSeguimientoByCliente(int idCliente)
+        {
+            var sql = @"
+                        SELECT f.*, a.*
+                        FROM ""Follows"" f
+                        INNER JOIN ""Artists"" a ON f.""ArtistId"" = a.""Id""
+                        WHERE f.""ClientId"" = @idCliente;
+                    ";
+
+            var follows = connection.Query<Follow, Artist, Follow>(
+                    sql,
+                    (follow, artist) =>
+                    {
+                        follow.Artist = artist;
+                        return follow;
+                    },
+                    new { idCliente },
+                    splitOn: "Id"
+                ).ToList();
+
+                return Ok(follows);
+            
         }
 
         [HttpGet("ObtenerIsFollowed/{idClient}/{idArtist}")]
