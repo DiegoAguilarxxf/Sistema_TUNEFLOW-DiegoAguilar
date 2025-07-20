@@ -48,6 +48,10 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             Playlist playlist = await Crud<Playlist>.GetByIdAsync(id);
             playlist.Songs = await Crud<SongPlaylist>.GetCancionesPorPlaylist(id);
+            Console.WriteLine($"Canciones {playlist.Songs.Count}");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            ViewBag.IdCliente = client.Id;
             return View(playlist);
         }
 

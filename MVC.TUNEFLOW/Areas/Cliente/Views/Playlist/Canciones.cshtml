@@ -87,7 +87,11 @@
                     <td>@(cancion.ExplicitContent ? "Sí" : "No")</td>
                     <td>@cancion.TimeInMinutes(cancion.Duration)</td>
                     <td>
-                        <button class="btn btn-sm btn-success" onclick="reproducirCancion('@cancion.Id')">
+                        <button class="btn btn-sm btn-success" onclick="reproducirCancion(@cancion.Id,
+                                            '@cancion.Title',
+                                            '@cancion.FilePath',
+                                            '@cancion.ImagePath',
+                                            @ViewBag.IdCliente)">
                             ▶
                         </button>
 

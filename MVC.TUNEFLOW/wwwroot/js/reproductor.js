@@ -130,7 +130,7 @@ async function reproducirCancion(id, titulo, url, portada, idCliente, tiempo = 0
                 await audioPlayer.play();
                 estaReproduciendo = true;
                 actualizarIconoPlayPause();
-                const esFavorito = comprobarIsFavorito();
+                const esFavorito = await comprobarIsFavorito();
                 actualizarBotonFavorito(esFavorito);
             } catch (err) {
                 console.error('Error al reproducir:', err);
@@ -328,9 +328,9 @@ async function funcionFavorito() {
     }
     console.log(`Id de la playlist Me Gustas: ${idMeGustas}`);
     if (estaFavorito) {
-        eliminarFavorito(idMeGustas);
+        await eliminarFavorito(idMeGustas);
     } else {
-        agregarFavorito(cancionEnReproduccion.id, cancionEnReproduccion.idCliente, idMeGustas);
+        await agregarFavorito(cancionEnReproduccion.id, cancionEnReproduccion.idCliente, idMeGustas);
     }
 }
 
@@ -400,7 +400,7 @@ async function agregarFavorito(idCancion, idCliente, idMeGustas) {
         if (favoritoCreado && favoritoCreado.id) {
             console.log('Favorito agregado con ID:', favoritoCreado.id);
             alert('Canción agregada a Favoritos.');
-            actualizarBotonFavorito(true);
+            await actualizarBotonFavorito(true);
 
             const bodySongPlaylist = {
                 "id": 0,
@@ -444,14 +444,14 @@ async function eliminarFavorito(idMeGustas) {
             if (response.ok) {
                 console.log('Canción eliminada de favoritos.');
                 alert('Canción eliminada de favoritos.');
-                actualizarBotonFavorito(false);
+                await actualizarBotonFavorito(false);
 
                 const respuestaEcontrarSongPlaylist = await fetch(`https://localhost:7031/api/SongsPlaylists/ExistSongPlaylist/${cancionEnReproduccion.id}/${idMeGustas}`)
 
                 if (respuestaEcontrarSongPlaylist.ok) {
                     const data = await respuestaEcontrarSongPlaylist.json();
 
-                    var responseEliminacion = await fetch(`https://localhost:7031/api/SongsPlaylists/${data}`, {
+                    var responseEliminacion = await fetch(`https://localhost:7031/api/SongsPlaylists/${data.id}`, {
                         method: "DELETE",
                         headers: {
                             'Content-Type': 'application/json'
@@ -496,3 +496,106 @@ async function obtenerIdFavorito() {
         return null;
     }
 }
+
+//Agregar A cualquier Playlist
+async function agregarACualquierPlaylist() {
+    const idCliente = cancionEnReproduccion.idCliente;
+
+    try {
+        const response = await fetch(`https://localhost:7031/api/Playlists/Cliente/Playlist/${idCliente}`);
+        if (!response.ok) throw new Error("No se pudo obtener la lista");
+
+        const playlists = await response.json();
+        mostrarModalPlaylists(playlists);
+    } catch (err) {
+        alert("Error al cargar playlists: " + err.message);
+    }
+}
+
+function mostrarModalPlaylists(playlists) {
+    const lista = document.getElementById('listaPlaylists');
+    lista.innerHTML = '';
+
+    if (playlists.length === 0) {
+        lista.innerHTML = '<li>No tienes playlists creadas.</li>';
+    } else {
+        playlists.forEach(playlist => {
+            const item = document.createElement('li');
+            item.style.cursor = 'pointer';
+            item.style.padding = '10px';
+            item.style.borderBottom = '1px solid #333';
+            item.style.display = 'flex';
+            item.style.alignItems = 'center';
+            item.style.gap = '10px';
+
+            if (playlist.title != "Tus Me Gusta") {
+                // Imagen de portada
+                const img = document.createElement('img');
+                img.src = playlist.playlistCover || '/img/icons/default-cover.png'; // Usa una imagen por defecto si no hay
+                img.alt = 'Portada';
+                img.style.width = '40px';
+                img.style.height = '40px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '5px';
+
+                // Título
+                const title = document.createElement('span');
+                title.textContent = playlist.title;
+                title.style.fontSize = '16px';
+
+                // Agregar imagen y título al item
+                item.appendChild(img);
+                item.appendChild(title);
+
+                // Agregar evento de click
+                item.onclick = () => agregarCancionAPlaylist(playlist.id);
+
+                // Agregar al listado
+                lista.appendChild(item);
+            }
+        });
+    }
+
+    // Mostrar el modal
+    document.getElementById('overlayModal').style.display = 'block';
+}
+
+function cerrarModal() {
+    document.getElementById('overlayModal').style.display = 'none';
+}
+
+async function agregarCancionAPlaylist(idPlaylist) {
+    const body = {
+        playlistId: idPlaylist,
+        songId: cancionEnReproduccion.id
+    };
+
+    try {
+        const response = await fetch('https://localhost:7031/api/SongsPlaylists', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (response.ok) {
+            alert("Canción añadida correctamente a la playlist.");
+        } else {
+            alert("Error al añadir canción.");
+        }
+
+        cerrarModal();
+    } catch (err) {
+        console.error("Error:", err);
+        alert("No se pudo agregar la canción.");
+    }
+}
+
+// Cerrar modal al hacer clic fuera
+window.addEventListener('click', function (e) {
+    const overlay = document.getElementById('overlayModal');
+    const modal = document.getElementById('modalPlaylists');
+
+    if (e.target === overlay) {
+        cerrarModal();
+    }
+});

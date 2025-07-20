@@ -49,7 +49,7 @@
                 <img src="~/img/icons/letra.png" alt="Letra" />
             </button>
 
-            <button class="btn-icon btn-expandido" onclick="añadirACualquierPlaylist()">
+            <button class="btn-icon btn-expandido" onclick="agregarACualquierPlaylist()">
                 <img src="~/img/icons/add-playlist.png" alt="Añadir a Playlist" />
             </button>
 
@@ -70,4 +70,11 @@
     </div>
 
     <audio id="audioPlayer" src="" preload="auto"></audio>
+</div>
+<div id="overlayModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1999;">
+    <div id="modalPlaylists" style="background-color:#1c1c1c; color:white; padding:1rem 2rem; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.5); min-width:300px; max-height:80vh; overflow-y:auto; position:absolute; top:25%; left:50%; transform:translateX(-50%); z-index:2000;">
+        <h5 style="margin-bottom:1rem;">Selecciona una playlist</h5>
+        <ul id="listaPlaylists" style="list-style:none; padding:0;"></ul>
+        <button onclick="cerrarModal()" class="btn btn-danger mt-3">Cancelar</button>
+    </div>
 </div>

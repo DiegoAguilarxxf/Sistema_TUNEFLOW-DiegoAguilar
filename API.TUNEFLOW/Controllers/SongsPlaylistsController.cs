@@ -73,11 +73,11 @@ namespace API.TUNEFLOW.Controllers
         {
             var sql = @"
                             SELECT 
-                                c.""Id"", c.""Title"", c.""Duration"", c.""Genere"", c.""ArtistId"", c.""AlbumId"",
+                                c.""Id"", c.""Title"", c.""Duration"", c.""Genre"", c.""ArtistId"", c.""AlbumId"",
                                 c.""FilePath"", c.""ExplicitContent"", c.""ImagePath"",c.""Available"",
 
-                                a.""Id"", a.""StageName"", a.""MusicGenre"", a.""Biography"",
-                                a.""CountryId"", a.""Virified"", a.""UserId"",
+                                a.""Id"", a.""StageName"", a.""MusicGenre"",
+                                a.""CountryId"", a.""Verified"", a.""UserId"",
 
                                 al.""Id"", al.""Title"", al.""ReleaseDate"", al.""Genre"",
                                 al.""CreationDate"", al.""Description"", al.""CoverPath""
