@@ -4,6 +4,8 @@ using API.Consumer;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Json;
 using Modelos.Tuneflow.Media;
+using System.Security.Claims;
+using Modelos.Tuneflow.User.Consumer;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -13,6 +15,10 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
     {
         public async Task<IActionResult> Panel()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            var subscription = await Crud<Subscription>.GetByIdAsync(client.SubscriptionId);
+            ViewBag.TipoSuscripcion = subscription.SubscriptionType.Id;
             var paises = await Crud<Country>.GetAllAsync();
             return View(paises);
         }

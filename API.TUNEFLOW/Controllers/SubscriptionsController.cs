@@ -42,6 +42,8 @@ namespace API.TUNEFLOW.Controllers
         {
             var subscription = connection.QuerySingleOrDefault<Subscription>(@"SELECT * FROM ""Subscriptions"" WHERE ""Id"" = @Id", new { Id = id });
 
+            subscription.SubscriptionType = connection.QuerySingleOrDefault<SubscriptionType>(@"SELECT * FROM ""SubscriptionsTypes"" WHERE ""Id"" = @SubscriptionTypeId", new { SubscriptionTypeId = subscription.SubscriptionTypeId });
+
             if (subscription == null)
             {
                 return NotFound();

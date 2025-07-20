@@ -20,9 +20,12 @@
 <div class="panel-container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">🎧 Bienvenido a TUNEFLOW</h2>
-        <div>
-            <a href="/Cliente/Planes/Planes" class="btn btn-outline-primary">Eliminar Publicidad</a>
-        </div>
+        @if (ViewBag.TipoSuscripcion == 1)
+        {
+            <div>
+                <a href="/Cliente/Planes/Planes" class="btn btn-outline-primary">Eliminar Publicidad</a>
+            </div>
+        }
     </div>
 
     <div class="top50">
