@@ -5,6 +5,7 @@ using Modelos.Tuneflow.Media;
 using System.Diagnostics;
 using System.Security.Claims;
 using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.User.Production;
 
 
 
@@ -50,6 +51,10 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             }
           
             var songs = await Crud<Song>.GetCancionesPorgenero(nameSong);
+            foreach(var song in songs)
+            {
+                song.Artist = await Crud<Artist>.GetByIdAsync(song.ArtistId);
+            }
             Console.WriteLine($"Buscar llamado con parámetro: '{nameSong}'");
             Console.WriteLine($"Número de canciones recibidas en controlador: {songs?.Count ?? 0}");
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

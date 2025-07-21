@@ -4,6 +4,7 @@ using Modelos.Tuneflow.Media; // Modelo de canciones
 using System.Threading.Tasks;
 using MVC.TUNEFLOW.Models;
 using Microsoft.AspNetCore.Authorization;
+using Modelos.Tuneflow.User.Production;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -49,6 +50,11 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             try
             {
                 var canciones = await Crud<Song>.GetCancionesPorPalabrasClave(genre);
+
+                foreach(var cancion in canciones)
+                {
+                    cancion.Artist = await Crud<Artist>.GetByIdAsync(cancion.ArtistId);
+                }
 
                 ViewBag.Genre = genre;
 
