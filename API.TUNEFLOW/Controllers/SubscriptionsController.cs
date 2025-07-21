@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.User.Consumer;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -15,24 +16,21 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class SubscriptionsController : ControllerBase
     {
-        private DbConnection connection;
-        /*private readonly TUNEFLOWContext _context;
-
-        public SuscripcionesController(TUNEFLOWContext context)
-        {
-            _context = context;
-        }*/
+        
+        private readonly IConfiguration _config;
+        
         public SubscriptionsController(IConfiguration configuration)
         {
-            var connString = configuration.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = configuration;
         }
 
         // GET: api/Suscripciones
         [HttpGet]
         public IEnumerable<Subscription> GetSuscripcion()
-        { var suscripciones = connection.Query<Subscription>("SELECT * FROM \"Subscriptions\"");
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            var suscripciones = connection.Query<Subscription>("SELECT * FROM \"Subscriptions\"");
             return suscripciones;
         }
 
@@ -40,6 +38,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<Subscription> GetSuscripcionById(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var subscription = connection.QuerySingleOrDefault<Subscription>(@"SELECT * FROM ""Subscriptions"" WHERE ""Id"" = @Id", new { Id = id });
 
             subscription.SubscriptionType = connection.QuerySingleOrDefault<SubscriptionType>(@"SELECT * FROM ""SubscriptionsTypes"" WHERE ""Id"" = @SubscriptionTypeId", new { SubscriptionTypeId = subscription.SubscriptionTypeId });
@@ -57,6 +57,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public IActionResult PutSuscripcion(int id, [FromBody] Subscription subscription)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var affectedRows = connection.Execute(@"UPDATE ""Subscriptions"" SET 
                 ""StartDate"" = @StartDate,
                 ""JoinCode"" = @JoinCode,
@@ -86,6 +88,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<Subscription> PostSuscripcion([FromBody] Subscription subscription)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"INSERT INTO ""Subscriptions"" (""StartDate"", ""SubscriptionTypeId"",""NumberMembers"") 
                 VALUES (@StartDate, @SubscriptionTypeId, @NumberMembers) 
                 RETURNING ""Id"";";
@@ -105,7 +109,9 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public void DeleteSuscripcion(int id)
         {
-          connection.Execute(@"DELETE FROM ""Subscriptions"" WHERE ""Id"" = @Id", new { Id = id });
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            connection.Execute(@"DELETE FROM ""Subscriptions"" WHERE ""Id"" = @Id", new { Id = id });
         }
 /*
         private bool SuscripcionExists(int id)

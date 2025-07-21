@@ -140,6 +140,40 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                     ModelState.AddModelError("", "Error al eliminar la imagen de portada.");
                     return View("Create", playlist);
                 }
+                List<Song> canciones = await Crud<SongPlaylist>.GetCancionesPorPlaylist(id);
+                Console.WriteLine($"Canciones para eliminar: {canciones.Count}");
+
+                foreach (var cancion in canciones)
+                {
+                    try
+                    {
+                        if (cancion == null)
+                        {
+                            Console.WriteLine("⚠️ Canción es NULL");
+                            continue;
+                        }
+
+                        Console.WriteLine($"➡️ Procesando canción con ID: {cancion.Id}");
+
+                        var idEliminar = await Crud<SongPlaylist>.ObtenerIdSongPlaylist(cancion.Id, playlist.Id);
+
+                        Console.WriteLine($"✅ ID a eliminar en SongPlaylist: {idEliminar}");
+
+                        if (idEliminar != 0)
+                        {
+                            await Crud<SongPlaylist>.DeleteAsync(idEliminar);
+                            Console.WriteLine("🎵 Canción eliminada");
+                        }
+                        else
+                        {
+                            Console.WriteLine("⚠️ No se encontró relación en SongPlaylist");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"❌ ERROR dentro del foreach: {ex.Message}");
+                    }
+                }
                 var eliminado = await Crud<Playlist>.DeleteAsync(id);
                 return RedirectToAction("Index", "Playlist", new { area = "Cliente" });
             }

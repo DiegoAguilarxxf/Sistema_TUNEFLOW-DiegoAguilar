@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.User.Administration;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -16,19 +17,18 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class AlbumsController : ControllerBase
     {
-        private DbConnection connection;
-
-       public AlbumsController(IConfiguration config)
+        
+        private readonly IConfiguration _config;
+        public AlbumsController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
         }
 
         // GET: api/Albums
         [HttpGet]
         public IEnumerable<Album> Get()
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             var albums = connection.Query<Album>("SELECT * FROM \"Albums\"");
             return albums;
         }
@@ -37,6 +37,7 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<Album> Get(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             var albums = connection.QuerySingle<Album>(@"SELECT * FROM ""Albums"" WHERE ""Id""=@Id", new {Id= id });
 
             if (albums == null)
@@ -52,6 +53,7 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public void Put(int id,[FromBody] Album album)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             connection.Execute(
                 @"UPDATE ""Albums"" SET 
                 ""Title"" = @Title, 
@@ -79,6 +81,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public Album Post([FromBody]Album album)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(
                 @"Insert INTO ""Albums"" (""Title"", ""ReleaseDate"", ""Genre"", ""FechaCreacion"", ""Description"", ""CoverPath"")VALUES
                 (@Title, @ReleaseDate, @Genre, @CreationDate, @Description, @CoverPath",
@@ -100,7 +104,9 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-           connection.Execute(@"DELETE FROM ""Albums"" WHERE ""Id"" = @Id", new { Id = id });
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            connection.Execute(@"DELETE FROM ""Albums"" WHERE ""Id"" = @Id", new { Id = id });
         }
 
        /* private bool AlbumExists(int id)

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.User.Consumer;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -22,19 +23,20 @@ namespace API.TUNEFLOW.Controllers
         {
             _context = context;
         }*/
-        private DbConnection connection;
+        private readonly IConfiguration _config;
         public ClientsController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
+            
         }
 
         // GET: api/Clientes
         [HttpGet]
         public IEnumerable<Client> GetCliente()
         {
-           var cliente= connection.Query<Client>("SELECT * FROM \"Clients\"");
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            var cliente= connection.Query<Client>("SELECT * FROM \"Clients\"");
             return cliente;
         }
 
@@ -42,6 +44,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<Client> GetClienteById(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var client = connection.QuerySingleOrDefault<Client>(@"SELECT * FROM ""Clients"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (client == null)
@@ -55,6 +59,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("Usuario/{idUser}")]
         public ActionResult<Client> GetClienteByUsuarioId(string idUser)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var client = connection.QuerySingleOrDefault<Client>(@"SELECT * FROM ""Clients"" WHERE ""UserId"" = @UserId", new { UserId = idUser });
             if (client == null)
             {
@@ -68,6 +74,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public void PutCliente(int id,[FromBody] Client client)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"UPDATE ""Clients"" SET 
                 ""FirstName"" = @FirstName,
                 ""LastName"" = @LastName,
@@ -93,6 +101,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<Client> PostCliente([FromBody]Client client)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"INSERT INTO ""Clients"" (""CountryId"", ""SubscriptionId"", ""FirstName"", ""LastName"", ""Email"", ""Password"",""Phone"",""BirthDate"",""AccountType"",""IsActive"",""RegistrationDate"",""UserId"") 
                 VALUES (@CountryId, @SubscriptionId, @FirstName, @LastName, @Email, @Password, @Phone, @BirthDate, @AccountType, @IsActive, @RegistrationDate, @UserId) RETURNING ""Id"";";
             
@@ -122,6 +132,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public void DeleteCliente(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"DELETE FROM ""Clients"" WHERE ""Id"" = @Id", new { Id = id });
         }
 /*

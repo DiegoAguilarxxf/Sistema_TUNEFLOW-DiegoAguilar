@@ -11,6 +11,7 @@ using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.Media;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Modelos.Tuneflow.User.Production;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -18,24 +19,20 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class SongsPlaylistsController : ControllerBase
     {
-        /*private readonly TUNEFLOWContext _context;
-
-        public MusicasPlaylistsController(TUNEFLOWContext context)
-        {
-            _context = context;
-        }*/
-        private DbConnection connection;
+        
+        private readonly IConfiguration _config;
         public SongsPlaylistsController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
         }
 
         // GET: api/MusicasPlaylists
         [HttpGet]
         public IEnumerable<SongPlaylist> GetMusicaPlaylist()
-        {   var getmusic = connection.Query<SongPlaylist>("SELECT * FROM \"SongsPlaylists\"");
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            var getmusic = connection.Query<SongPlaylist>("SELECT * FROM \"SongsPlaylists\"");
             return getmusic;
         }
 
@@ -43,6 +40,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<SongPlaylist> GetMusicaPlaylistById(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var songPlaylist = connection.QuerySingle<SongPlaylist>(@"SELECT * FROM ""SongsPlaylists"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (songPlaylist == null)
@@ -56,6 +55,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("ExistSongPlaylist/{SongId}/{PlaylistId}")]
         public ActionResult<int> GetCancionFavoritaPorIdEIdCliente(int SongId, int PlaylistId)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"SELECT ""Id"" FROM ""SongsPlaylists"" WHERE ""SongId"" = @IdSong AND ""PlaylistId"" = @IdPlaylist";
 
             var existId = connection.ExecuteScalar<int?>(sql, new { IdSong = SongId, IdPlaylist = PlaylistId });
@@ -71,6 +72,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("SongsForPlaylist/{idPlaylist}")]
         public ActionResult<IEnumerable<Song>> ObtenerCancionesPorPlaylist(int idPlaylist)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"
                             SELECT 
                                 c.""Id"", c.""Title"", c.""Duration"", c.""Genre"", c.""ArtistId"", c.""AlbumId"",
@@ -112,6 +115,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public void PutMusicaPlaylist(int id,[FromBody] SongPlaylist musicPlaylist)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"UPDATE ""SongsPlaylists"" SET 
                 ""PlaylistId"" = @PlaylistId,
                 ""MusicaId"" = @MusicaId
@@ -128,6 +133,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<SongPlaylist> PostMusicaPlaylist([FromBody]SongPlaylist musicPlaylist)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var idReturned = connection.ExecuteScalar<int>(@"INSERT INTO ""SongsPlaylists"" (""SongId"", ""PlaylistId"") 
                 VALUES (@SongId, @PlaylistId) RETURNING ""Id"";", new
             {
@@ -144,6 +151,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteMusicaPlaylist(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"DELETE FROM ""SongsPlaylists"" WHERE ""Id"" = @Id", new { Id = id });
             return NoContent(); // Código 204
         }

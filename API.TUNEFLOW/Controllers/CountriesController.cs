@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Models;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -16,24 +17,20 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class CountriesController : ControllerBase
     {
-        /* private readonly TUNEFLOWContext _context;
-
-         public PaisesController(TUNEFLOWContext context)
-         {
-             _context = context;
-         }*/
-        private DbConnection connection;
+        
+        private readonly IConfiguration _config;
+        
         public CountriesController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
         }
 
         // GET: api/Paises
         [HttpGet]
         public IEnumerable<Country> GetPais()
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var paises = connection.Query<Country>("SELECT * FROM \"Countries\"");
             return paises;
         }
@@ -42,6 +39,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<Country> GetPais(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var country = connection.QuerySingle<Country>(@"SELECT * FROM ""Countries"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (country == null)
@@ -57,6 +56,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public void PutPais(int id, [FromBody] Country country)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"UPDATE ""Countrys"" SET 
               ""Name""= @Name,
               "" Continent""= @Continent,
@@ -69,6 +70,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public Country PostPais([FromBody] Country country)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"INSERT INTO ""Paises"" (""Name"", ""Continent"", ""Currency"") 
             VALUES (@Name, @Continent, @Currency)", new { Name = country.Name, Continent = country.Continent, Currency = country.Currency });
             return country;
@@ -78,6 +81,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public void DeletePais(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"DELETE FROM ""Countrys"" WHERE ""Id"" = @Id", new { Id = id });
         }
         /*
@@ -90,6 +95,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{paisId}/songs")]
         public IEnumerable<Song> GetSongsByCountry(int paisId)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             // Consulta que une Songs con Artists y filtra por CountryId del artista
             var sql = @"
                     SELECT s.*

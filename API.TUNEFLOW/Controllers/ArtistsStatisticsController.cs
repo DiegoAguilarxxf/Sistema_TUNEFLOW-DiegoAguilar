@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.User.Administration;
 using Modelos.Tuneflow.User.Consumer;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -16,24 +17,20 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class ArtistsStatisticsController : ControllerBase
     {
-        //private readonly TUNEFLOWContext _context;
-        private DbConnection connection;
-
-        /*public EstadisticasArtistasController(TUNEFLOWContext context)
-        {
-            _context = context;
-        }*/
+        
+        private readonly IConfiguration _config;
         public ArtistsStatisticsController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
         }
 
         // GET: api/EstadisticasArtistas
         [HttpGet]
         public IEnumerable<ArtistStatistics> GetEstadisticasArtista()
-        { var artistStatistics = connection.Query<ArtistStatistics>("SELECT * FROM \"ArtistsStatistics\"");
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            var artistStatistics = connection.Query<ArtistStatistics>("SELECT * FROM \"ArtistsStatistics\"");
             return artistStatistics;
         }
 
@@ -41,6 +38,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<ArtistStatistics> GetEstadisticasArtistaById(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var artistStatistics = connection.QuerySingle<ArtistStatistics>(@"SELECT * FROM ""ArtistsStatistics"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (artistStatistics == null)
@@ -56,7 +55,9 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public void PutEstadisticasArtista(int id, [FromBody] ArtistStatistics artistStatistics)
         {
-           connection.Execute(@"UPDATE ""ArtistsStatistics"" SET 
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            connection.Execute(@"UPDATE ""ArtistsStatistics"" SET 
                 ""ArtistId"" = @ArtistId,
                 ""TotalPlays"" = @TotalPlays,
                 ""TotalFollowers"" = @TotalFollowers,
@@ -79,6 +80,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<ArtistStatistics> PostEstadisticasArtista([FromBody]ArtistStatistics artistStatistics)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"INSERT INTO ""ArtistsStatistics"" 
                 (""ArtistId"", ""TotalPlays"", ""TotalFollowers"", ""PublishedSongs"", ""PublishedAlbums"") 
                 VALUES (@ArtistId, @TotalPlays, @TotalFollowers, @PublishedSongs, @PublishedAlbums) RETURNING ""Id"";";
@@ -99,6 +102,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public void DeleteEstadisticasArtista(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"DELETE FROM ""ArtistsStatistics"" WHERE ""Id"" = @Id", new { Id = id });
 
            

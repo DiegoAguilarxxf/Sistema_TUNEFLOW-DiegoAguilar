@@ -17,24 +17,22 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class FollowsController : ControllerBase
     {
-       /* private readonly TUNEFLOWContext _context;
-
-        public SeguimientosController(TUNEFLOWContext context)
-        {
-            _context = context;
-        }*/
-       private DbConnection connection;
+        
+        private readonly IConfiguration _config;
+        
         public FollowsController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
+            
         }
 
         // GET: api/Seguimientos
         [HttpGet]
         public IEnumerable<Follow> GetSeguimiento()
-        { var follows = connection.Query<Follow>("SELECT * FROM \"Follows\"");
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            var follows = connection.Query<Follow>("SELECT * FROM \"Follows\"");
             return follows;
         }
 
@@ -42,6 +40,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Follow>> GetSeguimientoById(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var follow = connection.QuerySingle<Follow>(@"SELECT * FROM ""Follows"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (follow == null)
@@ -55,6 +55,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("FollowsByCliemnte/{idCliente}")]
         public ActionResult<IEnumerable<Follow>> GetSeguimientoByCliente(int idCliente)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"
                         SELECT f.*, a.*
                         FROM ""Follows"" f
@@ -80,6 +82,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("ObtenerIsFollowed/{idClient}/{idArtist}")]
         public async Task<ActionResult<int>> GetIdSeguimientoExist(int idClient, int idArtist)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"SELECT ""Id"" FROM ""Follows"" WHERE ""ClientId"" = @IdClient AND ""ArtistId""=@IdArtist";
 
             var followId = connection.QuerySingleOrDefault<int?>(sql, new { IdClient = idClient, IdArtist = idArtist });
@@ -100,6 +104,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public void PutSeguimiento(int id,[FromBody] Follow follow)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"UPDATE ""Follows"" SET
                 ""ClientId""=@ClientId,
                 ""ArtistId""=@ArtistId WERE ""Id""=@Id", new
@@ -115,6 +121,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<Follow>  PostSeguimiento([FromBody]Follow follow)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"INSERT INTO ""Follows"" (""ClientId"", ""ArtistId"") 
                 VALUES (@ClientId, @ArtistId) RETURNING ""Id""";
 
@@ -131,7 +139,10 @@ namespace API.TUNEFLOW.Controllers
         // DELETE: api/Seguimientos/5
         [HttpDelete("{id}")]
         public void DeleteSeguimiento(int id)
-        {connection.Execute(@"DELETE FROM ""Follows"" WHERE ""Id"" = @Id", new { Id = id });
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            connection.Execute(@"DELETE FROM ""Follows"" WHERE ""Id"" = @Id", new { Id = id });
             
         }
         /*

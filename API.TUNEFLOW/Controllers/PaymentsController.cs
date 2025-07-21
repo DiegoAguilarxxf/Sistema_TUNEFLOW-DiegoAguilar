@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Payments;
 using Modelos.Tuneflow.User.Consumer;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -16,25 +17,21 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class PaymentsController : ControllerBase
     {
-       /* private readonly TUNEFLOWContext _context;
-
-        public PagosController(TUNEFLOWContext context)
-        {
-            _context = context;
-        */
-
-        private DbConnection connection;
+        
+        private readonly IConfiguration _config;
+        
         public PaymentsController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
         }
 
         // GET: api/Pagos
         [HttpGet]
         public IEnumerable<Payment> GetPago()
-        {   var payment = connection.Query<Payment>("SELECT * FROM \"Payments\"");
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            var payment = connection.Query<Payment>("SELECT * FROM \"Payments\"");
             return payment;
         }
 
@@ -42,6 +39,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<Payment> GetPagoById(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var payment = connection.QuerySingleOrDefault<Payment>(@"SELECT * FROM ""Payments"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (payment == null)
@@ -57,6 +56,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public void PutPago(int id, [FromBody] Payment payment)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"UPDATE ""Payments"" SET 
                 ""ClientId"" = @ClientId,
                 ""PaymentDate"" = @PaymentDate,
@@ -77,6 +78,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<Payment> PostPago([FromBody]Payment payment)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"INSERT INTO ""Payments"" (""ClientId"", ""PaymentDate"", ""Amount"", ""PaymentMethod"") 
                 VALUES (@ClientId, @PaymentDate, @Amount, @PaymentMethod) RETURNING ""Id""";
             
@@ -96,7 +99,9 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public void DeletePago(int id)
         {
-           connection.Execute(@"DELETE FROM ""Payments"" WERE ""Id"" = @Id", new { Id = id });
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            connection.Execute(@"DELETE FROM ""Payments"" WERE ""Id"" = @Id", new { Id = id });
            
         }
         /*

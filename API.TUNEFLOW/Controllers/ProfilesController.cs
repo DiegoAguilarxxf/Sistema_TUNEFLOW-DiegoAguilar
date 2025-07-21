@@ -8,6 +8,7 @@ using Modelos.Tuneflow.Models;
 using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.User.Profiles;
 using Modelos.Tuneflow.User.Production;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -15,19 +16,20 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class ProfilesController : ControllerBase
     {
-        private readonly DbConnection connection;
+        
+        private readonly IConfiguration _config;
 
         public ProfilesController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
         }
 
         // GET: api/Profiles
         [HttpGet]
         public IEnumerable<Profile> GetPerfiles()
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             return connection.Query<Profile>("SELECT * FROM \"Profiles\"");
         }
 
@@ -35,6 +37,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<Profile> GetPerfilById(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var profile = connection.QuerySingleOrDefault<Profile>(
                 @"SELECT * FROM ""Profiles"" WHERE ""Id"" = @Id",
                 new { Id = id });
@@ -49,6 +53,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("User/ByClient/{idClient}")]
         public ActionResult<Profile> ObtenerPerfilPorClienteId(int idClient)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"SELECT * FROM ""Profiles"" WHERE ""ClientId"" = @Id";
             var profile = connection.QueryFirstOrDefault<Profile>(sql, new { Id = idClient });
 
@@ -68,6 +74,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("User/ByArtist/{idArtist}")]
         public ActionResult<Profile> ObtenerPerfilPorArtistaId(int idArtist)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"SELECT * FROM ""Profiles"" WHERE ""ArtistId"" = @Id";
             var profile = connection.QueryFirstOrDefault<Profile>(sql, new { Id = idArtist });
 
@@ -87,6 +95,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public ActionResult PutPerfil(int id, [FromBody] Profile profile)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             if (profile == null || profile.Id != id)
                 return BadRequest("ID en URL no coincide con el perfil.");
 
@@ -107,6 +117,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<Profile> PostPerfil([FromBody] Profile profile)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             if (profile == null)
                 return BadRequest("Datos inválidos.");
 
@@ -156,6 +168,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeletePerfil(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var filasAfectadas = connection.Execute(@"DELETE FROM ""Profiles"" WHERE ""Id"" = @Id", new { Id = id });
 
             if (filasAfectadas == 0)

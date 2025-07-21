@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.User.Administration;
 using Dapper;
+using Npgsql;
 
 
 namespace API.TUNEFLOW.Controllers
@@ -15,13 +16,11 @@ namespace API.TUNEFLOW.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class AdministratorsController : ControllerBase
-    {   private DbConnection connection;
-        
+    {   
+        private readonly IConfiguration _config;
         public AdministratorsController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
         }
        
 
@@ -29,6 +28,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet]
         public IEnumerable<Administrator> Get()
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var administrators = connection.Query<Administrator>("SELECT * FROM \"Administrators\"");
             return administrators;
         }
@@ -37,6 +38,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult <Administrator> Get(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var administrator = connection.QuerySingle<Administrator>(@"SELECT * FROM ""Administrators"" WHERE ""Id"" = @Id", new { Id=id });
           
 
@@ -53,6 +56,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public void  Put(int id,[FromBody] Administrator administrator)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"UPDATE ""Administrators"" SET 
              ""Description"" = @Description,
             ""FirstName""= @FirstName,
@@ -86,8 +91,10 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public Administrator Post([FromBody]Administrator administrator)
         {
-       
-    connection.Execute(
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+
+            connection.Execute(
     @"INSERT INTO ""Administrators""
      (""Description"", ""FirstName"", ""LastName"", ""Email"", ""Password"", ""Phone"", ""BirthDate"", ""AccountType"", ""IsActive"", ""RegistrationDate"")
     VALUES 
@@ -112,6 +119,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"DELETE FROM ""Administrators"" WHERE ""Id"" = @Id", new { Id = id });
         }
 

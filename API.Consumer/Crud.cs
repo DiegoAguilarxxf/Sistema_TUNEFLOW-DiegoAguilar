@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace API.Consumer
 {
@@ -400,6 +401,30 @@ namespace API.Consumer
                 else if (response.StatusCode == HttpStatusCode.NotFound)
                 {
                     Console.WriteLine("No se encontró el seguimiento");
+                    return 0;
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return 0;
+                }
+            }
+        }
+
+        public static async Task<int> ObtenerIdSongPlaylist(int SongId, int PlaylistId)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/ExistSongPlaylist/{SongId}/{PlaylistId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var jObj = JObject.Parse(json);
+                    int id = jObj["id"]?.Value<int>() ?? 0;
+                    return id;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
                     return 0;
                 }
                 else

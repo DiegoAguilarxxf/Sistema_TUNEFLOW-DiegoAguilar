@@ -4,6 +4,7 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Modelos.Tuneflow.Media;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -11,20 +12,22 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class ReproductorController : ControllerBase
     {
-        private readonly DbConnection _connection;
+        
+        private readonly IConfiguration _config;
 
         public ReproductorController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            _connection = new Npgsql.NpgsqlConnection(connString);
-            _connection.Open();
+            _config = config;
         }
 
         [HttpPost("play")]
         public IActionResult ReproducirCancion([FromQuery] int songId, [FromQuery] int clientId)
         {
+
             try
             {
+                using var _connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+                _connection.Open();
                 var playback = new Playback
                 {
                     PlaybackDate = DateTime.UtcNow,

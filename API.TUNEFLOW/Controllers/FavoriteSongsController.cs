@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.User.Profiles;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -16,25 +17,21 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class FavoriteSongsController : ControllerBase
     {
-        /* private readonly TUNEFLOWContext _context;
-
-         public CancionesFavoritasController(TUNEFLOWContext context)
-         {
-             _context = context;
-         }
-        */
-        private DbConnection connection;
+        
+        private readonly IConfiguration _config;
+        
 
         public FavoriteSongsController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
         }
         // GET: api/CancionesFavoritas
         [HttpGet]
         public IEnumerable<FavoriteSong> GetCancionFavorita()
-        { var cancionesfav = connection.Query<FavoriteSong>("SELECT * FROM \"FavoritesSongs\"");
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            var cancionesfav = connection.Query<FavoriteSong>("SELECT * FROM \"FavoritesSongs\"");
             return cancionesfav;
         }
 
@@ -42,6 +39,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<FavoriteSong> GetCancionFavoritaById(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var favoriteSong = connection.QuerySingle<FavoriteSong>(@"SELECT * FROM ""FavoritesSongs"" WERE ""Id""= @Id", new { Id = id });
 
             if (favoriteSong == null)
@@ -55,6 +54,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("IsFavorite/{id}/{idClient}")]
         public ActionResult<int> GetCancionFavoritaPorIdEIdCliente(int id, int idClient)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var sql = @"SELECT ""Id"" FROM ""FavoritesSongs"" WHERE ""ClientId"" = @IdClient AND ""SongId"" = @Id";
 
             var existId = connection.ExecuteScalar<int?>(sql, new { IdClient = idClient, Id = id });
@@ -72,6 +73,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public void PutCancionFavorita(int id,[FromBody] FavoriteSong favoriteSong)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(@"UPDATE ""FavoritesSongs"" SET " +
                 "\"ClientId\" = @ClientId, " +
                 "\"SongsId\" = @SongsId, " +
@@ -90,6 +93,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<FavoriteSong> PostCancionFavorita([FromBody]FavoriteSong favoriteSong)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             Console.WriteLine("Entro al post");
             var idReturned = connection.ExecuteScalar<int>(@"INSERT INTO ""FavoritesSongs"" (""ClientId"", ""SongId"", ""DateAdded"") 
                                                 VALUES (@ClientId, @SongId, @DateAdded) RETURNING ""Id"";",
@@ -108,7 +113,9 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteCancionFavorita(int id)
         {
-           connection.Execute(@"DELETE FROM ""FavoritesSongs"" WHERE ""Id"" = @Id", new { Id = id });
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            connection.Execute(@"DELETE FROM ""FavoritesSongs"" WHERE ""Id"" = @Id", new { Id = id });
             return NoContent(); // Código 204
         }
 

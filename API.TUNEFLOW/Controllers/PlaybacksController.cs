@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Media;
+using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
 {
@@ -15,19 +16,19 @@ namespace API.TUNEFLOW.Controllers
     [ApiController]
     public class PlaybacksController : ControllerBase
     {
-        private readonly DbConnection connection;
-
+        
+        private readonly IConfiguration _config;
         public PlaybacksController(IConfiguration config)
         {
-            var connString = config.GetConnectionString("TUNEFLOWContext");
-            connection = new Npgsql.NpgsqlConnection(connString);
-            connection.Open();
+            _config = config;
         }
 
         // GET: api/Playbacks
         [HttpGet]
         public IEnumerable<Playback> GetPlaybacks()
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             return connection.Query<Playback>("SELECT * FROM \"Playbacks\"");
         }
 
@@ -35,6 +36,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpGet("{id}")]
         public ActionResult<Playback> GetPlayback(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var playback = connection.QueryFirstOrDefault<Playback>(
                 @"SELECT * FROM ""Playbacks"" WHERE ""Id"" = @Id", new { Id = id });
 
@@ -48,6 +51,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPost]
         public ActionResult<Playback> PostPlayback([FromBody] Playback playback)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             connection.Execute(
                 @"INSERT INTO ""Playbacks"" (""PlaybackDate"", ""ClientId"", ""SongId"") 
               VALUES (@PlaybackDate, @ClientId, @SongId)", playback);
@@ -59,6 +64,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpPut("{id}")]
         public IActionResult PutPlayback(int id, [FromBody] Playback playback)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var rowsAffected = connection.Execute(
                 @"UPDATE ""Playbacks"" SET 
                 ""PlaybackDate"" = @PlaybackDate,
@@ -82,6 +89,8 @@ namespace API.TUNEFLOW.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeletePlayback(int id)
         {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
             var rowsAffected = connection.Execute(
                 @"DELETE FROM ""Playbacks"" WHERE ""Id"" = @Id", new { Id = id });
 
