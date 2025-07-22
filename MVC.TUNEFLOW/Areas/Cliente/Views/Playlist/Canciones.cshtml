@@ -83,7 +83,19 @@
                             <div class="text-muted small">@cancion.Genre</div>
                         </div>
                     </td>
-                    <td>@(cancion.Artist?.StageName ?? "Desconocido")</td>
+                    <td>
+                        @if (cancion.Artist != null)
+                        {
+                            <a href="/Artista/Perfil/Index?id=@cancion.Artist.Id&idCliente=@ViewBag.IdCliente" class="btn btn-primary btn-sm">
+                                @cancion.Artist.StageName
+                            </a>
+                        }
+                        else
+                        {
+                            <span>Desconocido</span>
+                        }
+                    </td>
+
                     <td>@(cancion.ExplicitContent ? "Sí" : "No")</td>
                     <td>@cancion.TimeInMinutes(cancion.Duration)</td>
                     <td>
