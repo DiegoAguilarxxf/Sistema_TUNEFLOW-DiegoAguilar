@@ -20,7 +20,8 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
             var follows = await Crud<Follow>.GetFollowsPorClienteId(client.Id);
-            foreach(var follow in follows)
+            ViewBag.IdCliente = client.Id;
+            foreach (var follow in follows)
             {
                 var profile = await Crud<Profile>.GetPerfilPorArtistaId(follow.ArtistId);
                 follow.Artist.Profile = profile;
@@ -39,7 +40,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
             var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
 
-            Crud<Follow>.EndPoint = Crud<Follow>.EndPoint = "https://localhost:7031/api/Follows";
+            Crud<Follow>.EndPoint = "https://localhost:7031/api/Follows";
             
 
             var follows = await Crud<Follow>.GetCustomAsync($"FollowsByCliemnte/{client.Id}");
