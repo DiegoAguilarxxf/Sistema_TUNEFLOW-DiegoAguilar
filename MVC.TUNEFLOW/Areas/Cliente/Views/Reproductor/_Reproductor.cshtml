@@ -9,9 +9,17 @@
 
     <div class="d-flex align-items-center w-100 position-relative">
         <!-- Portada -->
-        <div class="reproductor-portada me-3">
-            <img id="portadaActual" src="~/img/placeholder.png" alt="Portada" style="height: 60px; width: 60px; object-fit: cover;" />
+        <div class="reproductor-portada me-3" style="position: relative; display: inline-block;">
+            <img id="portadaActual" src="~/img/placeholder.png" alt="Portada"
+                 style="height: 60px; width: 60px; object-fit: cover;" />
+
+            <!-- Botón invisible encima de la portada -->
+            <button id="togglePlayerBtn" title="Maximizar/Minimizar reproductor"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                   background: transparent; border: none; cursor: pointer;">
+            </button>
         </div>
+
 
         <!-- Información canción y barra -->
         <div class="reproductor-info flex-grow-1">
@@ -65,8 +73,7 @@
 
         </div>
 
-        <!-- Botón expandir/minimizar -->
-        <button class="btn-toggle-player" id="togglePlayerBtn" title="Maximizar/Minimizar reproductor">⬆</button>
+        
     </div>
 
     <audio id="audioPlayer" src="" preload="auto"></audio>
