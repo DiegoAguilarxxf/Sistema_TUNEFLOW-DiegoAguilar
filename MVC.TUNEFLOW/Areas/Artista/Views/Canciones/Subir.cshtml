@@ -1,0 +1,139 @@
+﻿@model Modelos.Tuneflow.Media.Song
+
+@{
+    Layout = "~/Areas/Artista/Views/Shared/_LayoutArtista.cshtml";
+    ViewData["Title"] = "Subir Canción";
+}
+
+<style>
+    .form-container {
+        background-color: #121212;
+        color: #fff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .form-control,
+    .form-select {
+        background-color: #1e1e1e;
+        color: #fff;
+        border: 1px solid #333;
+    }
+
+    .form-control:focus {
+        background-color: #1e1e1e;
+        color: #fff;
+        border-color: #1db954;
+        box-shadow: 0 0 0 0.2rem rgba(30,215,96,0.25);
+    }
+
+    label {
+        font-weight: 500;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 22px; width: 22px;
+        left: 3px; bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: #1db954;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(22px);
+    }
+
+    .btn-primary {
+        background-color: #1db954;
+        border-color: #1db954;
+    }
+
+    .btn-primary:hover {
+        background-color: #1aa34a;
+        border-color: #1aa34a;
+    }
+
+</style>
+
+<div class="container mt-4">
+    <h2 class="text-white">Subir nueva canción</h2>
+    <div class="form-container mt-4">
+        <form asp-area="Artista" asp-controller="Canciones" asp-action="SubirCancion" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+            <input type="hidden" name="artistaId" value="@ViewBag.ArtistaId" />
+
+
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label">Título</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Genre" class="control-label">Género</label>
+                <input asp-for="Genre" class="form-control" />
+                <span asp-validation-for="Genre" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label me-3">Contenido explícito</label>
+                <label class="switch">
+                    <input asp-for="ExplictContent" type="checkbox" />
+                    <span class="slider"></span>
+                </label>
+                <span asp-validation-for="ExplictContent" class="text-danger d-block mt-1"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="archivoCancion" class="control-label">Archivo MP3</label>
+                <input type="file" name="archivoCancion" id="archivoCancion" class="form-control" accept=".mp3" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="archivoImagen" class="control-label">Imagen de portada</label>
+                <input type="file" name="archivoImagen" id="archivoImagen" class="form-control" accept=".jpg,.jpeg,.png,.gif" />
+            </div>
+
+
+            <div class="form-group mt-4 d-flex justify-content-between">
+                <input type="submit" value="Subir canción" class="btn btn-primary" />
+                <a asp-action="Index" asp-controller="Artista" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

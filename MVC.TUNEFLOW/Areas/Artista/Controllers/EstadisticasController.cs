@@ -11,9 +11,9 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
     public class EstadisticasController : Controller
     {
         // GET: EstadisticasController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var estadisticas = Crud<ArtistStatistics>.GetAllAsync();
+            var estadisticas = await Crud<ArtistStatistics>.GetAllAsync();
             return View(estadisticas);
         }
 

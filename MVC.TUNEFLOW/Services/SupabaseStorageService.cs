@@ -138,5 +138,71 @@ namespace MVC.TUNEFLOW.Services
         {
             _httpClient?.Dispose();
         }
+
+        private readonly string[] _allowedExtension = new[] { ".mp3", ".wav", ".ogg", ".flac", ".aac" };
+        private readonly long _maxFileSizes = 10 * 1024 * 1024; // 10 MB ejemplo
+        private readonly string _buckets = "cancionestuneflow";
+        private readonly string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co"; 
+        private readonly string anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o"; // reemplaza con tu anon key real
+        private readonly HttpClient _httpClients = new HttpClient();
+        
+
+        public async Task<string> SubirCancionAsync(IFormFile archivo, string nombreArtista)
+        {
+            if (archivo == null || archivo.Length == 0)
+                throw new ArgumentException("El archivo no puede estar vacío");
+
+            if (archivo.Length > _maxFileSizes)
+                throw new ArgumentException($"El archivo excede el tamaño máximo permitido ({_maxFileSizes / (1024 * 1024)}MB)");
+
+            var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
+
+            if (!_allowedExtension.Contains(extension))
+                throw new ArgumentException($"Extensión no permitida. Solo se aceptan: {string.Join(", ", _allowedExtension)}");
+
+            string carpetaArtista = Regex.Replace(nombreArtista.ToLower(), @"[^a-zA-Z0-9_\-]", "_");
+            string nombreArchivoLimpio = Regex.Replace(Path.GetFileNameWithoutExtension(archivo.FileName), @"[^a-zA-Z0-9_\-]", "");
+            string nombreArchivoFinal = $"{nombreArchivoLimpio}{extension}";
+            string rutaFinal = $"{carpetaArtista}/{nombreArchivoFinal}";
+
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                await archivo.CopyToAsync(memoryStream);
+
+                var contenido = new ByteArrayContent(memoryStream.ToArray());
+                contenido.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(archivo.ContentType ?? "application/octet-stream");
+
+                // Agregar el header de autorización si no está
+                if (!_httpClients.DefaultRequestHeaders.Contains("Authorization"))
+                {
+                    _httpClients.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", anonKey);
+                }
+
+                // Usar la URL completa para la petición PUT
+                var urlCompleta = $"{supabaseUrl}/storage/v1/object/{_buckets}/{rutaFinal}";
+
+                var respuesta = await _httpClients.PutAsync(urlCompleta, contenido);
+
+                if (!respuesta.IsSuccessStatusCode)
+                {
+                    var error = await respuesta.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al subir a Supabase: {respuesta.StatusCode} - {error}");
+                }
+
+                return $"{supabaseUrl}/storage/v1/object/public/{_buckets}/{rutaFinal}";
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                throw new Exception("Error subiendo archivo a Supabase: " + errorMessage, ex);
+            }
+        }
+
+
+
+
+
     }
 }

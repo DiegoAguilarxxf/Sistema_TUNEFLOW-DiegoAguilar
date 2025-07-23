@@ -32,6 +32,10 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             {
                 ViewBag.Seguido = false;
             }
+            ViewBag.ArtistaId = artista.Id;
+            ViewBag.StageName = artista.StageName; // Si necesitas nombre para carpeta o mostrar
+
+
             Console.WriteLine($"Estado de Seguido: {ViewBag.Seguido}");
                 return View(profile);
         }

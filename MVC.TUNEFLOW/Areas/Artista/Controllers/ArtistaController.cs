@@ -65,7 +65,13 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 
             ViewBag.Seguido = seguido;
 
-            var artista = ObtenerArtista(id);
+            // Obtener información del artista
+            var artista = await Crud<Artist>.GetByIdAsync(id);
+
+            // Obtener canciones del artista
+            var canciones = await Crud<Song>.GetCancionesPorArtistaId(id);
+            ViewBag.Canciones = canciones;
+
             return View(artista);
         }
 
