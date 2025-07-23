@@ -32,6 +32,7 @@ namespace MVC.TUNEFLOW.Areas.Client.Controllers
 
             // Obtener cliente asociado al usuario
             var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            ViewBag.IdCliente = cliente.Id;
             if (cliente == null)
             {
                 Console.WriteLine($"❌ No se encontró cliente para userId: {userId}");

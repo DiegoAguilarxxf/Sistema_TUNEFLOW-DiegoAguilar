@@ -22,7 +22,6 @@ namespace Modelos.Tuneflow.User.Production
         public Profile? Profile { get; set; } // Relación con el perfil del artista
         public List<Song>? Songs { get; set; }
         public List<Album>? Albums { get; set; }
-       // public Profile? Profile { get; set; } // Relación con el perfil del artista
     }
 
 }

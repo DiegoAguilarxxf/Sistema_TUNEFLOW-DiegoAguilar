@@ -15,16 +15,24 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         
         [Authorize]
         // GET: PagoController
-        public ActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var pagos = Crud<Modelos.Tuneflow.Payments.Payment>.GetAllAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            ViewBag.IdCliente = cliente.Id;
+            var pagos = await Crud<Modelos.Tuneflow.Payments.Payment>.GetAllAsync();
             return View(pagos);
         }
 
         // GET: PagoController/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var pago = Crud<Modelos.Tuneflow.Payments.Payment>.GetByIdAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+
+            ViewBag.IdCliente = cliente.Id;
+            var pago = await Crud<Modelos.Tuneflow.Payments.Payment>.GetByIdAsync(id);
             return View(pago);
         }
 
@@ -35,6 +43,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             Console.WriteLine($"El tipo de Subcripcion es de id: {id}");
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            ViewBag.IdCliente = client.Id;
             var TypePago = await Crud<SubscriptionType>.GetByIdAsync(id);
             if (TypePago == null)
             {
@@ -60,6 +69,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 Console.WriteLine($"Amount: {pago.Amount}");
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+                ViewBag.IdCliente = client.Id;
                 var pay = await Crud<Modelos.Tuneflow.Payments.Payment>.CreateAsync(pago);
                 if(pay != null)
                 {

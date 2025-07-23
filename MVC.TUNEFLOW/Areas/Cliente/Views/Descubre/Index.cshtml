@@ -5,18 +5,20 @@
     ViewData["Title"] = "Descubre";
 }
 
-<div class="descubre-container">
-    <h2 class="text-center mb-4">🔍 Descubre por Género</h2>
+<div class="genre-panel">
+    <h2 class="genre-title">🔍 Descubre por Género</h2>
 
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+    <div class="genre-card-grid">
         @foreach (var genero in Model)
         {
-            <a href="/Cliente/Buscar/Buscar?nameSong=@genero" class="genre-card">
-                <div class="card" style="width: 200px; text-align: center; border-radius: var(--radius-lg); background: var(--bg-tertiary); padding: 16px; box-shadow: var(--shadow-md);">
-                    <h5>@genero</h5>
-                    <img src="@Url.Content($"~/img_descubre/{genero}.png")" alt="Género: @genero" style="width: 100%; border-radius: var(--radius-md);" />
+            var imgNombre = genero.Replace(" ", "-").ToLower(); // normalización
+            <a href="/Cliente/Buscar/Buscar?nameSong=@genero" class="genre-card-link">
+                <div class="genre-card-box">
+                    <img src="@Url.Content($"~/img_descubre/{imgNombre}.png")" alt="Género: @genero" class="genre-card-img" />
+                    <h5 class="genre-card-name">@genero</h5>
                 </div>
             </a>
         }
     </div>
 </div>
+

@@ -557,10 +557,18 @@ body {
 
 /* Barra de progreso en expandido */
 .cliente-reproductor.expanded #barraProgreso {
-    max-width: 400px;
-    height: 3px;
-    flex-grow: 0;
+    width: 100%;
+    flex-grow: 1;
+    height: 5px;
+    background: var(--progress-bg);
+    border-radius: var(--radius-full);
 }
+
+.cliente-reproductor.expanded .reproductor-info .d-flex {
+    width: 100%;
+    gap: 12px;
+}
+
 
 /* Responsive: teléfonos, tablets */
 @media (max-width: 768px) {
@@ -1065,3 +1073,223 @@ input:checked + .slider {
         color: white !important;
         text-decoration: none !important;
     }
+
+
+/* ===============================
+ SECCIÓN DESCUBRE POR GÉNERO
+=============================== */
+.genre-panel {
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.genre-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--text-primary, #ffffff);
+}
+
+.genre-card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 28px;
+}
+
+/* Enlace general */
+.genre-card-link {
+    text-decoration: none;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+/* Tarjeta completa */
+.genre-card-box {
+    width: 220px;
+    background: var(--bg-tertiary, #1e1e1e);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.genre-card-link:hover .genre-card-box {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Imagen cuadrada centrada */
+.genre-card-img {
+    display: block;
+    width: 100%;
+    height: 220px; /* igual que el ancho */
+    object-fit: cover;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: #000; /* previene transparencias en PNG */
+}
+
+/* Texto del género */
+.genre-card-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 12px 0;
+    color: var(--text-primary, #ffffff);
+    text-transform: capitalize;
+    background: var(--bg-tertiary, #1e1e1e);
+}
+
+
+/* ===============================
+ SECCIÓN CANCION POR PAIS
+=============================== */
+.top50 h2 {
+    margin: 30px 0 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.cards {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 250px;
+    height: 250px;
+    border-radius: 14px;
+    padding: 15px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+}
+
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+.play-btn-pais {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .play-btn-pais:hover {
+        background: #ddd;
+    }
+
+
+
+/* ===============================
+ SECCIÓN SEGUIMIENTO
+=============================== */
+
+/* Contenedor principal de la página */
+.siguiendo-container {
+    padding: 40px 20px;
+    background-color: var(--bg-primary);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary);
+}
+
+/* Título principal */
+.siguiendo-titulo {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+/* Grid para los artistas */
+.siguiendo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+}
+
+/* Tarjeta individual del artista */
+.siguiendo-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    width: 180px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: background-color 0.3s var(--transition-normal), transform 0.2s var(--transition-fast), box-shadow 0.3s var(--transition-normal);
+    color: var(--text-color);
+    outline-offset: 3px;
+    outline: none;
+}
+
+    .siguiendo-card:hover,
+    .siguiendo-card:focus {
+        background-color: var(--bg-glass-hover);
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-lg);
+    }
+
+/* Imagen circular del artista */
+.siguiendo-card-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    margin-bottom: 15px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Nombre del artista */
+.siguiendo-card-nombre {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text-color);
+    word-break: break-word;
+}
+
+/* Etiqueta de rol */
+.siguiendo-card-rol {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+}
+
+/* Responsive básico */
+@media (max-width: 480px) {
+    .siguiendo-card {
+        width: 140px;
+        padding: 15px;
+    }
+
+    .siguiendo-titulo {
+        font-size: 1.5rem;
+    }
+}

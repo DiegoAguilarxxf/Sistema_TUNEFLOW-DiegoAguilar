@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using MVC.TUNEFLOW.Models;
 using Microsoft.AspNetCore.Authorization;
 using Modelos.Tuneflow.User.Production;
+using Modelos.Tuneflow.User;
+using System.Security.Claims;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -23,8 +25,14 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
         public async Task<IActionResult> Index()
         {
+
             try
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+
+                ViewBag.IdCliente = cliente.Id;
                 var canciones = await Crud<Song>.GetAllAsync();
                 var generos = canciones
                     .Where(c => !string.IsNullOrEmpty(c.Genre))
