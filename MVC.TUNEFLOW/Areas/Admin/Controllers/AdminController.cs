@@ -2,9 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.User.Administration;
 using API.Consumer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MVC.TUNEFLOW.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize]
     public class AdminController : Controller
     {
         // GET: AdminController

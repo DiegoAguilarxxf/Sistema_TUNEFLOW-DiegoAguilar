@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MVC.TUNEFLOW.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize]
     public class PanelController : Controller
     {
         // GET: PanelController

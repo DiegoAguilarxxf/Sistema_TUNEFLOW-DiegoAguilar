@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Media;
 using API.Consumer;
 using Modelos.Tuneflow.User.Administration;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MVC.TUNEFLOW.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize]
     public class CancionesController : Controller
     {
         // GET: CancionesController
