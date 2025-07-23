@@ -105,13 +105,22 @@ namespace MVC.TUNEFLOW
                 .AddRoles<IdentityRole>() // Permite el uso de roles de usuario
                 .AddEntityFrameworkStores<ApplicationDbContext>(); // Conecta Identity con tu DbContext
 
-            // A�ade soporte para controladores MVC con vistas
+            
+
+
             builder.Services.AddControllersWithViews();
 
             // A�ade soporte para Razor Pages (com�nmente usado con Identity UI)
             builder.Services.AddRazorPages();
 
             builder.Services.AddHttpClient();
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 

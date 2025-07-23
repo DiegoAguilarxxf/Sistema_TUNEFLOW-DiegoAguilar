@@ -39,6 +39,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             }
 
             var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            ViewBag.IdCliente = client.Id;
 
             Crud<Follow>.EndPoint = "https://localhost:7031/api/Follows";
             

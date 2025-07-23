@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.AspNetCore.Http;
@@ -22,9 +23,9 @@ namespace API.TUNEFLOW.Controllers
         private readonly IConfiguration _config;
         public SongsController(IConfiguration config)
         {
-            _config = config;   
+            _config = config;
         }
-         
+
         // GET: api/Canciones
         [HttpGet]
         public ActionResult<IEnumerable<Song>> GetCancion()
@@ -134,7 +135,7 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/Canciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutCancion(int id,[FromBody]Song song)
+        public void PutCancion(int id, [FromBody] Song song)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             connection.Open();
@@ -149,7 +150,7 @@ namespace API.TUNEFLOW.Controllers
                 ""ImagePath"" = @ImagePath
             WHERE ""Id"" = @Id", new
             {
-                                   Id = id,
+                Id = id,
                 Title = song.Title,
                 Duration = song.Duration,
                 Genre = song.Genre,
@@ -164,7 +165,7 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Canciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Song PostCancion([FromBody]Song song)
+        public Song PostCancion([FromBody] Song song)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             connection.Open();
@@ -172,14 +173,14 @@ namespace API.TUNEFLOW.Controllers
                 (""Title"", ""Duration"", ""Genre"", ""ArtistId"", ""AlbumId"", ""FilePath"", ""ExplicitContent"", ""ImagePath"") 
                 VALUES (@Title, @Duration, @Genre, @ArtistId, @AlbumId, @FilePath, @ExplicitContent, @ImagePath)", new
             {
-               Title= song.Title,
-                Duration= song.Duration,
-               Genre= song.Genre,
-               ArtistId= song.ArtistId,
-               AlbumId= song.AlbumId,
-               FilePath= song.FilePath,
-               ExplicitContent= song.ExplicitContent,
-               ImagePath=song.ImagePath
+                Title = song.Title,
+                Duration = song.Duration,
+                Genre = song.Genre,
+                ArtistId = song.ArtistId,
+                AlbumId = song.AlbumId,
+                FilePath = song.FilePath,
+                ExplicitContent = song.ExplicitContent,
+                ImagePath = song.ImagePath
             });
 
             return song;
@@ -191,12 +192,119 @@ namespace API.TUNEFLOW.Controllers
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             connection.Open();
-            connection.Execute(@"DELETE FROM ""Songs"" WHERE ""Id"" = @Id", new { Id = id });    
+            connection.Execute(@"DELETE FROM ""Songs"" WHERE ""Id"" = @Id", new { Id = id });
         }
-/*
-        private bool CancionExists(int id)
+
+        [HttpGet("Random")]
+        public ActionResult<Song> GetCancionAleatoria()
         {
-            return _context.Canciones.Any(e => e.Id == id);
-        }*/
-    }//
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+
+            string sql = @"
+        SELECT 
+            c.""Id"", c.""Title"", c.""Duration"", c.""Genre"", c.""FilePath"", c.""ExplicitContent"", c.""ImagePath"",
+            al.""Title"" AS AlbumTitle,
+            ar.""Id"" AS ArtistId,
+            ar.""StageName"" AS StageName
+        FROM ""Songs"" c
+        LEFT JOIN ""Albums"" al ON c.""AlbumId"" = al.""Id""
+        LEFT JOIN ""Artists"" ar ON c.""ArtistId"" = ar.""Id""
+        ORDER BY RANDOM()
+        LIMIT 1";
+
+            var resultado = connection.Query<Song, string, int, string, Song>(
+                sql,
+                (song, albumTitle, artistId, stageName) =>
+                {
+                    song.Album = new Album { Title = albumTitle };
+                    song.Artist = new Artist { Id = artistId, StageName = stageName };
+                    return song;
+                },
+                splitOn: "AlbumTitle,ArtistId,StageName"
+            ).FirstOrDefault();
+
+            if (resultado == null)
+                return NotFound("No se encontró ninguna canción aleatoria.");
+
+            return Ok(resultado);
+        }
+
+        [HttpGet("Letra/{songId}")]
+        public async Task<IActionResult> ObtenerLetraPorCancion(int songId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+
+            string sql = @"
+        SELECT 
+            c.""Title"",
+            ar.""StageName""
+        FROM ""Songs"" c
+        LEFT JOIN ""Artists"" ar ON c.""ArtistId"" = ar.""Id""
+        WHERE c.""Id"" = @SongId";
+
+            var resultado = connection.QuerySingleOrDefault<(string Title, string StageName)>(sql, new { SongId = songId });
+
+            if (resultado == default)
+            {
+                Console.WriteLine($"No se encontró la canción con ID {songId}");
+                return NotFound("Canción no encontrada.");
+            }
+
+            var artista = resultado.StageName ?? "Desconocido";
+            var titulo = resultado.Title;
+
+            Console.WriteLine($"Buscando letra para artista: {artista}, título: {titulo}");
+
+            try
+            {
+                using var httpClient = new HttpClient();
+                var url = $"https://api.lyrics.ovh/v1/{Uri.EscapeDataString(artista)}/{Uri.EscapeDataString(titulo)}";
+
+                Console.WriteLine($"URL para la API de letras: {url}");
+
+                var response = await httpClient.GetAsync(url);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"No se encontró la letra. Código HTTP: {response.StatusCode}");
+                    return NotFound("No se encontró la letra.");
+                }
+
+                var data = await response.Content.ReadFromJsonAsync<JsonElement>();
+                var letra = data.GetProperty("lyrics").GetString();
+
+                Console.WriteLine("Letra obtenida con éxito.");
+
+                return Ok(new { artista, titulo, letra });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener la letra: {ex.Message}");
+                return StatusCode(500, "Error al obtener la letra.");
+            }
+        }
+        [HttpGet("Artista/{id}")]
+        public ActionResult<string> ObtenerNombreArtistaPorCancion(int id)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+
+            string sql = @"
+        SELECT ar.""StageName""
+        FROM ""Songs"" s
+        LEFT JOIN ""Artists"" ar ON s.""ArtistId"" = ar.""Id""
+        WHERE s.""Id"" = @Id";
+
+            var nombreArtista = connection.QuerySingleOrDefault<string>(sql, new { Id = id });
+
+            if (string.IsNullOrEmpty(nombreArtista))
+                return NotFound($"No se encontró artista para la canción con ID {id}");
+
+            return Ok(nombreArtista);
+        }
+
+
+    }
 }

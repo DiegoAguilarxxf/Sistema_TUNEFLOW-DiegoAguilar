@@ -7,8 +7,10 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.User.Administration;
+using Modelos.Tuneflow.User.Production;
 using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
@@ -108,10 +110,45 @@ namespace API.TUNEFLOW.Controllers
             connection.Open();
             connection.Execute(@"DELETE FROM ""Albums"" WHERE ""Id"" = @Id", new { Id = id });
         }
-
-       /* private bool AlbumExists(int id)
+        [HttpGet("{albumId}/songs")]
+        public ActionResult<IEnumerable<Song>> ObtenerCancionesPorAlbum(int albumId)
         {
-            return _context.Albums.Any(e => e.Id == id);
-        }*/
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+
+            var sql = @"
+        SELECT 
+            s.""Id"", s.""Title"", s.""Duration"", s.""Genre"", s.""ArtistId"", s.""AlbumId"",
+            s.""FilePath"", s.""ExplicitContent"", s.""ImagePath"", s.""Available"",
+            
+            a.""Id"", a.""StageName"", a.""MusicGenre"", a.""CountryId"", a.""Verified"", a.""UserId"",
+            
+            al.""Id"", al.""Title"", al.""ReleaseDate"", al.""Genre"",
+            al.""CreationDate"", al.""Description"", al.""CoverPath""
+
+        FROM ""Songs"" s
+        INNER JOIN ""Artists"" a ON s.""ArtistId"" = a.""Id""
+        LEFT JOIN ""Albums"" al ON s.""AlbumId"" = al.""Id""
+        WHERE s.""AlbumId"" = @AlbumId
+    ";
+
+            var canciones = connection.Query<Song, Artist, Album, Song>(
+                sql,
+                (song, artist, album) =>
+                {
+                    song.Artist = artist;
+                    song.Album = album;
+                    return song;
+                },
+                new { AlbumId = albumId },
+                splitOn: "Id,Id" // muy importante
+            ).ToList();
+
+            if (!canciones.Any())
+                return NotFound($"No se encontraron canciones para el álbum con ID {albumId}.");
+
+            return Ok(canciones);
+        }
+
     }
 }

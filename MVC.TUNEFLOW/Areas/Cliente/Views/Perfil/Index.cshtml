@@ -29,4 +29,19 @@
             <a href="/Cliente/Perfil/Edit/@Model.Id" class="btn btn-primary">Editar</a>
         </div>
     </div>
+
+    @if (Model.Client != null)
+    {
+        <div class="mt-4 p-4" style="background: var(--bg-secondary); border-radius: var(--radius-md); color: white;">
+            <h5 class="mb-3">📌 Datos del Cliente</h5>
+
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <strong>Descripción:</strong> @Model.Biography
+                </div>
+                
+            </div>
+        </div>
+    }
+
 </div>

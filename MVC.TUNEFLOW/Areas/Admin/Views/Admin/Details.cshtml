@@ -1,0 +1,46 @@
+﻿@model Modelos.Tuneflow.User.Administration.Administrator
+@{
+    ViewData["Title"] = "Detalles del Administrador";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Detalles del Administrador</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">Descripción</dt>
+                <dd class="col-sm-8">@Model.Description</dd>
+
+                <dt class="col-sm-4">Nombre</dt>
+                <dd class="col-sm-8">@Model.FirstName</dd>
+
+                <dt class="col-sm-4">Apellido</dt>
+                <dd class="col-sm-8">@Model.LastName</dd>
+
+                <dt class="col-sm-4">Correo electrónico</dt>
+                <dd class="col-sm-8">@Model.Email</dd>
+
+                <dt class="col-sm-4">Teléfono</dt>
+                <dd class="col-sm-8">@Model.Phone</dd>
+
+                <dt class="col-sm-4">Fecha de nacimiento</dt>
+                <dd class="col-sm-8">@Model.BirthDate.ToShortDateString()</dd>
+
+                <dt class="col-sm-4">Tipo de cuenta</dt>
+                <dd class="col-sm-8">@Model.AccountType</dd>
+
+                <dt class="col-sm-4">Activo</dt>
+                <dd class="col-sm-8">@Model.IsActive</dd>
+
+                <dt class="col-sm-4">Fecha de registro</dt>
+                <dd class="col-sm-8">@Model.RegistrationDate.ToShortDateString()</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">Editar</a>
+            <a asp-action="Index" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>

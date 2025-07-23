@@ -1,0 +1,105 @@
+﻿@model Modelos.Tuneflow.User.Consumer.Client
+
+@{
+    ViewData["Title"] = "Mi cuenta";
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<div class="cuenta-contenedor">
+    <div class="cuenta-tarjeta">
+        <h2 class="cuenta-titulo">👤 Mi cuenta</h2>
+
+        <div class="cuenta-info">
+            <div class="cuenta-item">
+                <span class="cuenta-label">Nombre:</span>
+                <span class="cuenta-valor">@Model.FirstName</span>
+            </div>
+            <div class="cuenta-item">
+                <span class="cuenta-label">Apellido:</span>
+                <span class="cuenta-valor">@Model.LastName</span>
+            </div>
+            <div class="cuenta-item">
+                <span class="cuenta-label">Correo electrónico:</span>
+                <span class="cuenta-valor">@Model.Email</span>
+            </div>
+            <div class="cuenta-item">
+                <span class="cuenta-label">Teléfono:</span>
+                <span class="cuenta-valor">@Model.Phone</span>
+            </div>
+            <div class="cuenta-item">
+                <span class="cuenta-label">Fecha de nacimiento:</span>
+                <span class="cuenta-valor">@Model.BirthDate.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="cuenta-item">
+                <span class="cuenta-label">Cuenta activa:</span>
+                <span class="cuenta-valor">@(Model.IsActive ? "Sí" : "No")</span>
+            </div>
+            <div class="cuenta-item">
+                <span class="cuenta-label">Registrado el:</span>
+                <span class="cuenta-valor">@Model.RegistrationDate.ToString("dd/MM/yyyy")</span>
+            </div>
+        </div>
+
+        <div class="cuenta-acciones mt-4">
+            <a asp-action="Edit"  class="btn btn-primary me-2">✏️ Editar cuenta</a>
+
+            <a asp-action="ConfirmDelete" class="btn btn-danger">🗑️ Eliminar cuenta</a>
+
+            <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="d-inline ms-3">
+                <button type="submit" class="btn btn-outline-secondary">🚪 Cerrar sesión</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cuenta-contenedor {
+        max-width: 700px;
+        margin: 40px auto;
+        background: var(--bg-secondary);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        color: var(--text-primary);
+    }
+
+    .cuenta-titulo {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        color: var(--text-primary);
+    }
+
+    .cuenta-info {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .cuenta-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 16px;
+        border-bottom: 1px solid var(--border-light);
+        padding-bottom: 8px;
+    }
+
+    .cuenta-label {
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+
+    .cuenta-valor {
+        color: var(--text-primary);
+    }
+
+    .cuenta-acciones button,
+    .cuenta-acciones a {
+        transition: var(--transition-normal);
+    }
+
+    .cuenta-acciones .btn-danger:hover {
+        background-color: var(--error);
+        border-color: var(--error);
+    }
+</style>

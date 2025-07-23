@@ -16,8 +16,10 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
     {
         public async Task<IActionResult> Panel()
         {
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            ViewBag.IdCliente = client.Id;
             var subscription = await Crud<Subscription>.GetByIdAsync(client.SubscriptionId);
             ViewBag.TipoSuscripcion = subscription.SubscriptionType.Id;
             var paises = await Crud<Country>.GetAllAsync();

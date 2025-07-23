@@ -2,17 +2,16 @@
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
     ViewData["Title"] = "Inicio";
 
-    // Paletas suaves para los degradados
     var gradientPalettes = new List<(string, string)>
-    {
-        ("#6366F1", "#A5B4FC"),
-        ("#10B981", "#6EE7B7"),
-        ("#F43F5E", "#FCA5A5"),
-        ("#3B82F6", "#93C5FD"),
-        ("#EC4899", "#F9A8D4"),
-        ("#F59E0B", "#FCD34D"),
-        ("#8B5CF6", "#C4B5FD")
-    };
+{
+    ("#1e1b4b", "#312e81"),   
+    ("#0f172a", "#1e293b"),   
+    ("#581c87", "#9333ea"),  
+    ("#111827", "#1f2937"),   
+    ("#3b0764", "#7e22ce"),  
+    ("#171717", "#3f3f46"),   
+    ("#111827", "#1e40af")   
+};
 
     Random rand = new Random();
 }
@@ -37,70 +36,9 @@
                 var backgroundStyle = $"linear-gradient(to bottom, {color1}, {color2})";
 
                 <a href="@Url.Action("CancionesPorPais", "Panel", new { area = "Cliente", paisId = pais.Id })" class="card" style="background: @backgroundStyle">
-                    <button class="play-btn">▶</button>
                     <span>@pais.Name</span>
                 </a>
             }
         </div>
     </div>
 </div>
-
-<style>
-    .top50 h2 {
-        margin: 30px 0 10px;
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-
-    .cards {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-
-    .card {
-        width: 250px;
-        height: 250px;
-        border-radius: 14px;
-        padding: 15px;
-        position: relative;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 16px;
-        color: white;
-        cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        user-select: none;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        text-decoration: none;
-    }
-
-        .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-    .play-btn {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background: white;
-        color: black;
-        border: none;
-        border-radius: 50%;
-        width: 32px;
-        height: 32px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-        .play-btn:hover {
-            background: #ddd;
-        }
-</style>

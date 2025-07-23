@@ -38,6 +38,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            ViewBag.IdCliente = client.Id;
             if (client == null) return RedirectToAction("Index", "Buscar");
 
             var playlists = await Crud<Playlist>.GetPlaylistPorClienteId(client.Id);
@@ -65,6 +66,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+                ViewBag.IdCliente = client.Id;
                 string urlImagen = await _supabaseService.SubirArchivoAsync(ImageCover);
                 if (string.IsNullOrEmpty(urlImagen))
                 {
@@ -93,6 +95,11 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
         public async Task<ActionResult> Edit(int id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+
+            ViewBag.IdCliente = cliente.Id;
             var playlist = await Crud<Playlist>.GetByIdAsync(id);
             return View(playlist);
         }
@@ -103,6 +110,11 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             try
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+
+                ViewBag.IdCliente = cliente.Id;
                 var playlist = await Crud<Playlist>.GetByIdAsync(id);
                 var urlEliminar = playlist.PlaylistCover;
                 var eliminado = await _supabaseService.EliminarArchivoAsync(urlEliminar);
@@ -134,6 +146,11 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             try
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+
+                ViewBag.IdCliente = cliente.Id;
                 var playlist = await Crud<Playlist>.GetByIdAsync(id);
                 var eliminadoSupa = await _supabaseService.EliminarArchivoAsync(playlist.PlaylistCover);
                 if (!eliminadoSupa)
@@ -195,6 +212,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                     return Unauthorized(new { status = "error", message = "Usuario no autenticado" });
 
                 var cliente = await Crud < Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+                ViewBag.IdCliente = cliente.Id;
                 if (cliente == null)
                     return NotFound(new { status = "error", message = "Cliente no encontrado" });
 
@@ -236,7 +254,11 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             try
             {
-              
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+
+                ViewBag.IdCliente = cliente.Id;
                 var idEliminar = await Crud<SongPlaylist>.ObtenerIdSongPlaylist(songId, playlistId);
                 if (idEliminar == 0)
                 {

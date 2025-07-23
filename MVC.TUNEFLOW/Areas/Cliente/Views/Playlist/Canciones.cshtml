@@ -6,39 +6,189 @@
 }
 
 <style>
+    :root {
+        --color-morado-claro: #9b59b6;
+        --color-morado-oscuro: #6a1b9a;
+        --color-fondo-claro: #f9f7fb;
+        --color-texto-claro: #2c2c2c;
+        --color-sombra: rgba(107, 42, 121, 0.25);
+        --color-hover-claro: #d8bde8;
+        --color-boton-bg: var(--color-morado-claro);
+        --color-boton-hover-bg: var(--color-morado-oscuro);
+        --color-boton-texto: #fff;
+    }
+
+
+    body {
+        background-color: var(--color-fondo-claro);
+        color: var(--color-texto-claro);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
     .playlist-header {
-        background: linear-gradient(to bottom, #1db954, #121212);
+        background: linear-gradient(to bottom, var(--color-boton-bg), var(--color-boton-hover-bg));
         padding: 2rem;
         display: flex;
         align-items: center;
-        color: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px var(--color-sombra);
+        color: var(--color-boton-texto);
+        transition: background 0.3s ease;
     }
 
     .playlist-cover {
         width: 180px;
         height: 180px;
         object-fit: cover;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        box-shadow: 0 6px 15px var(--color-sombra);
+        flex-shrink: 0;
     }
 
     .playlist-info {
         margin-left: 2rem;
+        flex: 1;
     }
+
+        .playlist-info > .text-uppercase {
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            opacity: 0.8;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
 
     .playlist-title {
         font-size: 3rem;
-        font-weight: bold;
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 1rem;
     }
 
     .btn-play-all {
         margin-top: 1rem;
-        font-size: 1.5rem;
-        padding: 0.5rem 1.5rem;
+        font-size: 1.3rem;
+        padding: 0.6rem 1.8rem;
+        background-color: var(--color-boton-bg);
+        color: var(--color-boton-texto);
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px var(--color-sombra);
+        transition: background-color 0.25s ease, box-shadow 0.25s ease;
+        user-select: none;
     }
 
-    .song-row:hover {
-        background-color: #282828;
+        .btn-play-all:hover,
+        .btn-play-all:focus {
+            background-color: var(--color-boton-hover-bg);
+            box-shadow: 0 6px 20px var(--color-sombra);
+            outline: none;
+        }
+
+    table.table {
+        background: transparent;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        width: 100%;
+        color: var(--color-texto-claro);
+    }
+
+    thead tr {
+        border-bottom: 2px solid var(--color-boton-bg);
+    }
+
+    thead th {
+        font-weight: 700;
+        font-size: 1rem;
+        padding-bottom: 0.5rem;
+        text-align: left;
+        color: var(--color-boton-bg);
+    }
+
+    tbody tr.song-row {
+        background-color: var(--color-fondo-claro);
+        border-radius: 8px;
+        box-shadow: 0 3px 8px var(--color-sombra);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        tbody tr.song-row:hover {
+            background-color: var(--color-hover-claro);
+            transform: scale(1.02);
+            cursor: pointer;
+            color: var(--color-boton-texto);
+        }
+
+    tbody td {
+        padding: 12px 15px;
+        vertical-align: middle;
+    }
+
+        tbody td.d-flex {
+            gap: 12px;
+            align-items: center;
+        }
+
+            tbody td.d-flex img {
+                border-radius: 6px;
+                box-shadow: 0 2px 6px var(--color-sombra);
+                width: 50px;
+                height: 50px;
+                object-fit: cover;
+            }
+
+    .btn-sm {
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 6px 12px;
+        user-select: none;
+        transition: background-color 0.25s ease;
+    }
+
+    .btn-success {
+        background-color: var(--color-boton-bg);
+        color: var(--color-boton-texto);
+        border: none;
+    }
+
+        .btn-success:hover,
+        .btn-success:focus {
+            background-color: var(--color-boton-hover-bg);
+            color: var(--color-boton-texto);
+        }
+
+    .btn-primary {
+        background-color: #8e44ad;
+        border: none;
+        color: #fff;
+        transition: background-color 0.25s ease;
+    }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background-color: #732d91;
+            color: #fff;
+        }
+
+    .btn-danger {
+        background-color: #c0392b;
+        border: none;
+        color: #fff;
+    }
+
+        .btn-danger:hover,
+        .btn-danger:focus {
+            background-color: #922b21;
+            color: #fff;
+        }
+
+    a.btn-primary {
+        text-decoration: none;
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
     }
 </style>
 
@@ -46,18 +196,18 @@
 <div class="playlist-header mb-4">
     <img src="@Model.PlaylistCover" alt="Portada" class="playlist-cover" />
     <div class="playlist-info">
-        <div class="text-uppercase text-muted">Playlist</div>
+        <div class="text-uppercase">Playlist</div>
         <div class="playlist-title">@Model.Title</div>
 
-        <button class="btn btn-success btn-play-all" onclick="reproducirTodas()">
+        <button class="btn btn-play-all" onclick="reproducirPlaylist()">
             ▶ Reproducir
         </button>
     </div>
 </div>
 
 <!-- TABLA DE CANCIONES -->
-<table class="table table-dark table-borderless align-middle">
-    <thead class="text-muted border-bottom">
+<table class="table">
+    <thead>
         <tr>
             <th>#</th>
             <th>Título</th>
@@ -73,11 +223,10 @@
             int index = 1;
             foreach (var cancion in Model.Songs)
             {
-                <tr class="song-row">
+                <tr class="song-row" onclick="reproducirCancion(@cancion.Id)">
                     <td>@index</td>
-                    <td class="d-flex align-items-center gap-3">
-                        <img src="@cancion.ImagePath" alt="@cancion.Title"
-                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                    <td class="d-flex align-items-center">
+                        <img src="@cancion.ImagePath" alt="@cancion.Title" />
                         <div>
                             <div class="fw-bold">@cancion.Title</div>
                             <div class="text-muted small">@cancion.Genre</div>
@@ -95,11 +244,10 @@
                             <span>Desconocido</span>
                         }
                     </td>
-
                     <td>@(cancion.ExplicitContent ? "Sí" : "No")</td>
                     <td>@cancion.TimeInMinutes(cancion.Duration)</td>
                     <td>
-                        <button class="btn btn-sm btn-success" onclick="reproducirCancion(@cancion.Id,
+                        <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); reproducirCancion(@cancion.Id,
                                             '@cancion.Title',
                                             '@cancion.FilePath',
                                             '@cancion.ImagePath',
@@ -110,7 +258,8 @@
                         <form method="post"
                               action="@Url.Action("DeleteSong", "Playlist", new { playlistId = Model.Id, songId = cancion.Id })"
                               style="display:inline;"
-                              onsubmit="return confirm('¿Quieres eliminar esta canción de la playlist?');">
+                              onsubmit="return confirm('¿Quieres eliminar esta canción de la playlist?');"
+                              onclick="event.stopPropagation();">
                             <button type="submit" class="btn btn-sm btn-danger ms-1">
                                 🗑️
                             </button>
@@ -131,15 +280,14 @@
     </tbody>
 </table>
 
-<!-- SCRIPTS DE REPRODUCCIÓN (Ejemplo) -->
 <script>
     function reproducirCancion(id) {
         console.log("Reproducir canción ID:", id);
         // lógica de reproducción
     }
 
-    function reproducirTodas() {
-        console.log("Reproducir todas las canciones");
-        // lógica para reproducir toda la playlist
+    function reproducirPlaylist() {
+        console.log("Reproducir toda la playlist");
+        // lógica para reproducir la playlist
     }
 </script>
