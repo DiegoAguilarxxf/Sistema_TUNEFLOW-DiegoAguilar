@@ -434,6 +434,35 @@ namespace API.Consumer
                 }
             }
         }
+        public static async Task<List<Follow>> GetFollowsByClientIdAsync(int clientId)
+        {
+            using var client = new HttpClient();
+            var response = await client.GetAsync($"{EndPoint}/FollowsByCliemnte/{clientId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Follow>>(json);
+            }
+            else
+            {
+                return new List<Follow>();
+            }
+        }
+        public static async Task<List<T>> GetCustomAsync(string path)
+        {
+            using var client = new HttpClient();
+            var response = await client.GetAsync($"{EndPoint}/{path}");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Error: {response.StatusCode}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<T>>(json);
+        }
+
+
+
 
     }
 }

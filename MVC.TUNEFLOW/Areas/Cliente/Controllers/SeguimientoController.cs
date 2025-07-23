@@ -20,7 +20,8 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
             var follows = await Crud<Follow>.GetFollowsPorClienteId(client.Id);
-            foreach(var follow in follows)
+            ViewBag.IdCliente = client.Id;
+            foreach (var follow in follows)
             {
                 var profile = await Crud<Profile>.GetPerfilPorArtistaId(follow.ArtistId);
                 follow.Artist.Profile = profile;
@@ -34,30 +35,37 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
             if (string.IsNullOrEmpty(userId))
             {
-
                 return RedirectToAction("Login", "Account");
             }
+
             var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
 
-            var seguimiento = new Follow
-            {
-                ClientId = client.Id,
-                ArtistId = id
-            };
-            var result = await Crud<Follow>.CreateAsync(seguimiento);
+            Crud<Follow>.EndPoint = "https://localhost:7031/api/Follows";
+            
 
-            if (result != null)
+            var follows = await Crud<Follow>.GetCustomAsync($"FollowsByCliemnte/{client.Id}");
+
+
+            var followExistente = follows.FirstOrDefault(f => f.ArtistId == id);
+
+            if (followExistente != null)
             {
-                Console.WriteLine($"Seguimiento creado para el artista con ID: {id}");
-                return RedirectToAction("Index", "Perfil", new { area = "Artista", id = id, idCliente = client.Id });
+                await Crud<Follow>.DeleteAsync(followExistente.Id);
             }
             else
             {
-                Console.WriteLine("Error al crear el seguimiento.");
-                return RedirectToAction("Panel", "Panel");
+                var nuevoSeguimiento = new Follow
+                {
+                    ClientId = client.Id,
+                    ArtistId = id
+                };
+
+                await Crud<Follow>.CreateAsync(nuevoSeguimiento);
             }
 
+            return RedirectToAction("Index", "Perfil", new { area = "Artista", id = id });
         }
+
 
         // GET: SeguimientoController/Create
         public ActionResult Create()
@@ -121,5 +129,41 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 return View();
             }
         }
+        [HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<ActionResult> DejarSeguir(int artistId)
+{
+    string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    if (string.IsNullOrEmpty(userId))
+    {
+        return RedirectToAction("Login", "Account");
+    }
+
+    var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+    // Obtén todos los follow del cliente
+    Crud<Follow>.EndPoint = "https://localhost:7031/api/Follows";
+    var follows = await Crud<Follow>.GetByAsync("ClientId", client.Id);
+
+    // Busca el follow específico con ese artista
+    var seguimiento = follows.FirstOrDefault(f => f.ArtistId == artistId);
+
+    if (seguimiento != null)
+    {
+        bool eliminado = await Crud<Follow>.DeleteAsync(seguimiento.Id);
+
+        if (eliminado)
+        {
+            Console.WriteLine($"Seguimiento eliminado para el artista con ID: {artistId}");
+            return RedirectToAction("Index", "Perfil", new { area = "Artista", id = artistId, idCliente = client.Id });
+        }
+    }
+
+    Console.WriteLine("No se encontró el seguimiento para eliminar.");
+    return RedirectToAction("Panel", "Panel");
+}
+
+
     }
 }

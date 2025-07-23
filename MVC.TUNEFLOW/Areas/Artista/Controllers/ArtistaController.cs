@@ -9,6 +9,7 @@ using Modelos.Tuneflow.User.Production;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.Security.Claims;
 
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
@@ -43,15 +44,58 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                 return View(artista);
             }
         }
-       
+
 
 
 
         // GET: ArtistaController
-        public ActionResult Index()
+        public async Task<IActionResult> Index(int id) // id del artista
         {
-            return View();
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            bool seguido = false;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+                Crud<Follow>.EndPoint = "https://localhost:7031/api/Follows";
+
+                var follows = await Crud<Follow>.GetFollowsByClientIdAsync(client.Id);
+                seguido = follows.Any(f => f.ArtistId == id);
+            }
+
+            ViewBag.Seguido = seguido;
+
+            // Obtener información del artista
+            var artista = await Crud<Artist>.GetByIdAsync(id);
+
+            // Obtener canciones del artista
+            var canciones = await Crud<Song>.GetCancionesPorArtistaId(id);
+            ViewBag.Canciones = canciones;
+
+            return View(artista);
         }
+
+        private Modelos.Tuneflow.User.Production.Artist ObtenerArtista(int id)
+        {
+            var sql = @"
+        SELECT * FROM Artists WHERE Id = @Id;
+        SELECT * FROM Songs WHERE ArtistId = @Id;
+    ";
+
+            using (var multi = _db.QueryMultiple(sql, new { Id = id }))
+            {
+                var artista = multi.Read<Modelos.Tuneflow.User.Production.Artist>().FirstOrDefault();
+                if (artista != null)
+                {
+                    artista.Songs = multi.Read<Song>().ToList();
+                }
+                return artista;
+            }
+        }
+
+
+
+
 
         // GET: ArtistaController/Details/5
         public ActionResult Details(int id)

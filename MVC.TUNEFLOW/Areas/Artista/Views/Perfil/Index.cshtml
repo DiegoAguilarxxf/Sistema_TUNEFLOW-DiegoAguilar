@@ -266,14 +266,50 @@
         bool seguido = ViewBag.Seguido != null && (bool)ViewBag.Seguido;
     }
 
-    @if (!seguido)
-    {
-        <a href="/Cliente/Seguimiento/Seguir/@Model.Artist.Id"
-           class="btn btn-success"
-           style="padding: 0.5rem 1rem; border-radius: 8px; position: relative; z-index: 3;">
-            Seguir
-        </a>
-    }
+    <a href="#" id="btnSeguir" data-artist="@Model.Artist.Id"
+       class="btn @(seguido ? "btn-danger" : "btn-success")"
+       style="padding: 0.5rem 1rem; border-radius: 8px; position: relative; z-index: 3;"
+       onclick="toggleFollow(event)">
+        @(seguido ? "Dejar de Seguir" : "Seguir")
+    </a>
+
+    <script>
+        async function toggleFollow(e) {
+            e.preventDefault();
+            const btn = e.currentTarget;
+            const artistId = btn.dataset.artist;
+
+            try {
+                // Llamas tu método Seguir que hace toggle
+                const response = await fetch(`/Cliente/Seguimiento/Seguir/${artistId}`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    // Aquí asumes que si llegó respuesta exitosa, el toggle sucedió
+                    if (btn.classList.contains('btn-success')) {
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-danger');
+                        btn.textContent = 'Dejar de Seguir';
+                    } else {
+                        btn.classList.remove('btn-danger');
+                        btn.classList.add('btn-success');
+                        btn.textContent = 'Seguir';
+                    }
+                } else {
+                    alert('Error al cambiar seguimiento');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error en la petición');
+            }
+        }
+    </script>
+
+
+
+
 </div>
 
 <!-- Contenido Principal -->

@@ -80,8 +80,9 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                     PlaylistCover = urlImagen
 
                 };
-                Crud<Playlist>.CreateAsync(playlist);
-                return RedirectToAction(nameof(Index));
+                await Crud<Playlist>.CreateAsync(playlist);
+                return RedirectToAction("Index", "Playlist", new { area = "Cliente" });
+
             }
             catch (Exception e)
             {
@@ -230,5 +231,31 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 return StatusCode(500, new { status = "error", message = "Error interno del servidor" });
             }
         }
+        [HttpPost]
+        public async Task<ActionResult> DeleteSong(int playlistId, int songId)
+        {
+            try
+            {
+              
+                var idEliminar = await Crud<SongPlaylist>.ObtenerIdSongPlaylist(songId, playlistId);
+                if (idEliminar == 0)
+                {
+                    ModelState.AddModelError("", "La canción no está en la playlist.");
+                    return RedirectToAction("Canciones", new { id = playlistId });
+                }
+
+                await Crud<SongPlaylist>.DeleteAsync(idEliminar);
+                Console.WriteLine($"🎵 Canción {songId} eliminada de playlist {playlistId}");
+
+                // Regresa a la vista de la playlist
+                return RedirectToAction("Canciones", new { id = playlistId });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"❌ Error al eliminar la canción: {e.Message}");
+                return RedirectToAction("Canciones", new { id = playlistId });
+            }
+        }
+
     }
 }

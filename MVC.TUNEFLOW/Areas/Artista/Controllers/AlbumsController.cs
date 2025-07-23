@@ -11,9 +11,9 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
     public class AlbumsController : Controller
     {
         // GET: AlbumsController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var albums = Crud<Album>.GetAllAsync();
+            var albums = await Crud<Album>.GetAllAsync();
             return View(albums);
         }
 

@@ -1,15 +1,22 @@
 ﻿@model IEnumerable<Modelos.Tuneflow.Media.Song>
 
 @{
+
+    Layout = "~/Areas/Artista/Views/Shared/_LayoutArtista.cshtml";
+   
+
     ViewData["Title"] = "Canciones";
 }
 
 <div class="container">
 
-<h1>Mis Cancionesx</h1>
+<h1>Mis Canciones</h1>
 
 <p>
-    <a asp-action="Create">Subir Canción</a>
+        <a href="/Artista/Canciones/SubirCancion?artistaId=@ViewBag.ArtistaId" class="btn btn-primary btn-sm">Subir Canción</a>
+
+
+
 </p>
 <table class="table">
     <thead>

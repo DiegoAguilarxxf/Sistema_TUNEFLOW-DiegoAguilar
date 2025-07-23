@@ -67,7 +67,7 @@
         var artista = follow.Artist; 
         if (artista != null)
         {
-            <div class="card-artista">
+            <div class="card-artista" onclick="location.href='/Artista/Perfil/Index?id=@artista.Id&idCliente=@ViewBag.IdCliente'" style="cursor: pointer;">
                 <img src="@(!string.IsNullOrEmpty(artista.Profile.ProfileImage) ? artista.Profile.ProfileImage : "/images/default-artist.png")" alt="@artista.StageName" class="img-artista" />
                 <div class="nombre-artista">@artista.StageName</div>
                 <div class="rol-artista">Artista</div>

@@ -45,6 +45,7 @@ namespace MVC.TUNEFLOW
             Crud<Country>.EndPoint = "https://localhost:7031/api/Countries";
             // Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.EndPoint = "https://localhost:7031/api/Clientes"; // Esta l�nea estaba duplicada y es redundante. Se elimin� o se consolid� con la anterior.
 
+
             builder.Services.AddTransient<IDbConnection>(sp =>
     new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 

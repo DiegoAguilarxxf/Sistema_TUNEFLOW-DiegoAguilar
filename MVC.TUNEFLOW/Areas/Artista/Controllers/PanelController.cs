@@ -9,7 +9,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
     public class PanelController : Controller
     {
         // GET: PanelController
-        public ActionResult Index()
+        public ActionResult Panel()
         {
             return View();
         }
