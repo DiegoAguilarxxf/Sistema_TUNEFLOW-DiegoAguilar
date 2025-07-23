@@ -2,6 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Media;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text;
+using API.Consumer;
+using System.Security.Claims;
+using Modelos.Tuneflow.User;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -10,6 +15,8 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
     public class ReproductorController : Controller
     {
         private readonly HttpClient _httpClient;
+        private const string SessionKeyListaReproduccion = "ListaReproduccion";
+        private const string SessionKeyIndiceActual = "IndiceActual";
 
         public ReproductorController(IHttpClientFactory httpClientFactory)
         {
@@ -17,6 +24,38 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             _httpClient.BaseAddress = new Uri("https://localhost:7031/api/");
         }
 
+        // Guarda el índice actual de la canción en la sesión.
+        private void GuardarIndiceActual(int index)
+        {
+            HttpContext.Session.SetInt32(SessionKeyIndiceActual, index);
+        }
+
+        // Guarda la lista de canciones en la sesión como una cadena JSON.
+        private void GuardarListaEnSesion(List<Song> canciones)
+        {
+            var cancionesJson = JsonSerializer.Serialize(canciones);
+            HttpContext.Session.SetString(SessionKeyListaReproduccion, cancionesJson);
+        }
+
+        // Obtiene la lista de canciones almacenada en la sesión, deserializándola desde JSON.
+        private List<Song>? ObtenerListaDeSesion()
+        {
+            var cancionesJson = HttpContext.Session.GetString(SessionKeyListaReproduccion);
+            return cancionesJson == null ? null : JsonSerializer.Deserialize<List<Song>>(cancionesJson);
+        }
+
+        // Agrega una canción a la lista de sesión si no está ya presente.
+        private void AgregarCancionASesion(Song cancion)
+        {
+            var lista = ObtenerListaDeSesion() ?? new List<Song>();
+            if (!lista.Any(c => c.Id == cancion.Id))
+            {
+                lista.Add(cancion);
+                GuardarListaEnSesion(lista);
+            }
+        }
+
+        // Obtiene los datos de una canción específica por su ID y los devuelve en una vista parcial.
         [HttpGet]
         public async Task<IActionResult> GetCancionData(int id)
         {
@@ -25,7 +64,24 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 var cancion = await _httpClient.GetFromJsonAsync<Song>($"songs/{id}");
                 if (cancion == null)
                     return NotFound();
+                return PartialView("_Reproductor", cancion);
+            }
+            catch (Exception ex)
+            {
+                return Content($"Error al obtener la canción: {ex.Message}");
+            }
+        }
 
+        // Reproduce una canción específica por su ID, la agrega a la lista de sesión y muestra el reproductor.
+        [HttpGet]
+        public async Task<IActionResult> Reproducir(int id)
+        {
+            try
+            {
+                var cancion = await _httpClient.GetFromJsonAsync<Song>($"songs/{id}");
+                if (cancion == null)
+                    return NotFound();
+                AgregarCancionASesion(cancion);
                 return PartialView("_Reproductor", cancion);
             }
             catch (Exception ex)
@@ -35,22 +91,308 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Reproducir(int id)
+        public async Task<IActionResult> ReproducirPlaylist(int playlistId)
+        {
+            var canciones = await _httpClient.GetFromJsonAsync<List<Song>>($"SongsPlaylists/SongsForPlaylist/{playlistId}");
+            if (canciones == null || !canciones.Any())
+                return NotFound("No hay canciones en esta playlist.");
+
+            GuardarListaEnSesion(canciones);
+
+            // Imprimir en consola cada canción de la playlist
+            Console.WriteLine($"Playlist {playlistId} contiene:");
+            foreach (var song in canciones)
+            {
+                Console.WriteLine($"- {song.Title} por {song.Artist?.StageName ?? "Desconocido"}");
+            }
+
+            return Ok("Playlist cargada correctamente en sesión.");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReproducirAlbum(int albumId)
+        {
+            var canciones = await _httpClient.GetFromJsonAsync<List<Song>>($"Albums/{albumId}/songs");
+            if (canciones == null || !canciones.Any())
+                return NotFound("No hay canciones en este álbum.");
+
+            GuardarListaEnSesion(canciones);
+
+            // Imprimir en consola cada canción del álbum
+            Console.WriteLine($"Álbum {albumId} contiene:");
+            foreach (var song in canciones)
+            {
+                Console.WriteLine($"- {song.Title} por {song.Artist?.StageName ?? "Desconocido"}");
+            }
+
+            return Ok("Álbum cargado correctamente en sesión.");
+        }
+
+
+
+        // Obtiene una canción aleatoria, la agrega a la lista de sesión y devuelve sus datos en formato JSON.
+        [HttpGet]
+        public async Task<IActionResult> SiguienteCancion()
         {
             try
             {
-                var cancion = await _httpClient.GetFromJsonAsync<Song>($"songs/{id}");
+                var cancion = await _httpClient.GetFromJsonAsync<Song>("songs/Random");
                 if (cancion == null)
-                    return NotFound();
-
-                return PartialView("_Reproductor", cancion);
+                    return Json(new { success = false, message = "No se encontró ninguna canción aleatoria." });
+                var lista = ObtenerListaDeSesion() ?? new List<Song>();
+                if (!lista.Any(c => c.Id == cancion.Id))
+                {
+                    lista.Add(cancion);
+                    GuardarListaEnSesion(lista);
+                }
+                var index = lista.FindIndex(c => c.Id == cancion.Id);
+                if (index == -1) index = lista.Count - 1;
+                GuardarIndiceActual(index);
+                return Json(new
+                {
+                    success = true,
+                    cancion = new
+                    {
+                        id = cancion.Id,
+                        titulo = cancion.Title,
+                        artista = cancion.Artist?.StageName ?? "Desconocido",
+                        url = cancion.FilePath,
+                        portada = cancion.ImagePath ?? "/img/default-album.jpg",
+                        idCliente = await GetClientId()
+                    }
+                });
             }
             catch (Exception ex)
             {
-                return Content($"Error al obtener la canción: {ex.Message}");
+                return Json(new { success = false, message = $"Error al obtener canción aleatoria: {ex.Message}" });
             }
         }
 
+        // Reproduce la canción anterior en la lista de sesión y devuelve sus datos en formato JSON.
+        [HttpGet]
+        public async Task<IActionResult>  CancionAnterior()
+        {
+            try
+            {
+                var cancion = await _httpClient.GetFromJsonAsync<Song>("songs/Random");
+                if (cancion == null)
+                    return Json(new { success = false, message = "No se encontró ninguna canción aleatoria." });
+                var lista = ObtenerListaDeSesion() ?? new List<Song>();
+                if (!lista.Any(c => c.Id == cancion.Id))
+                {
+                    lista.Add(cancion);
+                    GuardarListaEnSesion(lista);
+                }
+                var index = lista.FindIndex(c => c.Id == cancion.Id);
+                if (index == -1) index = lista.Count - 1;
+                GuardarIndiceActual(index);
+                return Json(new
+                {
+                    success = true,
+                    cancion = new
+                    {
+                        id = cancion.Id,
+                        titulo = cancion.Title,
+                        artista = cancion.Artist?.StageName ?? "Desconocido",
+                        url = cancion.FilePath,
+                        portada = cancion.ImagePath ?? "/img/default-album.jpg",
+                        idCliente = await GetClientId()
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error al obtener canción aleatoria: {ex.Message}" });
+            }
+        }
+
+
+
+
+        private async Task<int?> GetClientId()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return 0; // Usuario no identificado
+            var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            return client.Id;
+
+        }
+
+        // Verifica si una canción específica es favorita para el cliente actual.
+        [HttpGet]
+        public async Task<IActionResult> ComprobarFavorito(int songId)
+        {
+            try
+            {
+                var clientId = await GetClientId();
+                if (clientId == 0)
+                    return Json(new { esFavorito = false, error = "Usuario no identificado." });
+                var response = await _httpClient.GetAsync($"FavoriteSongs/IsFavorite/{songId}/{clientId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var favorito = await response.Content.ReadFromJsonAsync<object>();
+                    return Json(new { esFavorito = true, favorito });
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return Json(new { esFavorito = false });
+                }
+                return Json(new { esFavorito = false, error = "Error al verificar favorito" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { esFavorito = false, error = ex.Message });
+            }
+        }
+
+        // Agrega una canción a la lista de favoritos del cliente y a su playlist de favoritos.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AgregarFavorito(int songId)
+        {
+            try
+            {
+                var clientId = await GetClientId();
+                if (clientId == 0)
+                    return Json(new { success = false, message = "Usuario no identificado." });
+                var favoriteSong = new
+                {
+                    id = 0,
+                    clientId = clientId,
+                    songId = songId,
+                    dateAdded = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+                };
+                var content = new StringContent(JsonSerializer.Serialize(favoriteSong), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("FavoriteSongs", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var playlistResponse = await _httpClient.GetAsync($"Playlists/FavoritesPlaylist/{clientId}");
+                    if (playlistResponse.IsSuccessStatusCode)
+                    {
+                        var playlistId = await playlistResponse.Content.ReadFromJsonAsync<int>();
+                        var songPlaylist = new
+                        {
+                            id = 0,
+                            songId = songId,
+                            playlistId = playlistId
+                        };
+                        var playlistContent = new StringContent(JsonSerializer.Serialize(songPlaylist), Encoding.UTF8, "application/json");
+                        await _httpClient.PostAsync("SongsPlaylists", playlistContent);
+                    }
+                    return Json(new { success = true, message = "Canción agregada a favoritos" });
+                }
+                return Json(new { success = false, message = "Error al agregar a favoritos" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+            // Elimina una canción de la lista de favoritos del cliente y de su playlist de favoritos.
+            [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EliminarFavorito(int songId)
+        {
+            try
+            {
+                var clientId = await GetClientId();
+                if (clientId == 0)
+                    return Json(new { success = false, message = "Usuario no identificado." });
+                var favoritoResponse = await _httpClient.GetAsync($"FavoriteSongs/IsFavorite/{songId}/{clientId}");
+                if (!favoritoResponse.IsSuccessStatusCode)
+                    return Json(new { success = false, message = "Favorito no encontrado" });
+                var favorito = await favoritoResponse.Content.ReadFromJsonAsync<JsonElement>();
+                if (!favorito.TryGetProperty("id", out var favoritoIdProp) || !favoritoIdProp.TryGetInt32(out int favoritoId))
+                    return Json(new { success = false, message = "Id del favorito inválido" });
+                var deleteResponse = await _httpClient.DeleteAsync($"FavoriteSongs/{favoritoId}");
+                if (deleteResponse.IsSuccessStatusCode)
+                {
+                    var playlistResponse = await _httpClient.GetAsync($"Playlists/FavoritesPlaylist/{clientId}");
+                    if (playlistResponse.IsSuccessStatusCode)
+                    {
+                        var playlistId = await playlistResponse.Content.ReadFromJsonAsync<int>();
+                        var songPlaylistResponse = await _httpClient.GetAsync($"SongsPlaylists/ExistSongPlaylist/{songId}/{playlistId}");
+                        if (songPlaylistResponse.IsSuccessStatusCode)
+                        {
+                            var songPlaylist = await songPlaylistResponse.Content.ReadFromJsonAsync<JsonElement>();
+                            if (songPlaylist.TryGetProperty("id", out var songPlaylistIdProp) && songPlaylistIdProp.TryGetInt32(out int songPlaylistId))
+                            {
+                                await _httpClient.DeleteAsync($"SongsPlaylists/{songPlaylistId}");
+                            }
+                        }
+                    }
+                    return Json(new { success = true, message = "Canción eliminada de favoritos" });
+                }
+                return Json(new { success = false, message = "Error al eliminar favorito" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Obtiene las playlists del cliente actual, excluyendo la playlist de favoritos.
+        [HttpGet]
+        public async Task<IActionResult> GetPlaylistsCliente()
+        {
+            try
+            {
+                var clientId = await GetClientId();
+                if (clientId == 0)
+                    return Json(new { success = false, message = "Usuario no identificado." });
+                var response = await _httpClient.GetAsync($"Playlists/Cliente/Playlist/{clientId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var playlists = await response.Content.ReadFromJsonAsync<List<JsonElement>>();
+                    var playlistsFiltradas = playlists?.Where(p =>
+                        p.GetProperty("title").GetString() != "Tus Me Gusta"
+                    ).ToList();
+                    return Json(new { success = true, playlists = playlistsFiltradas });
+                }
+                return Json(new { success = false, message = "Error al obtener playlists" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Agrega una canción a una playlist específica.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AgregarAPlaylist(int songId, int playlistId)
+        {
+            try
+            {
+                var songPlaylist = new
+                {
+                    id = 0,
+                    songId = songId,
+                    playlistId = playlistId
+                };
+                var content = new StringContent(JsonSerializer.Serialize(songPlaylist), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("SongsPlaylists", content);
+                if (response.IsSuccessStatusCode)
+                    return Json(new { success = true, message = "Canción añadida a la playlist" });
+                return Json(new { success = false, message = "Error al agregar a la playlist" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Obtiene la letra de una canción específica utilizando una API externa.
+        [HttpGet]
+        public async Task<IActionResult> GetLetra(int id)
+        {
+            return null;
+
+        }
+
+        // Registra la reproducción de una canción para el cliente actual.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegistrarReproduccion(int songId)
@@ -60,25 +402,50 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 TempData["Error"] = "Debes iniciar sesión para reproducir.";
                 return RedirectToAction("Reproducir", new { id = songId });
             }
-
-            var clientIdString = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-
-            if (string.IsNullOrEmpty(clientIdString) || !int.TryParse(clientIdString, out int clientId))
+            var clientId = await GetClientId();
+            if (clientId == 0)
             {
                 TempData["Error"] = "No se pudo obtener el ID del usuario.";
                 return RedirectToAction("Reproducir", new { id = songId });
             }
-
             var response = await _httpClient.PostAsync($"reproductor/play?songId={songId}&clientId={clientId}", null);
-
             if (response.IsSuccessStatusCode)
                 TempData["Mensaje"] = "🎶 Reproducción registrada con éxito.";
             else
                 TempData["Error"] = "❌ Error al registrar la reproducción.";
-
             return RedirectToAction("Reproducir", new { id = songId });
         }
 
 
+
+        public async Task<string?> ObtenerNombreArtista(int songId)
+        {
+            try
+            {
+                var nombre = await _httpClient.GetFromJsonAsync<string>($"songs/Artista/{songId}");
+                return nombre;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        // Obtiene el título de una canción específica por su ID.
+        public async Task<string?> ObtenerNombreCancion(int songId)
+        {
+            try
+            {
+                var cancion = await _httpClient.GetFromJsonAsync<Song>($"songs/{songId}");
+                if (cancion == null)
+                    return null;
+                return cancion.Title;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
     }
 }
+

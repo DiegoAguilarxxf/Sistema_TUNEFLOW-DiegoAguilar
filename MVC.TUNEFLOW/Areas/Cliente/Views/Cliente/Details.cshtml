@@ -11,10 +11,6 @@
 
         <div class="cuenta-info">
             <div class="cuenta-item">
-                <span class="cuenta-label">Tipo de suscripción:</span>
-                <span class="cuenta-valor">@Model.Subscription.SubscriptionType.Name </span>
-            </div>
-            <div class="cuenta-item">
                 <span class="cuenta-label">Nombre:</span>
                 <span class="cuenta-valor">@Model.FirstName</span>
             </div>
@@ -45,9 +41,9 @@
         </div>
 
         <div class="cuenta-acciones mt-4">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary me-2">✏️ Editar cuenta</a>
+            <a asp-action="Edit"  class="btn btn-primary me-2">✏️ Editar cuenta</a>
 
-            <a asp-action="ConfirmDelete" asp-route-id="@Model.Id" class="btn btn-danger">🗑️ Eliminar cuenta</a>
+            <a asp-action="ConfirmDelete" class="btn btn-danger">🗑️ Eliminar cuenta</a>
 
             <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="d-inline ms-3">
                 <button type="submit" class="btn btn-outline-secondary">🚪 Cerrar sesión</button>

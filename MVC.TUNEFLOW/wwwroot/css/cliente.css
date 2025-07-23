@@ -179,7 +179,7 @@ body {
 .perfil-edit-container {
     width: 100%;
     max-width: var(--container-max-width);
-    margin: 0 auto;
+    margin: 40px auto;
     padding: var(--container-padding);
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);

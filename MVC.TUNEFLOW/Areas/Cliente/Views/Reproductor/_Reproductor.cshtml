@@ -3,27 +3,33 @@
     <div id="portadaGrandeContainer" class="portada-expandida">
         <img id="portadaGrande" src="~/img/placeholder.png" alt="Portada Grande" />
     </div>
+
+    <!-- Letra -->
     <div id="contenedorLetra" style="display: none; padding: 1rem;">
         <pre id="textoLetra" style="white-space: pre-wrap; font-family: 'Monument', sans-serif; color: white; text-shadow: 1px 1px 3px black; font-size: 1rem;"></pre>
     </div>
 
     <div class="d-flex align-items-center w-100 position-relative">
-        <!-- Portada -->
+        <!-- Portada pequeña -->
         <div class="reproductor-portada me-3" style="position: relative; display: inline-block;">
             <img id="portadaActual" src="~/img/placeholder.png" alt="Portada"
                  style="height: 60px; width: 60px; object-fit: cover;" />
-
-            <!-- Botón invisible encima de la portada -->
             <button id="togglePlayerBtn" title="Maximizar/Minimizar reproductor"
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                   background: transparent; border: none; cursor: pointer;">
+                           background: transparent; border: none; cursor: pointer;">
             </button>
         </div>
 
-
-        <!-- Información canción y barra -->
+        <!-- Info canción -->
         <div class="reproductor-info flex-grow-1">
+            <!-- Nombre artista como enlace -->
+            <div id="artistaActual" style="font-size: 0.9rem;">
+                <!-- Esto se llena con JS -->
+            </div>
+            <!-- Título de la canción -->
             <strong id="cancionActual">Ninguna canción en reproducción</strong>
+
+            <!-- Barra de progreso -->
             <div class="d-flex align-items-center mt-1">
                 <span id="tiempoActual" style="min-width: 40px;">0:00</span>
                 <input type="range" id="barraProgreso" min="0" max="100" value="0" class="form-range mx-2" style="flex-grow: 1;" />
@@ -33,22 +39,19 @@
 
         <!-- Controles -->
         <div class="reproductor-controles ms-3 d-flex align-items-center">
-            <!-- Botón anterior -->
             <button class="btn-icon" onclick="anteriorCancion()" id="btn-atras">
                 <img src="~/img/icons/atras.png" alt="Anterior" />
             </button>
 
-            <!-- Botón play/pause -->
             <button class="btn-icon" onclick="togglePlay()" id="btn-play">
                 <img id="icono-play-pause" src="~/img/icons/play.png" alt="Play/Pause" />
             </button>
 
-            <!-- Botón siguiente -->
             <button class="btn-icon" onclick="siguienteCancion()" id="btn-siguiente">
                 <img src="~/img/icons/siguiente.png" alt="Siguiente" />
             </button>
 
-            <!-- Solo en expandido -->
+            <!-- Solo en modo expandido -->
             <button class="btn-icon btn-expandido" onclick="descargarCancion()">
                 <img src="~/img/icons/descargar.png" alt="Descargar" />
             </button>
@@ -61,23 +64,20 @@
                 <img src="~/img/icons/add-playlist.png" alt="Añadir a Playlist" />
             </button>
 
-
-            <!-- Me gusta siempre visible -->
+            <!-- Favorito -->
             <button class="btn-icon" id="btnfavorito" onclick="funcionFavorito()">
                 <img id="imgFavorito" src="~/img/icons/me-gusta.png" alt="Favorito" />
             </button>
 
-            <!-- Control de volumen solo en expandido -->
-            <!-- Volumen fuera de btn-expandido -->
+            <!-- Volumen -->
             <input type="range" class="form-range ms-2" id="volumenControl" min="0" max="1" step="0.01" value="0.5" style="width: 100px;" />
-
         </div>
-
-        
     </div>
 
     <audio id="audioPlayer" src="" preload="auto"></audio>
 </div>
+
+<!-- Modal para Playlists -->
 <div id="overlayModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1999;">
     <div id="modalPlaylists" style="background-color:#1c1c1c; color:white; padding:1rem 2rem; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.5); min-width:300px; max-height:80vh; overflow-y:auto; position:absolute; top:25%; left:50%; transform:translateX(-50%); z-index:2000;">
         <h5 style="margin-bottom:1rem;">Selecciona una playlist</h5>

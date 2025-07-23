@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Modelos.Tuneflow.Media.Song>
+@using System.Text.Json
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
@@ -54,15 +55,20 @@
                             <td>@item.TimeInMinutes(item.Duration)</td>
                             <td>
                                 <button class="btn btn-sm btn-success"
-                                        onclick="reproducirCancion(
-                                            @item.Id,
-                                            '@item.Title',
-                                            '@item.FilePath',
-                                            '@item.ImagePath',
-                                            @ViewBag.IdCliente
-                                        )">
+                                        onclick='agregarYReproducir(
+            @Html.Raw(JsonSerializer.Serialize(new {
+                id = item.Id,
+                titulo = item.Title,
+                url = item.FilePath,
+                portada = item.ImagePath ?? "/img/default-album.jpg",
+                idCliente = ViewBag.IdCliente ?? 0,
+                artista = item.Artist?.StageName ?? "Desconocido"
+            }))
+        )'>
                                     ▶ Reproducir
                                 </button>
+
+
                             </td>
                         </tr>
                     }

@@ -63,6 +63,9 @@
             </div>
         </div>
     </div>
+    <form id="tokenForm" style="display:none;">
+        @Html.AntiForgeryToken()
+    </form>
 
     @await Html.PartialAsync("~/Areas/Cliente/Views/Reproductor/_Reproductor.cshtml")
 
