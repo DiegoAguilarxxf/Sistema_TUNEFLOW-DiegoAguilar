@@ -1,8 +1,11 @@
 ﻿@model Modelos.Tuneflow.Media.Song
 
 @{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Delete";
 }
+
+<div class="container py-5">
 
 <h1>Delete</h1>
 
@@ -83,4 +86,5 @@
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>
+</div>
 </div>

@@ -1,9 +1,11 @@
 ﻿@model Modelos.Tuneflow.Media.Song
 
 @{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Details";
 }
 
+<div class="container py-5">
 <h1>Details</h1>
 
 <div>
@@ -81,4 +83,5 @@
 <div>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     <a asp-action="Index">Back to List</a>
+</div>
 </div>

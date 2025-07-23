@@ -1,6 +1,245 @@
-﻿namespace MVC.TUNEFLOW.wwwroot.css
-{
-    public class admin
-    {
+﻿/* ===========================================
+   VARIABLES GLOBALES
+=========================================== */
+:root {
+    --primary: #6c63ff;
+    --primary-dark: #5851db;
+    --primary-light: #8b85ff;
+    --radius: 12px;
+    --transition: 0.3s ease;
+    --star-color: rgba(255, 255, 255, 0.7);
+    --star-size-min: 1px;
+    --star-size-max: 3px;
+    --star-duration: 20s;
+    --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 15px 40px rgba(0, 0, 0, 0.2);
+    --mobile: 480px;
+    --tablet: 768px;
+    --desktop: 1024px;
+    --large: 1200px;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+}
+
+    :root[data-theme='light'] {
+        --bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --card-bg-solid: #ffffff;
+        --text-color: #2c3e50;
+        --text-secondary: #7f8c8d;
+        --input-bg: rgba(255, 255, 255, 0.9);
+        --border-color: #e1e8ed;
+        --border-focus: var(--primary);
+        --input-focus: rgba(108, 99, 255, 0.15);
+        --footer-bg: #ecf0f1;
+        --star-color: rgba(108, 99, 255, 0.6);
+    }
+
+    :root[data-theme='dark'] {
+        --bg: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        --card-bg: rgba(30, 30, 40, 0.95);
+        --card-bg-solid: #1e1e28;
+        --text-color: #ecf0f1;
+        --text-secondary: #95a5a6;
+        --input-bg: rgba(30, 30, 40, 0.9);
+        --border-color: #34495e;
+        --border-focus: var(--primary-light);
+        --input-focus: rgba(139, 133, 255, 0.2);
+        --footer-bg: #2c3e50;
+        --star-color: rgba(255, 255, 255, 0.3);
+    }
+
+/* ===========================================
+   LAYOUT ADMIN
+=========================================== */
+body.admin-body {
+    background: var(--bg);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    transition: background var(--transition), color var(--transition);
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 260px;
+    background-color: var(--card-bg);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid var(--border-color);
+}
+
+    .admin-sidebar .nav-link {
+        color: var(--text-color);
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        font-weight: 500;
+        transition: background var(--transition), color var(--transition);
+    }
+
+        .admin-sidebar .nav-link:hover,
+        .admin-sidebar .nav-link:focus {
+            background-color: var(--primary-light);
+            color: #fff;
+        }
+
+    .admin-sidebar button.nav-link {
+        text-align: left;
+        width: 100%;
+        color: var(--text-color);
+    }
+
+        .admin-sidebar button.nav-link:hover {
+            color: #fff;
+            background-color: var(--primary);
+        }
+
+/* SWITCH TEMA */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: var(--spacing-sm) 0;
+    border-top: 1px solid var(--border-color);
+    margin-top: var(--spacing-md);
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+    .theme-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: var(--transition);
+    border-radius: 34px;
+}
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: var(--transition);
+        border-radius: 50%;
+    }
+
+input:checked + .slider {
+    background-color: var(--primary);
+}
+
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+
+.switch-label {
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.main-wrapper {
+    flex: 1;
+    padding: var(--spacing-lg);
+    background: var(--bg);
+}
+
+.admin-content {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-medium);
+}
+
+/* ===========================================
+   FORMULARIOS
+=========================================== */
+input.form-control,
+select.form-select,
+textarea.form-control {
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    color: var(--text-color);
+    transition: all var(--transition);
+}
+
+    input.form-control:focus,
+    select.form-select:focus,
+    textarea.form-control:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 0.25rem var(--input-focus);
+        outline: none;
+    }
+
+button.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all var(--transition);
+}
+
+    button.btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        transform: translateY(-2px);
+    }
+
+/* ===========================================
+   RESPONSIVE
+=========================================== */
+@media (max-width: 768px) {
+    .admin-layout {
+        flex-direction: column;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .main-wrapper {
+        padding: var(--spacing-md);
+    }
+
+    .admin-content {
+        padding: var(--spacing-md);
     }
 }
