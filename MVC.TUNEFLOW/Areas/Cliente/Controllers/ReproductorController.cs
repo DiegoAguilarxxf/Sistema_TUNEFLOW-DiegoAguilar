@@ -130,7 +130,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
 
 
-        // Obtiene una canción aleatoria, la agrega a la lista de sesión y devuelve sus datos en formato JSON.
+        // Obtiene una canción aleatoria, la agrega a la lista de sesión y devuelve sus datos en JSON.
         [HttpGet]
         public async Task<IActionResult> SiguienteCancion()
         {
@@ -138,16 +138,28 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             {
                 var cancion = await _httpClient.GetFromJsonAsync<Song>("songs/Random");
                 if (cancion == null)
+                {
+                    Console.WriteLine("No se encontró canción aleatoria.");
                     return Json(new { success = false, message = "No se encontró ninguna canción aleatoria." });
+                }
+
                 var lista = ObtenerListaDeSesion() ?? new List<Song>();
+
+                // Agregar la canción si no está
                 if (!lista.Any(c => c.Id == cancion.Id))
                 {
                     lista.Add(cancion);
                     GuardarListaEnSesion(lista);
+                    Console.WriteLine($"Agregada canción nueva al historial: {cancion.Title} (ID: {cancion.Id})");
                 }
+                else
+                {
+                    Console.WriteLine($"La canción ya está en el historial: {cancion.Title} (ID: {cancion.Id})");
+                }
+
                 var index = lista.FindIndex(c => c.Id == cancion.Id);
-                if (index == -1) index = lista.Count - 1;
                 GuardarIndiceActual(index);
+
                 return Json(new
                 {
                     success = true,
@@ -164,46 +176,52 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"ERROR en SiguienteCancion: {ex.Message}");
                 return Json(new { success = false, message = $"Error al obtener canción aleatoria: {ex.Message}" });
             }
         }
+        private int ObtenerIndiceActual() => HttpContext.Session.GetInt32(SessionKeyIndiceActual) ?? 0;
 
-        // Reproduce la canción anterior en la lista de sesión y devuelve sus datos en formato JSON.
+
         [HttpGet]
-        public async Task<IActionResult>  CancionAnterior()
+        public IActionResult GetIndiceActual()
         {
-            try
+            var index = ObtenerIndiceActual();
+            return Json(new { index });
+        }
+
+
+        [HttpGet]
+        public IActionResult CancionAnterior()
+        {
+            var lista = ObtenerListaDeSesion();
+            if (lista == null || !lista.Any())
             {
-                var cancion = await _httpClient.GetFromJsonAsync<Song>("songs/Random");
-                if (cancion == null)
-                    return Json(new { success = false, message = "No se encontró ninguna canción aleatoria." });
-                var lista = ObtenerListaDeSesion() ?? new List<Song>();
-                if (!lista.Any(c => c.Id == cancion.Id))
+                Console.WriteLine("Historial vacío al intentar retroceder.");
+                return Json(new { success = false, message = "No hay historial de canciones." });
+            }
+
+            var index = ObtenerIndiceActual();
+            Console.WriteLine($"Índice actual antes de retroceder: {index}");
+
+            index = (index - 1 + lista.Count) % lista.Count;
+            GuardarIndiceActual(index);
+
+            var cancion = lista[index];
+            Console.WriteLine($"Reproduciendo canción anterior: {cancion.Title} (ID: {cancion.Id})");
+
+            return Json(new
+            {
+                success = true,
+                cancion = new
                 {
-                    lista.Add(cancion);
-                    GuardarListaEnSesion(lista);
+                    id = cancion.Id,
+                    titulo = cancion.Title,
+                    artista = cancion.Artist?.StageName ?? "Desconocido",
+                    url = cancion.FilePath,
+                    portada = cancion.ImagePath ?? "/img/default-album.jpg"
                 }
-                var index = lista.FindIndex(c => c.Id == cancion.Id);
-                if (index == -1) index = lista.Count - 1;
-                GuardarIndiceActual(index);
-                return Json(new
-                {
-                    success = true,
-                    cancion = new
-                    {
-                        id = cancion.Id,
-                        titulo = cancion.Title,
-                        artista = cancion.Artist?.StageName ?? "Desconocido",
-                        url = cancion.FilePath,
-                        portada = cancion.ImagePath ?? "/img/default-album.jpg",
-                        idCliente = await GetClientId()
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = $"Error al obtener canción aleatoria: {ex.Message}" });
-            }
+            });
         }
 
 

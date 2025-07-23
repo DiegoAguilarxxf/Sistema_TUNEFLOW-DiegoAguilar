@@ -121,39 +121,85 @@ function agregarYReproducir(cancion) {
     reproducirCancion(cancion.id, cancion.titulo, cancion.url, cancion.portada, cancion.idCliente, 0, true, cancion.artista);
 }
 
-// --- NAVEGACIÓN ---
+// Avanza a la siguiente canción: primero en historial, luego en servidor
 async function siguienteCancion() {
+    console.log("➡️ Intentando avanzar a la siguiente canción...");
+
     if (indiceActual < historialCanciones.length - 1) {
+        // Hay una canción más en el historial local
         indiceActual++;
         const cancion = historialCanciones[indiceActual];
+        console.log("🎵 Reproduciendo desde historial:", cancion);
         guardarHistorial();
-        reproducirCancion(cancion.id, cancion.titulo, cancion.url, cancion.portada, cancion.idCliente, 0, true, cancion.artista);
+        reproducirCancion(
+            cancion.id,
+            cancion.titulo,
+            cancion.url,
+            cancion.portada,
+            cancion.idCliente,
+            0,
+            true,
+            cancion.artista
+        );
         return;
     }
+
+    // No hay más en historial: obtener una canción aleatoria desde el backend
     try {
         const response = await fetch('/Cliente/Reproductor/SiguienteCancion');
         const data = await response.json();
+
         if (data.success) {
-            agregarYReproducir(data.cancion);
+            console.log("🎲 Canción aleatoria recibida:", data.cancion);
+            historialCanciones.push(data.cancion);
+            indiceActual = historialCanciones.length - 1;
+            guardarHistorial();
+            reproducirCancion(
+                data.cancion.id,
+                data.cancion.titulo,
+                data.cancion.url,
+                data.cancion.portada,
+                data.cancion.idCliente,
+                0,
+                true,
+                data.cancion.artista
+            );
         } else {
+            console.warn("⚠️ Error del servidor:", data.message);
             mostrarNotificacion('No se pudo obtener la siguiente canción', 'error');
         }
     } catch (error) {
-        console.error(error);
+        console.error("❌ Error de red al obtener canción aleatoria:", error);
         mostrarNotificacion('Error al cargar la siguiente canción', 'error');
     }
 }
 
+
+// Retrocede a la canción anterior en el historial
 async function cancionAnterior() {
+    console.log("⬅️ Intentando retroceder a la canción anterior...");
+
     if (indiceActual > 0) {
         indiceActual--;
         const cancion = historialCanciones[indiceActual];
+        console.log("🎵 Reproduciendo anterior desde historial:", cancion);
         guardarHistorial();
-        reproducirCancion(cancion.id, cancion.titulo, cancion.url, cancion.portada, cancion.idCliente, 0, true, cancion.artista);
+        reproducirCancion(
+            cancion.id,
+            cancion.titulo,
+            cancion.url,
+            cancion.portada,
+            cancion.idCliente,
+            0,
+            true,
+            cancion.artista
+        );
     } else {
         mostrarNotificacion('No hay canciones anteriores en el historial', 'info');
+        console.log("📛 No hay canciones anteriores en el historial.");
     }
 }
+
 
 // --- FAVORITOS ---
 async function actualizarBotonFavorito() {
