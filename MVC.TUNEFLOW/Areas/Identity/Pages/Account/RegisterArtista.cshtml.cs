@@ -53,6 +53,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
         public string ReturnUrl { get; set; }
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
         public List<SelectListItem> Paises { get; set; }
+        public List<SelectListItem> Generos { get; set; }
 
         public class InputModel
         {
@@ -97,6 +98,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
         {
             ReturnUrl = returnUrl;
             Paises = await GetPaisesAsync();
+            Generos = await GetGenerosAsync();
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
@@ -185,6 +187,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
             }
 
             Paises = await GetPaisesAsync(); // Para recargar el selector si falla
+            Generos = await GetGenerosAsync(); // Para recargar el selector si falla
             return Page();
         }
 
@@ -207,6 +210,17 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
             return countries.Select(p => new SelectListItem
             {
                 Value = p.Id.ToString(),
+                Text = p.Name
+            }).ToList();
+        }
+
+        private async Task<List<SelectListItem>> GetGenerosAsync()
+        {
+            var generos = await Crud<Genre>.GetAllAsync();
+
+            return generos.Select(p => new SelectListItem
+            {
+                Value = p.Name,
                 Text = p.Name
             }).ToList();
         }

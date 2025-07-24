@@ -62,7 +62,7 @@
 
                 <div class="mb-3">
                     <label asp-for="Input.MusicGenre"></label>
-                    <input asp-for="Input.MusicGenre" class="form-control" />
+                    <select asp-for="Input.MusicGenre" asp-items="Model.Generos" class="form-select" ></select>
                     <span asp-validation-for="Input.MusicGenre" class="text-danger"></span>
                 </div>
 

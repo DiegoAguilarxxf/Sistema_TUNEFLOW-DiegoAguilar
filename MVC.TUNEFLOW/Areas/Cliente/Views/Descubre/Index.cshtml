@@ -1,4 +1,4 @@
-﻿@model IEnumerable<string>
+﻿@model IEnumerable<Modelos.Tuneflow.Models.Genre>
 
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
@@ -11,11 +11,10 @@
     <div class="genre-card-grid">
         @foreach (var genero in Model)
         {
-            var imgNombre = genero.Replace(" ", "-").ToLower(); // normalización
-            <a href="/Cliente/Buscar/Buscar?nameSong=@genero" class="genre-card-link">
+            <a href="/Cliente/Buscar/Buscar?nameSong=@genero.Name" class="genre-card-link">
                 <div class="genre-card-box">
-                    <img src="@Url.Content($"~/img_descubre/{imgNombre}.png")" alt="Género: @genero" class="genre-card-img" />
-                    <h5 class="genre-card-name">@genero</h5>
+                    <img src="@genero.FilePath" )" alt="Género: @genero.Name" class="genre-card-img" />
+                    <h5 class="genre-card-name">@genero.Name</h5>
                 </div>
             </a>
         }

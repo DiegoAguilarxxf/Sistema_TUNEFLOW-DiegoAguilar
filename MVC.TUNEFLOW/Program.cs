@@ -43,7 +43,7 @@ namespace MVC.TUNEFLOW
             Crud<SubscriptionType>.EndPoint = "https://localhost:7031/api/SubscriptionsTypes";
             Crud<Playlist>.EndPoint = "https://localhost:7031/api/Playlists";
             Crud<Country>.EndPoint = "https://localhost:7031/api/Countries";
-            // Crud<Modelos.Tuneflow.Usuario.Consumidor.Cliente>.EndPoint = "https://localhost:7031/api/Clientes"; // Esta l�nea estaba duplicada y es redundante. Se elimin� o se consolid� con la anterior.
+            Crud<Genre>.EndPoint = "https://localhost:7031/api/Genres";
 
 
             builder.Services.AddTransient<IDbConnection>(sp =>

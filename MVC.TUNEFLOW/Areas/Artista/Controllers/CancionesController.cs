@@ -9,6 +9,8 @@ using Modelos.Tuneflow.User.Production;
 using MVC.TUNEFLOW.Services;
 using Npgsql;
 using Dapper;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Modelos.Tuneflow.Models;
 
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
@@ -24,6 +26,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         private readonly SupabaseStorageService _supaCancion;
         private readonly SupabaseStorageService _supaImagen;
         private readonly CancionService _cancionService = new CancionService();
+        
         public CancionesController()
         {
             _supaCancion = new SupabaseStorageService(supabaseUrl, supabaseAnonKey, bucket);
@@ -131,7 +134,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubirCancion(IFormFile archivoCancion, IFormFile archivoImagen, int artistaId, string Title,string Genre, bool ExplictContent)
+        public async Task<IActionResult> SubirCancion(IFormFile archivoCancion, IFormFile archivoImagen, int artistaId, string Title,string Genre, bool ExplicitContent)
         {
             var artista = await Crud<Artist>.GetByIdAsync(artistaId);   
 
@@ -187,6 +190,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             { Console.WriteLine($"Error al subir la canción: {ex.Message}");
                 ModelState.AddModelError("", $"Error al subir la canción: {ex.Message}");
                 var cancionError = new Song { ArtistId = artistaId };
+                ViewBag.Generos = await GetGenerosAsync();
                 return View("Subir", cancionError);
             }
         }
@@ -202,13 +206,23 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             }
 
             ViewBag.ArtistaId = artista.Id;
-
+            ViewBag.Generos = await GetGenerosAsync();
             var nuevaCancion = new Song
             {
                 ArtistId = artista.Id
             };
 
             return View("Subir", nuevaCancion); // ✅ Aquí sí
+        }
+
+        private async Task<List<SelectListItem>> GetGenerosAsync()
+        {
+            var generos = await Crud<Genre>.GetAllAsync();
+            return generos.Select(p => new SelectListItem
+            {
+                Value = p.Name,
+                Text = p.Name
+            }).ToList();
         }
 
 

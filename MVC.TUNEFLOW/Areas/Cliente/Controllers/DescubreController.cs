@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Modelos.Tuneflow.User.Production;
 using Modelos.Tuneflow.User;
 using System.Security.Claims;
+using Modelos.Tuneflow.Models;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -34,11 +35,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
                 ViewBag.IdCliente = cliente.Id;
                 var canciones = await Crud<Song>.GetAllAsync();
-                var generos = canciones
-                    .Where(c => !string.IsNullOrEmpty(c.Genre))
-                    .Select(c => c.Genre)
-                    .Distinct()
-                    .ToList();
+                var generos = await Crud<Genre>.GetAllAsync();
 
                 return View(generos);
             }
