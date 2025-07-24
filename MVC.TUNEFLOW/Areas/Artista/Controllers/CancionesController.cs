@@ -16,10 +16,18 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
     [Authorize]
     public class CancionesController : Controller
     {
-        private readonly IConfiguration _config;
-        public CancionesController(IConfiguration config)
+        string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co";
+        string supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o";
+        string bucket = "cancionestuneflow";
+        string bucketImagen = "imagenestuneflow";
+        string directory = "ImagenesCanciones";
+        private readonly SupabaseStorageService _supaCancion;
+        private readonly SupabaseStorageService _supaImagen;
+        private readonly CancionService _cancionService = new CancionService();
+        public CancionesController()
         {
-            _config = config;
+            _supaCancion = new SupabaseStorageService(supabaseUrl, supabaseAnonKey, bucket);
+            _supaImagen = new SupabaseStorageService(supabaseUrl, supabaseAnonKey, bucketImagen, directory);
         }
         // GET: CancionesController
         public async Task<IActionResult> Index()
@@ -123,10 +131,9 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubirCancion(IFormFile archivoCancion, IFormFile archivoImagen, int artistaId)
+        public async Task<IActionResult> SubirCancion(IFormFile archivoCancion, IFormFile archivoImagen, int artistaId, string Title,string Genre, bool ExplictContent)
         {
-            var artista = await Crud<Artist>.GetByIdAsync(artistaId);
-            Console.WriteLine("Entró al método POST");
+            var artista = await Crud<Artist>.GetByIdAsync(artistaId);   
 
             if (artista == null)
             {   Console.WriteLine("Artista no encontrado");
@@ -146,64 +153,35 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 
             try
             {
-                string carpetaArtista = Regex.Replace(artista.StageName.ToLower(), @"[^a-zA-Z0-9_\-]", "_");
-                Console.WriteLine($"Va a crear Carpeta del artista: {carpetaArtista}");
-                var storageService = new SupabaseStorageService(
-                    supabaseUrl: "https://kblhmjrklznspeijwzeg.supabase.co",
-                    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o",
-                    bucket: "cancionestuneflow",
-                    directory: carpetaArtista
-                    
-                );Console.WriteLine("llego hasta credenciales del supa");
+                // Subir archivo de audio
+                var urlCancion = await _supaCancion.SubirCancionAsyncrona(archivoCancion, artista.StageName);
+                var urlImagen = await _supaImagen.SubirArchivoAsync(archivoImagen);
+                int segundos = _cancionService.ObtenerDuracionCancion(archivoCancion);
 
-                string urlCancion = await storageService.SubirCancionAsync(archivoCancion, artista.StageName);
-                string urlImagen = null;
-                if (archivoImagen != null && archivoImagen.Length > 0)
-                {
-                    urlImagen = await storageService.SubirArchivoAsync(archivoImagen);
-                }
-                Console.Write("mando al metodo subircancion");
                 var nuevaCancion = new Song
                 {
-                    Title = Path.GetFileNameWithoutExtension(archivoCancion.FileName),
+                    Title = Title,
                     FilePath = urlCancion,
                     ArtistId = artistaId,
-                    Duration = 0,
-                    Genre = "Desconocido",
-                    ExplicitContent = false,
-                    ImagePath = urlImagen,       // Ok, puede ser null
-                    ReleaseDate = DateTime.UtcNow, // Asignar fecha actual (por ejemplo)
+                    AlbumId = null,
+                    Duration = segundos,
+                    Genre = Genre,
+                    ExplicitContent = ExplictContent,
+                    ImagePath = urlImagen,       
+                    ReleaseDate = DateTime.UtcNow, 
                     Available = true
                 };
-                Console.WriteLine("creo la carpeta");
-                using (var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection")))
-                {
-                    
-                    connection.Open();
-                    Console.WriteLine("va a subir al posgres la cancion");
-                    connection.Execute(@"
-INSERT INTO ""Songs"" 
-(""Title"", ""Duration"", ""Genre"", ""ArtistId"", ""AlbumId"", ""FilePath"", ""ExplicitContent"", ""ImagePath"", ""ReleaseDate"", ""Available"") 
-VALUES (@Title, @Duration, @Genre, @ArtistId, @AlbumId, @FilePath, @ExplicitContent, @ImagePath, @ReleaseDate, @Available)",
-    new
-    {
-        Title = nuevaCancion.Title,
-        Duration = nuevaCancion.Duration,
-        Genre = nuevaCancion.Genre,
-        ArtistId = nuevaCancion.ArtistId,
-        AlbumId = nuevaCancion.AlbumId,
-        FilePath = nuevaCancion.FilePath,
-        ExplicitContent = nuevaCancion.ExplicitContent,
-        ImagePath = nuevaCancion.ImagePath,
-        ReleaseDate = nuevaCancion.ReleaseDate,
-        Available = nuevaCancion.Available
-    });
 
+                var song = await Crud<Song>.CreateAsync(nuevaCancion);
+
+                if (song == null)
+                {
+                    return RedirectToAction("SubirCancion", new { artistaId = artistaId });
                 }
 
                 Console.WriteLine("Canción subida correctamente");
                 TempData["Success"] = "Canción subida correctamente.";
-                return RedirectToAction("Index", "Perfil", new { id = artistaId });
+                return RedirectToAction("Index", "Canciones", new {area = "Artista"});
             }
             catch (Exception ex)
             { Console.WriteLine($"Error al subir la canción: {ex.Message}");

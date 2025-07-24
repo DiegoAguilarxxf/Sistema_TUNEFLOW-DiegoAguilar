@@ -15,6 +15,7 @@ using Modelos.Tuneflow.User.Profiles;
 using Modelos.Tuneflow.User.Production;
 using NuGet.Protocol.Plugins;
 using Modelos.Tuneflow.User.Administration;
+using MVC.TUNEFLOW.Services;
 
 namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 {
@@ -26,6 +27,10 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterArtistaModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly SupabaseStorageService _supa;
+        string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co";
+        string supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o";
+        string bucket = "cancionestuneflow";
 
         public RegisterArtistaModel(
             UserManager<IdentityUser> userManager,
@@ -40,6 +45,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _supa = new SupabaseStorageService(supabaseUrl,supabaseAnonKey,bucket);
         }
 
         [BindProperty]
@@ -129,7 +135,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                     };
 
                     var newArtist = await Crud<Modelos.Tuneflow.User.Production.Artist>.CreateAsync(artist);
-
+                    await _supa.CrearCarpetaAsync(newArtist.StageName);
                     var profile = new Profile
                     {
                         ClientId = 0, // No aplica para artistas

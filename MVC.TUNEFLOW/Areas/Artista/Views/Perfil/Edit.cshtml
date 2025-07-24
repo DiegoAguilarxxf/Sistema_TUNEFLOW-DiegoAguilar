@@ -1,0 +1,294 @@
+﻿@model Modelos.Tuneflow.User.Profiles.Profile
+@{
+    Layout = "~/Areas/Artista/Views/Shared/_LayoutArtista.cshtml";
+    ViewBag.Title = "Editar Perfil";
+}
+
+<style>
+    .edit-profile-container {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        min-height: 100vh;
+        padding: 2rem;
+        color: white;
+    }
+
+    .profile-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2.5rem;
+        border: 1px solid rgba(138, 43, 226, 0.3);
+        box-shadow: 0 8px 32px rgba(138, 43, 226, 0.1);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .profile-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        background: linear-gradient(45deg, #8a2be2, #4169e1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1rem;
+    }
+
+    .image-upload-section {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .current-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #8a2be2;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 20px rgba(138, 43, 226, 0.4);
+    }
+
+    .upload-btn {
+        background: linear-gradient(45deg, #8a2be2, #4169e1);
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 25px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+        }
+
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.8rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #e0e0e0;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(138, 43, 226, 0.3);
+        border-radius: 12px;
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+    .textarea-control {
+        min-height: 120px;
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 3rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #8a2be2, #4169e1);
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 25px;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 150px;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(138, 43, 226, 0.4);
+        }
+
+    .btn-secondary {
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        padding: 1rem 2.5rem;
+        border-radius: 25px;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 150px;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+    .hidden-file-input {
+        display: none;
+    }
+
+    .creation-date {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .validation-message {
+        color: #ff6b6b;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+</style>
+
+<div class="edit-profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <h1 class="profile-title">Editar Perfil</h1>
+            <p class="profile-subtitle">Personaliza tu presencia en TuneFlow</p>
+        </div>
+
+        @using (Html.BeginForm(
+        actionName: "Edit",
+        controllerName: "Perfil",
+        routeValues: new { area = "Artista" },
+        method: FormMethod.Post,
+        antiforgery: false, // o true si no usas @Html.AntiForgeryToken() manualmente
+        htmlAttributes: new { enctype = "multipart/form-data", @class = "profile-form" }
+        ))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <div class="image-upload-section">
+                @if (!string.IsNullOrEmpty(Model.ProfileImage))
+                {
+                    <img src="@Model.ProfileImage" alt="Imagen de perfil actual" class="current-image" id="currentImage" />
+                }
+                else
+                {
+                    <div class="current-image" style="background: linear-gradient(45deg, #8a2be2, #4169e1); display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                        👤
+                    </div>
+                }
+
+                <input type="file" name="ImageFile" accept="image/*" class="hidden-file-input" id="imageUpload" onchange="previewImage(event)" />
+                <button type="button" class="upload-btn" onclick="document.getElementById('imageUpload').click()">
+                    📸 Cambiar Imagen
+                </button>
+                <div class="validation-message">
+                    @Html.ValidationMessageFor(m => m.ProfileImage)
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Biography, "Biografía", new { @class = "form-label" })
+                @Html.TextAreaFor(m => m.Biography, new
+                    {
+                        @class = "form-control textarea-control",
+                        placeholder = "Cuéntanos sobre ti, tu música, tus influencias...",
+                        maxlength = "1000"
+                    })
+                @Html.ValidationMessageFor(m => m.Biography, "", new { @class = "validation-message" })
+                <small style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">
+                    Máximo 1000 caracteres
+                </small>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-primary">
+                    Guardar Cambios
+                </button>
+                @Html.ActionLink("Cancelar", "PerfilEditar", "Perfil", null, new { @class = "btn-secondary" })
+            </div>
+
+            @if (Model.CreationDate != default(DateTime))
+            {
+                <div class="creation-date">
+                    <i>Perfil creado el @Model.CreationDate.ToString("dd/MM/yyyy")</i>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const currentImage = document.getElementById('currentImage');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImage.src = e.target.result;
+                currentImage.style.background = 'none';
+                currentImage.innerHTML = '';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Contador de caracteres para la biografía
+    document.addEventListener('DOMContentLoaded', function() {
+        const biographyTextarea = document.querySelector('textarea[name="Biography"]');
+        if (biographyTextarea) {
+            const maxLength = 1000;
+
+            function updateCharCount() {
+                const remaining = maxLength - biographyTextarea.value.length;
+                const charInfo = biographyTextarea.parentNode.querySelector('small');
+                if (charInfo) {
+                    charInfo.textContent = `${biographyTextarea.value.length}/${maxLength} caracteres`;
+                    charInfo.style.color = remaining < 50 ? '#ff6b6b' : 'rgba(255,255,255,0.6)';
+                }
+            }
+
+            biographyTextarea.addEventListener('input', updateCharCount);
+            updateCharCount(); // Inicial
+        }
+    });
+</script>

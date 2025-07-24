@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Modelos.Tuneflow.User.Production;
 using Modelos.Tuneflow.User.Profiles;
+using Modelos.Tuneflow.Models;
 using API.Consumer;
 using Modelos.Tuneflow.Media;
+using System.Threading.Tasks;
+using MVC.TUNEFLOW.Services;
 
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
@@ -13,6 +16,19 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
     [Authorize]
     public class PerfilController : Controller
     {
+        private readonly SupabaseStorageService _supabaseService;
+
+        public PerfilController()
+        {
+            string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co";
+            string supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o";
+            string bucket = "imagenesartistas";
+            string directory = "ArtistasNuevos";
+
+
+
+            _supabaseService = new SupabaseStorageService(supabaseUrl, supabaseAnonKey, bucket, directory);
+        }
 
         [Authorize(Roles = "cliente,artista")]
         public async Task<ActionResult> Index(int id, int idCliente)
@@ -38,6 +54,22 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 
             Console.WriteLine($"Estado de Seguido: {ViewBag.Seguido}");
                 return View(profile);
+        }
+
+        [Authorize(Roles = "artista")]
+        public async Task<ActionResult> PerfilEditar()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var artista = await Crud<Artist>.GetArtistaPorUsuarioId(userId);
+            var profile = await Crud<Profile>.GetPerfilPorArtistaId(artista.Id);
+            if (profile == null)
+            {
+                Console.WriteLine("No se encontró el perfil del artista.");
+                return RedirectToAction("Panel", "Panel");
+            }
+            profile.Artist.Country = await Crud<Country>.GetByIdAsync(artista.CountryId);
+
+            return View(profile);
         }
 
         // GET: PerfilController/Details/5
@@ -77,19 +109,35 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         }
 
         // GET: PerfilController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            var profile = await Crud<Profile>.GetByIdAsync(id);
+            return View(profile);
         }
 
         // POST: PerfilController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(int id, IFormFile ImageFile, string Biography)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var perfil = await Crud<Profile>.GetByIdAsync(id);
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+                    var urlDefault = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/ImagenDefault.jpeg";
+                    var urlEliminar = perfil.ProfileImage; // Guardar la URL actual para eliminarla después
+                    if (!string.Equals(urlDefault, urlEliminar, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var eliminado = await _supabaseService.EliminarArchivoAsync(urlEliminar);
+                    }
+                    var imageUrl = await _supabaseService.SubirArchivoAsync(ImageFile);
+                    perfil.ProfileImage = imageUrl; // Asignar la URL de la imagen al perfil
+                    perfil.Biography = Biography; // Asignar la biografía al perfil
+
+                    await Crud<Profile>.UpdateAsync(perfil.Id, perfil);
+                }
+                return RedirectToAction(nameof(PerfilEditar));
             }
             catch
             {
@@ -116,6 +164,11 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult SolicitarVerificacion(int id)
+        {
+            return View();
         }
     }
 }

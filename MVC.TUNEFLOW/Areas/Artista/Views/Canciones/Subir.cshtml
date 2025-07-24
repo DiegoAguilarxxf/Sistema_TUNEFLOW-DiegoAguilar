@@ -94,21 +94,21 @@
 
 
             <div class="form-group mb-3">
-                <label asp-for="Title" class="control-label">Título</label>
-                <input asp-for="Title" class="form-control" />
+                <label for="Title" class="control-label">Título</label>
+                <input type="text" name="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Genre" class="control-label">Género</label>
-                <input asp-for="Genre" class="form-control" />
+                <label for="Genre" class="control-label">Género</label>
+                <input type="text" name="Genre" class="form-control" />
                 <span asp-validation-for="Genre" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
                 <label class="control-label me-3">Contenido explícito</label>
                 <label class="switch">
-                    <input asp-for="ExplictContent" type="checkbox" />
+                    <input name="ExplictContent" type="checkbox" />
                     <span class="slider"></span>
                 </label>
                 <span asp-validation-for="ExplictContent" class="text-danger d-block mt-1"></span>

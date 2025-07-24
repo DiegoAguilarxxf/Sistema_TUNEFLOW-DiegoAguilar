@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Playlists;
+using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.User.Production;
 using Npgsql;
 
@@ -61,7 +62,7 @@ namespace API.TUNEFLOW.Controllers
 
         // GET: api/Canciones/5
         [HttpGet("{id}")]
-        public ActionResult<Song> GetCancion(int id)
+        public ActionResult<Song> GetCancionById(int id)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             connection.Open();
@@ -165,13 +166,13 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Canciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Song PostCancion([FromBody] Song song)
+        public ActionResult<Song> PostCancion([FromBody] Song song)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             connection.Open();
-            connection.Execute(@"INSERT INTO ""Songs"" 
-                (""Title"", ""Duration"", ""Genre"", ""ArtistId"", ""AlbumId"", ""FilePath"", ""ExplicitContent"", ""ImagePath"") 
-                VALUES (@Title, @Duration, @Genre, @ArtistId, @AlbumId, @FilePath, @ExplicitContent, @ImagePath)", new
+            var idDevuelto = connection.ExecuteScalar<int>(@"INSERT INTO ""Songs"" 
+                (""Title"", ""Duration"", ""Genre"", ""ArtistId"", ""AlbumId"", ""FilePath"", ""ExplicitContent"", ""ImagePath"",""ReleaseDate"",""Available"") 
+                VALUES (@Title, @Duration, @Genre, @ArtistId, @AlbumId, @FilePath, @ExplicitContent, @ImagePath, @ReleaseDate, @Available) RETURNING ""Id"";", new
             {
                 Title = song.Title,
                 Duration = song.Duration,
@@ -180,10 +181,13 @@ namespace API.TUNEFLOW.Controllers
                 AlbumId = song.AlbumId,
                 FilePath = song.FilePath,
                 ExplicitContent = song.ExplicitContent,
-                ImagePath = song.ImagePath
+                ImagePath = song.ImagePath,
+                ReleaseDate = song.ReleaseDate,
+                Available = song.Available
             });
+            song.Id = idDevuelto;
 
-            return song;
+            return CreatedAtAction(nameof(GetCancionById), new { id = idDevuelto }, song);
         }
 
         // DELETE: api/Canciones/5

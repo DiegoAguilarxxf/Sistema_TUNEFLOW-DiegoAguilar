@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.User.Production;
+using Modelos.Tuneflow.Models;
 using Npgsql;
 
 namespace API.TUNEFLOW.Controllers
@@ -56,6 +57,8 @@ namespace API.TUNEFLOW.Controllers
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             connection.Open();
             var artista = connection.QuerySingleOrDefault<Artist>(@"SELECT * FROM ""Artists"" WHERE ""UserId"" = @UserId", new { UserId = idUser });
+            
+            
             if (artista == null)
             {
                 return NotFound();

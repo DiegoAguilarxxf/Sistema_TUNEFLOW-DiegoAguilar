@@ -117,6 +117,8 @@ namespace MVC.TUNEFLOW.Services
             }
         }
 
+        
+
         public async Task<bool> ArchivoExisteAsync(string urlPublica)
         {
             if (string.IsNullOrEmpty(urlPublica))
@@ -141,63 +143,139 @@ namespace MVC.TUNEFLOW.Services
 
         private readonly string[] _allowedExtension = new[] { ".mp3", ".wav", ".ogg", ".flac", ".aac" };
         private readonly long _maxFileSizes = 10 * 1024 * 1024; // 10 MB ejemplo
-        private readonly string _buckets = "cancionestuneflow";
-        private readonly string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co"; 
-        private readonly string anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o"; // reemplaza con tu anon key real
-        private readonly HttpClient _httpClients = new HttpClient();
-        
 
-        public async Task<string> SubirCancionAsync(IFormFile archivo, string nombreArtista)
+        
+        public SupabaseStorageService(string supabaseUrl, string anonKey, string bucket)
+        {
+            _supabaseUrl = supabaseUrl;
+            _anonKey = anonKey;
+            _bucket = bucket;
+
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(supabaseUrl),
+                Timeout = TimeSpan.FromMinutes(5)
+            };
+
+            // Configurar headers una sola vez
+            _httpClient.DefaultRequestHeaders.Add("apikey", _anonKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_anonKey}");
+        }
+
+
+        public async Task<string> SubirCancionAsyncrona(IFormFile archivo, string nombreArtista)
         {
             if (archivo == null || archivo.Length == 0)
                 throw new ArgumentException("El archivo no puede estar vacío");
 
             if (archivo.Length > _maxFileSizes)
-                throw new ArgumentException($"El archivo excede el tamaño máximo permitido ({_maxFileSizes / (1024 * 1024)}MB)");
+                throw new ArgumentException($"El archivo excede el tamaño máximo permitido ({_maxFileSize / (1024 * 1024)}MB)");
 
             var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
-
             if (!_allowedExtension.Contains(extension))
-                throw new ArgumentException($"Extensión no permitida. Solo se aceptan: {string.Join(", ", _allowedExtension)}");
+                throw new ArgumentException($"Tipo de archivo no permitido. Extensiones permitidas: {string.Join(", ", _allowedExtensions)}");
 
-            string carpetaArtista = Regex.Replace(nombreArtista.ToLower(), @"[^a-zA-Z0-9_\-]", "_");
-            string nombreArchivoLimpio = Regex.Replace(Path.GetFileNameWithoutExtension(archivo.FileName), @"[^a-zA-Z0-9_\-]", "");
-            string nombreArchivoFinal = $"{nombreArchivoLimpio}{extension}";
-            string rutaFinal = $"{carpetaArtista}/{nombreArchivoFinal}";
+            // Limpiar nombre del artista para usar en la ruta (solo letras, números, guiones y guion bajo)
+            var artistaClean = Regex.Replace(nombreArtista, @"[^a-zA-Z0-9_\-]", "");
+
+            // Generar nombre único y limpio para el archivo
+            var fileNameClean = Path.GetFileNameWithoutExtension(archivo.FileName);
+            fileNameClean = Regex.Replace(fileNameClean, @"[^a-zA-Z0-9_\-]", "");
+
+            // Crear la ruta usando el nombre del artista
+            var fileName = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{fileNameClean}{extension}";
+            var filePath = $"{artistaClean}/{fileName}";
 
             try
             {
                 using var memoryStream = new MemoryStream();
                 await archivo.CopyToAsync(memoryStream);
+                var content = new ByteArrayContent(memoryStream.ToArray());
+                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(archivo.ContentType ?? "application/octet-stream");
 
-                var contenido = new ByteArrayContent(memoryStream.ToArray());
-                contenido.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(archivo.ContentType ?? "application/octet-stream");
+                var response = await _httpClient.PutAsync($"/storage/v1/object/{_bucket}/{filePath}", content);
 
-                // Agregar el header de autorización si no está
-                if (!_httpClients.DefaultRequestHeaders.Contains("Authorization"))
+                if (!response.IsSuccessStatusCode)
                 {
-                    _httpClients.DefaultRequestHeaders.Authorization =
-                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", anonKey);
+                    Console.WriteLine($"Error al subir archivo a Supabase: {response.StatusCode}");
+                    var error = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al subir archivo a Supabase (Status: {response.StatusCode}): {error}");
                 }
-
-                // Usar la URL completa para la petición PUT
-                var urlCompleta = $"{supabaseUrl}/storage/v1/object/{_buckets}/{rutaFinal}";
-
-                var respuesta = await _httpClients.PutAsync(urlCompleta, contenido);
-
-                if (!respuesta.IsSuccessStatusCode)
-                {
-                    var error = await respuesta.Content.ReadAsStringAsync();
-                    throw new Exception($"Error al subir a Supabase: {respuesta.StatusCode} - {error}");
-                }
-
-                return $"{supabaseUrl}/storage/v1/object/public/{_buckets}/{rutaFinal}";
+                Console.WriteLine("Canción subida correctamente");
+                return $"{_supabaseUrl}/storage/v1/object/public/{_bucket}/{filePath}";
             }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
-                var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                throw new Exception("Error subiendo archivo a Supabase: " + errorMessage, ex);
+                throw new Exception("Error de conexión con Supabase", ex);
             }
+            catch (TaskCanceledException ex)
+            {
+                Console.WriteLine("Tiempo de espera agotado al subir el archivo. Asegúrate de que la conexión a Internet sea estable.");
+                throw new Exception("Tiempo de espera agotado al subir el archivo", ex);
+            }
+        }
+
+        public async Task CrearCarpetaAsync(string nombreArtista)
+        {
+            if (string.IsNullOrWhiteSpace(nombreArtista))
+                throw new ArgumentException("El nombre del artista no puede estar vacío");
+
+            // Limpiar nombreArtista para evitar caracteres no válidos
+            var artistaClean = Regex.Replace(nombreArtista, @"[^a-zA-Z0-9_\-]", "");
+
+            // Ruta simulando la carpeta con un archivo vacío llamado ".placeholder"
+            var carpetaPath = $"{artistaClean}/.placeholder";
+
+            // Crear contenido vacío
+            var emptyContent = new ByteArrayContent(Array.Empty<byte>());
+            emptyContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+
+            var response = await _httpClient.PutAsync($"/storage/v1/object/{_bucket}/{carpetaPath}", emptyContent);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al crear carpeta en Supabase (Status: {response.StatusCode}): {error}");
+            }
+
+            Console.WriteLine($"Carpeta '{artistaClean}' creada correctamente en el bucket '{_bucket}'.");
+        }
+
+        public async Task EliminarCancionAsync(string urlCancion, string nombreArtista)
+        {
+            if (string.IsNullOrWhiteSpace(urlCancion))
+                throw new ArgumentException("La URL de la canción no puede estar vacía");
+
+            if (string.IsNullOrWhiteSpace(nombreArtista))
+                throw new ArgumentException("El nombre del artista no puede estar vacío");
+
+            // Limpiar nombre del artista igual que en subir para evitar problemas
+            var artistaClean = Regex.Replace(nombreArtista, @"[^a-zA-Z0-9_\-]", "");
+
+            // Extraer el nombre del archivo de la URL
+            // La URL tiene este formato: https://<supabaseUrl>/storage/v1/object/public/<bucket>/<artista>/<archivo>
+            // Queremos obtener solo "<archivo>"
+            var uri = new Uri(urlCancion);
+            var segments = uri.Segments;
+
+            if (segments.Length < 5)
+                throw new ArgumentException("La URL no tiene el formato esperado");
+
+            // Último segmento es el nombre del archivo
+            var nombreArchivo = segments[^1].Trim('/');
+
+            // Construir la ruta del archivo en el bucket
+            var filePath = $"{artistaClean}/{nombreArchivo}";
+
+            var response = await _httpClient.DeleteAsync($"/storage/v1/object/{_bucket}/{filePath}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al eliminar la canción en Supabase (Status: {response.StatusCode}): {error}");
+            }
+
+            Console.WriteLine($"Canción '{filePath}' eliminada correctamente del bucket '{_bucket}'.");
         }
 
 
