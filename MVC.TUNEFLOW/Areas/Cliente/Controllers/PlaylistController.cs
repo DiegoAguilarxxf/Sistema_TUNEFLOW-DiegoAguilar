@@ -204,7 +204,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddToPlaylist(int idCancion, int idPlaylist)
-        {
+        {Console.WriteLine("Entro a AddToPlaylist");
             try
             {
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -222,7 +222,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
                 // Aquí obtienes la lista de canciones que ya están en la playlist
                 var cancionesEnPlaylist = await Crud<SongPlaylist>.GetCancionesPorPlaylist(idPlaylist);
-
+                Console.WriteLine("Va a verificar si la cancion existe");
                 // Verificar si ya existe la canción en la playlist
                 var existe = cancionesEnPlaylist.Any(sp => sp.Id == idCancion);
 

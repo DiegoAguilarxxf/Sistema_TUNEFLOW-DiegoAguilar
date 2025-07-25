@@ -169,7 +169,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                     AlbumId = null,
                     Duration = segundos,
                     Genre = Genre,
-                    ExplicitContent = ExplictContent,
+                    ExplicitContent = ExplicitContent,
                     ImagePath = urlImagen,       
                     ReleaseDate = DateTime.UtcNow, 
                     Available = true

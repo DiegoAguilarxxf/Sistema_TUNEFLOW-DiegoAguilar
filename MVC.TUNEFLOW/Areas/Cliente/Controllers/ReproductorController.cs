@@ -133,7 +133,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         // Obtiene una canción aleatoria, la agrega a la lista de sesión y devuelve sus datos en JSON.
         [HttpGet]
         public async Task<IActionResult> SiguienteCancion()
-        {
+        {Console.WriteLine("ENtro al metodo SiguienteCancion");
             try
             {
                 var cancion = await _httpClient.GetFromJsonAsync<Song>("songs/Random");
@@ -193,7 +193,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
         [HttpGet]
         public IActionResult CancionAnterior()
-        {
+        { Console.WriteLine("Entrando al método CancionAnterior");
             var lista = ObtenerListaDeSesion();
             if (lista == null || !lista.Any())
             {

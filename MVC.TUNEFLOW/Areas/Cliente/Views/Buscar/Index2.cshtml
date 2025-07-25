@@ -5,15 +5,17 @@
     ViewData["Title"] = "Buscar Canciones";
 }
 
+<!-- Necesario para el antiforgery token en JS -->
+@Html.AntiForgeryToken()
+
 <div class="buscar-container">
     <h2 class="text-center mb-4">🎧 Buscar Canciones</h2>
 
-    <form method="get" action="/Cliente/Buscar/Search" class="search-form d-flex justify-content-center mb-4">
+    <form method="get" action="/Cliente/Buscar/Search2" class="search-form d-flex justify-content-center mb-4">
         <input type="text" name="nameSong" placeholder="Busca tu canción" class="form-control w-50" />
+        <input type="hidden" name="idPlaylist" value="@ViewBag.IdPlaylist" />
         <button type="submit" class="btn btn-primary ms-2">Buscar</button>
     </form>
-   
-
 
     @if (Model == null || !Model.Any())
     {
@@ -63,22 +65,25 @@
                                 <!-- Botón para reproducir -->
                                 <button class="btn btn-sm btn-success"
                                         onclick="reproducirCancion(
-                            @item.Id,
-                            '@item.Title',
-                            '@item.FilePath',
-                            '@item.ImagePath',
-                            @ViewBag.IdCliente
-                        )">
+                                            @item.Id,
+                                            '@item.Title',
+                                            '@item.FilePath',
+                                            '@item.ImagePath',
+                                            @ViewBag.IdCliente)">
                                     ▶ Reproducir
                                 </button>
 
-                                
-                                
+                                <!-- Botón para agregar a playlist -->
+                                <button class="btn btn-sm btn-primary ms-2"
+                                        onclick="togglePlaylist(@item.Id, @ViewBag.IdPlaylist)">
+                                    ➕ Agregar
+                                </button>
+
+
                             </td>
                         </tr>
                     }
                 </tbody>
-
             </table>
         </div>
     }
@@ -91,18 +96,34 @@
     </div>
 </div>
 
-<script>
-    function cargarDetalle(id) {
-        fetch(`/Reproductor/Reproducir?id=${id}`)
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('modalContent').innerHTML = html;
-                const modal = new bootstrap.Modal(document.getElementById('detalleModal'));
-                modal.show();
-            })
-            .catch(err => {
-                console.error("Error al cargar detalle:", err);
-                alert("No se pudo cargar el reproductor.");
-            });
-    }
-</script>
+@section Scripts {
+    <script>
+        async function togglePlaylist(idCancion, idPlaylist) {
+            try {
+                const response = await fetch('/Cliente/Playlist/AddToPlaylist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': getAntiForgeryToken()
+                    },
+                    body: JSON.stringify({ idCancion, idPlaylist })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error al conectar con el servidor');
+                console.error(error);
+            }
+        }
+
+        function getAntiForgeryToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]').value;
+        }
+    </script>
+}
