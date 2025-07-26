@@ -11,7 +11,12 @@
     <div class="card mb-4">
         <div class="row g-0">
             <div class="col-md-3 text-center p-3">
-                <img src="@artista.Profile.ProfileImage class="img-fluid rounded-circle" alt="Foto de perfil" width="150" height="150" />
+                <img src="@(artista?.Profile?.ProfileImage ?? "/img/default-profile.jpg")"
+                     class="img-fluid rounded-circle"
+                     alt="Foto de perfil"
+                     width="150"
+                     height="150" />
+
             </div>
             <div class="col-md-9">
                 <div class="card-body">

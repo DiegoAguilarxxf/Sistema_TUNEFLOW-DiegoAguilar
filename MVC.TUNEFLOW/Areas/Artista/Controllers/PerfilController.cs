@@ -166,33 +166,36 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             }
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> SolicitarVerificacionAjax([FromBody] int profileId)
+        [Authorize(Roles = "artista")]
+        public async Task<IActionResult> SolicitarVerificacion()
         {
-            var perfil = await Crud<Profile>.GetByIdAsync(profileId);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { success = false, message = "No estás logueado" });
 
-            if (perfil == null || perfil.Artist == null)
-                return NotFound(new { success = false, message = "Perfil no encontrado" });
+            var artista = await Crud<Artist>.GetArtistaPorUsuarioId(userId);
+            if (artista == null)
+                return NotFound(new { success = false, message = "Artista no encontrado" });
 
-            if (perfil.Artist.Verified)
+            if (artista.Verified)
                 return Ok(new { success = false, message = "Ya estás verificado" });
 
             var peticiones = await Crud<ArtistVerificationRequest>.GetAllAsync();
-            var yaSolicitada = peticiones.Any(p => p.ArtistId == perfil.Artist.Id);
-
-            if (yaSolicitada)
-                return Ok(new { success = false, message = "Ya hay una solicitud pendiente" });
+            if (peticiones.Any(p => p.ArtistId == artista.Id))
+                return Ok(new { success = false, message = "Ya enviaste una solicitud" });
 
             var nueva = new ArtistVerificationRequest
             {
-                ArtistId = perfil.Artist.Id,
+                ArtistId = artista.Id,
                 RequestDate = DateTime.Now
             };
-
             await Crud<ArtistVerificationRequest>.CreateAsync(nueva);
 
             return Ok(new { success = true, message = "Solicitud enviada correctamente" });
         }
+
 
 
     }

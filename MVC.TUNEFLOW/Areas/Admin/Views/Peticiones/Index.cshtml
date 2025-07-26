@@ -29,8 +29,12 @@ else
                 var artista = peticion.Artist;
                 <tr>
                     <td>
-                        <img src="@artista.Profile.ProfileImage 
-                             class="rounded-circle" width="60" height="60" alt="Foto de perfil" />
+                        <img src="@(artista?.Profile?.ProfileImage ?? "/img/default-profile.jpg")"
+                             class="rounded-circle"
+                             width="60"
+                             height="60"
+                             alt="Foto de perfil" />
+
                     </td>
                     <td>
                         <a asp-controller="Peticiones" asp-action="Details" asp-route-id="@peticion.Id" class="btn btn-outline-primary">

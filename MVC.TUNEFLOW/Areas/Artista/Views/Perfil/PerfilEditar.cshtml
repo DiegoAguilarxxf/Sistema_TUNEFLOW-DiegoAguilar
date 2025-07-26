@@ -32,6 +32,7 @@
             <p><strong>Verificado:</strong> @(artist?.Verified == true ? "Sí" : "No")</p>
         </div>
     </div>
+
     <div style="display: flex; flex-direction: column; gap: 1rem;">
         <a class="btn btn-primary" href="/Artista/Perfil/Edit/@Model.Id">Editar Perfil</a>
 
@@ -43,22 +44,16 @@
             }
             else
             {
-                <a class="btn btn-primary"
-                   asp-area="Artista"
-                   asp-controller="Perfil"
-                   asp-action="SolicitarVerificacion"
-                   asp-route-id="@Model.Id">
+                <button class="btn btn-primary" onclick="solicitarVerificacion(@Model.Id)" id="btn-verificar">
                     Solicitar Verificación
-                </a>
-
+                </button>
             }
         }
-
     </div>
 </div>
 
 <div style="background-color: #000; color: white; padding: 2rem;">
-    <h3>Albumes Principales</h3>
+    <h3>Álbumes Principales</h3>
     <div style="display: flex; gap: 2rem;">
         @if (artist?.Albums != null && artist.Albums.Any())
         {
@@ -76,3 +71,29 @@
         }
     </div>
 </div>
+
+<script>
+    async function solicitarVerificacion(profileId) {
+        const btn = document.getElementById("btn-verificar");
+        btn.disabled = true;
+        btn.textContent = "Enviando...";
+
+        const response = await fetch("/Artista/Perfil/SolicitarVerificacion", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(profileId)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            btn.outerHTML = `<span class="badge bg-warning text-dark">Verificación Pendiente</span>`;
+        } else {
+            alert(result.message);
+            btn.disabled = false;
+            btn.textContent = "Solicitar Verificación";
+        }
+    }
+</script>

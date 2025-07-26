@@ -3,89 +3,63 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.Models;
 using Modelos.Tuneflow.User.Production;
+using Modelos.Tuneflow.User.Profiles;
 
 namespace MVC.TUNEFLOW.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "admin")]
+    [Authorize]
     public class PeticionesController : Controller
     {
-        // GET: PeticionesController
         public async Task<IActionResult> Index()
         {
             var peticiones = await Crud<ArtistVerificationRequest>.GetAllAsync();
+
+            foreach (var peticion in peticiones)
+            {
+                peticion.Artist = await Crud<Artist>.GetByIdAsync(peticion.ArtistId);
+                if (peticion.Artist != null)
+                {
+                    peticion.Artist.Profile = await Crud<Profile>.GetPerfilPorArtistaId(peticion.Artist.Id);
+                    peticion.Artist.Country = await Crud<Country>.GetByIdAsync(peticion.Artist.CountryId);
+                }
+            }
+
             return View(peticiones);
         }
 
-        // GET: PeticionesController/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var peticion = await Crud<ArtistVerificationRequest>.GetByIdAsync(id);
             if (peticion == null) return NotFound();
 
             var artista = await Crud<Artist>.GetByIdAsync(peticion.ArtistId);
+            if (artista != null)
+            {
+                artista.Profile = await Crud<Profile>.GetPerfilPorArtistaId(artista.Id);
+                artista.Country = await Crud<Country>.GetByIdAsync(artista.CountryId);
+            }
+
             ViewBag.Artista = artista;
-
             return View(peticion);
         }
 
-        // GET: PeticionesController/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: PeticionesController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ArtistVerificationRequest peticion)
-        {
-            try
-            {
-                await Crud<ArtistVerificationRequest>.CreateAsync(peticion);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "No se pudo crear la petición: " + ex.Message);
-                return View(peticion);
-            }
-        }
-
-        // GET: PeticionesController/Edit/5
-        public async Task<IActionResult> Edit(int id)
-        {
-            var peticion = await Crud<ArtistVerificationRequest>.GetByIdAsync(id);
-            if (peticion == null) return NotFound();
-            return View(peticion);
-        }
-
-        // POST: PeticionesController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ArtistVerificationRequest peticion)
-        {
-            try
-            {
-                await Crud<ArtistVerificationRequest>.UpdateAsync(id, peticion);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "No se pudo editar la petición: " + ex.Message);
-                return View(peticion);
-            }
-        }
-
-        // GET: PeticionesController/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var peticion = await Crud<ArtistVerificationRequest>.GetByIdAsync(id);
             if (peticion == null) return NotFound();
+
+            var artista = await Crud<Artist>.GetByIdAsync(peticion.ArtistId);
+            if (artista != null)
+            {
+                artista.Profile = await Crud<Profile>.GetPerfilPorArtistaId(artista.Id);
+                artista.Country = await Crud<Country>.GetByIdAsync(artista.CountryId);
+            }
+
+            ViewBag.Artista = artista;
             return View(peticion);
         }
 
-        // POST: PeticionesController/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -103,7 +77,6 @@ namespace MVC.TUNEFLOW.Areas.Admin.Controllers
             }
         }
 
-        // POST: PeticionesController/VerificarArtista/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerificarArtista(int artistId, int peticionId)
@@ -115,7 +88,6 @@ namespace MVC.TUNEFLOW.Areas.Admin.Controllers
 
                 artista.Verified = true;
                 await Crud<Artist>.UpdateAsync(artistId, artista);
-
                 await Crud<ArtistVerificationRequest>.DeleteAsync(peticionId);
 
                 return RedirectToAction(nameof(Index));

@@ -12,7 +12,11 @@
 </div>
 
 <div class="mb-3">
-    <img src="@artista?.Profile?.ProfileImage class="rounded-circle" width="100" />
+    <img src="@(artista?.Profile?.ProfileImage ?? "/img/default-profile.jpg")"
+         class="rounded-circle"
+         width="100"
+         alt="Foto de perfil" />
+
     <p><strong>Artista:</strong> @artista?.StageName</p>
     <p><strong>Género:</strong> @artista?.MusicGenre</p>
     <p><strong>Fecha de petición:</strong> @Model.RequestDate.ToString("dd/MM/yyyy")</p>
