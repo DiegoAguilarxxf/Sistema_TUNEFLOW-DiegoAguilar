@@ -3,14 +3,29 @@
 @{
     Layout = "~/Areas/Artista/Views/Shared/_LayoutArtista.cshtml";
     var artist = Model.Artist;
+    var solicitudes = await API.Consumer.Crud<Modelos.Tuneflow.Models.ArtistVerificationRequest>.GetAllAsync();
+    var solicitudPendiente = solicitudes.Any(p => p.ArtistId == artist.Id);
 }
 
 <div style="background-color: #252c64; padding: 2rem; display: flex; align-items: center; justify-content: space-between; color: white;">
     <div style="display: flex; align-items: center; gap: 2rem;">
         <img src="@Model.ProfileImage" alt="Foto de perfil" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;" />
         <div>
-            <h3 style="margin: 0;">Perfil</h3> 
+            <h3 style="margin: 0;">Perfil</h3>
             <h2><strong style="font-size: 2rem;">@artist?.StageName?.ToUpper()</strong></h2>
+
+            @if (!artist.Verified)
+            {
+                if (solicitudPendiente)
+                {
+                    <p><i class="text-warning">Tu solicitud de verificación está siendo procesada.</i></p>
+                }
+                else
+                {
+                    <p><i class="text-muted">Aún no estás verificado. Solicita la verificación si cumples con los requisitos.</i></p>
+                }
+            }
+
             <p>@Model.Biography</p>
             <p><strong>Género:</strong> @artist?.MusicGenre</p>
             <p><strong>País:</strong> @artist.Country.Name</p>
@@ -19,7 +34,26 @@
     </div>
     <div style="display: flex; flex-direction: column; gap: 1rem;">
         <a class="btn btn-primary" href="/Artista/Perfil/Edit/@Model.Id">Editar Perfil</a>
-        <a class="btn btn-primary" href="/Artista/Perfil/SolicitarVerificacion/@Model.Id">Solicitar Verificación</a>
+
+        @if (!artist.Verified)
+        {
+            if (solicitudPendiente)
+            {
+                <span class="badge bg-warning text-dark">Verificación Pendiente</span>
+            }
+            else
+            {
+                <a class="btn btn-primary"
+                   asp-area="Artista"
+                   asp-controller="Perfil"
+                   asp-action="SolicitarVerificacion"
+                   asp-route-id="@Model.Id">
+                    Solicitar Verificación
+                </a>
+
+            }
+        }
+
     </div>
 </div>
 
@@ -42,4 +76,3 @@
         }
     </div>
 </div>
-

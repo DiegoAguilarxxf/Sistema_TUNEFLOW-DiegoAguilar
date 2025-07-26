@@ -66,9 +66,16 @@ namespace API.TUNEFLOW.Controllers
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             connection.Open();
-            var song = connection.QuerySingle<Song>(@"SELECT * FROM ""Songs"" WHERE ""Id"" = @Id", new { Id = id });
-            return song;
+
+            var song = connection.QuerySingleOrDefault<Song>(
+                @"SELECT * FROM ""Songs"" WHERE ""Id"" = @Id", new { Id = id });
+
+            if (song == null)
+                return NotFound($"No se encontró la canción con ID {id}");
+
+            return Ok(song);
         }
+
 
         [HttpGet("Title/{title}")]
         public ActionResult<IEnumerable<Song>> GetCancionByTitulo(string title)

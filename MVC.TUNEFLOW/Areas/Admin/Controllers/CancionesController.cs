@@ -1,101 +1,100 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Modelos.Tuneflow.Media;
 using API.Consumer;
-using Modelos.Tuneflow.User.Administration;
-using Microsoft.AspNetCore.Authorization;
 
 namespace MVC.TUNEFLOW.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public class CancionesController : Controller
     {
         // GET: CancionesController
-        public async Task<ActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var canciones = await Crud<Song>.GetAllAsync();
             return View(canciones);
         }
 
         // GET: CancionesController/Details/5
-        public async Task<ActionResult> DetailsAsync(int id)
+        public async Task<IActionResult> Details(int id)
         {
             var cancion = await Crud<Song>.GetByIdAsync(id);
+            if (cancion == null) return NotFound();
             return View(cancion);
         }
 
         // GET: CancionesController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
 
+        // POST: CancionesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Song cancion)
+        public async Task<IActionResult> Create(Song cancion)
         {
             try
             {
-                Crud<Song>.CreateAsync(cancion);
+                await Crud<Song>.CreateAsync(cancion);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-
-                ModelState.AddModelError("", "No se pudo crear  la cancion: " + ex.Message);
-                return View();
+                ModelState.AddModelError("", "No se pudo crear la canción: " + ex.Message);
+                return View(cancion);
             }
         }
 
-
         // GET: CancionesController/Edit/5
-        public async Task<ActionResult> EditAsync(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             var cancion = await Crud<Song>.GetByIdAsync(id);
+            if (cancion == null) return NotFound();
             return View(cancion);
         }
 
         // POST: CancionesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Song cancion)
+        public async Task<IActionResult> Edit(int id, Song cancion)
         {
             try
             {
-                Crud<Song>.UpdateAsync(id, cancion);
+                await Crud<Song>.UpdateAsync(id, cancion);
                 return RedirectToAction(nameof(Index));
             }
-            catch(Exception ex) {
-
+            catch (Exception ex)
+            {
                 ModelState.AddModelError("", "No se pudo editar la canción: " + ex.Message);
-                return View();
+                return View(cancion);
             }
         }
 
         // GET: CancionesController/Delete/5
-        public async Task<ActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var cancion = await Crud<Song>.GetByIdAsync(id);
+            if (cancion == null) return NotFound();
             return View(cancion);
         }
 
         // POST: CancionesController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, Song cancion)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                Crud<Song>.DeleteAsync(id);
+                await Crud<Song>.DeleteAsync(id);
                 return RedirectToAction(nameof(Index));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", "No se pudo eliminar la canción: " + ex.Message);
-                
-                return View();
+                var cancion = await Crud<Song>.GetByIdAsync(id);
+                return View("Delete", cancion);
             }
         }
     }

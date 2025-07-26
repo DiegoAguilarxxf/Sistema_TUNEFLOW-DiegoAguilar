@@ -166,9 +166,34 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             }
         }
 
-        public ActionResult SolicitarVerificacion(int id)
+        [HttpPost]
+        public async Task<IActionResult> SolicitarVerificacionAjax([FromBody] int profileId)
         {
-            return View();
+            var perfil = await Crud<Profile>.GetByIdAsync(profileId);
+
+            if (perfil == null || perfil.Artist == null)
+                return NotFound(new { success = false, message = "Perfil no encontrado" });
+
+            if (perfil.Artist.Verified)
+                return Ok(new { success = false, message = "Ya estás verificado" });
+
+            var peticiones = await Crud<ArtistVerificationRequest>.GetAllAsync();
+            var yaSolicitada = peticiones.Any(p => p.ArtistId == perfil.Artist.Id);
+
+            if (yaSolicitada)
+                return Ok(new { success = false, message = "Ya hay una solicitud pendiente" });
+
+            var nueva = new ArtistVerificationRequest
+            {
+                ArtistId = perfil.Artist.Id,
+                RequestDate = DateTime.Now
+            };
+
+            await Crud<ArtistVerificationRequest>.CreateAsync(nueva);
+
+            return Ok(new { success = true, message = "Solicitud enviada correctamente" });
         }
+
+
     }
 }

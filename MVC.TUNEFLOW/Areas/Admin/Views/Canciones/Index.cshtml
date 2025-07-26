@@ -2,16 +2,16 @@
 @using System.Text.Json
 
 @{
-    Layout = "~/Areas/Artista/Views/Shared/_LayoutArtista.cshtml";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Mis Canciones";
 }
 
 <div class="container py-4">
-    <h2 class="text-center mb-4">🎶 Tus Canciones</h2>
+    <h2 class="text-center mb-4">Canciones Tuneflow</h2>
 
     @if (Model == null || !Model.Any())
     {
-        <div class="alert alert-info text-center">Aún no has subido canciones.</div>
+        <div class="alert alert-info text-center">Aún no han subido canciones.</div>
     }
     else
     {

@@ -15,7 +15,7 @@ namespace Modelos.Tuneflow.Models
 
         public DateTime RequestDate { get; set; } = DateTime.Now;
 
-        public virtual Artist Artist { get; set; } = null!;
+        public virtual Artist? Artist { get; set; } = null!;
     }
 
 }

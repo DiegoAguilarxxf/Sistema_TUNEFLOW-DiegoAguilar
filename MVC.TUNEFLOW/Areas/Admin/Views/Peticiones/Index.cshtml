@@ -1,47 +1,51 @@
 ﻿@model IEnumerable<Modelos.Tuneflow.Models.ArtistVerificationRequest>
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Peticiones de Verificación";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h1>Index</h1>
+<h1 class="mb-4">📩 Peticiones de Verificación</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ArtistId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RequestDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ArtistId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RequestDate)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-            </td>
-        </tr>
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No hay peticiones de verificación pendientes.</div>
 }
-    </tbody>
-</table>
+else
+{
+    <table class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Foto</th>
+                <th>Nombre Artístico</th>
+                <th>Género Musical</th>
+                <th>País</th>
+                <th>Fecha de Solicitud</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var peticion in Model)
+            {
+                var artista = peticion.Artist;
+                <tr>
+                    <td>
+                        <img src="@artista.Profile.ProfileImage 
+                             class="rounded-circle" width="60" height="60" alt="Foto de perfil" />
+                    </td>
+                    <td>
+                        <a asp-controller="Peticiones" asp-action="Details" asp-route-id="@peticion.Id" class="btn btn-outline-primary">
+                            @artista.StageName 
+                        </a>
+                    </td>
+                    <td>@artista.MusicGenre</td>
+                    <td>@artista.Country.Name</td>
+                    <td>@peticion.RequestDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@peticion.Id" class="btn btn-info btn-sm">Ver</a>
+                        <a asp-action="Delete" asp-route-id="@peticion.Id" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

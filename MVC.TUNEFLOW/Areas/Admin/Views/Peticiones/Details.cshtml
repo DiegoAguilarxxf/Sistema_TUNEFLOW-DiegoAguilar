@@ -1,36 +1,48 @@
 ﻿@model Modelos.Tuneflow.Models.ArtistVerificationRequest
-
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalle de Petición";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var artista = ViewBag.Artista as Modelos.Tuneflow.User.Production.Artist;
 }
 
-<h1>Details</h1>
+<div class="container py-4">
+    <h2 class="mb-3">👤 Detalles de la Petición</h2>
 
-<div>
-    <h4>ArtistVerificationRequest</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ArtistId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ArtistId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RequestDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RequestDate)
-        </dd>
-    </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    <a asp-action="Index">Back to List</a>
+    <div class="card mb-4">
+        <div class="row g-0">
+            <div class="col-md-3 text-center p-3">
+                <img src="@artista.Profile.ProfileImage class="img-fluid rounded-circle" alt="Foto de perfil" width="150" height="150" />
+            </div>
+            <div class="col-md-9">
+                <div class="card-body">
+                    <h4 class="card-title">@artista?.StageName</h4>
+                    <p><strong>Género:</strong> @artista?.MusicGenre</p>
+                    <p><strong>País:</strong> @artista?.Country?.Name</p>
+                    <p><strong>Fecha de solicitud:</strong> @Model.RequestDate.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5>🎵 Álbumes y canciones:</h5>
+    <ul>
+        @foreach (var album in artista?.Albums ?? new List<Modelos.Tuneflow.Playlists.Album>())
+        {
+            <li><strong>Álbum:</strong> @album.Title</li>
+        }
+        @foreach (var song in artista?.Songs ?? new List<Modelos.Tuneflow.Media.Song>())
+        {
+            <li><strong>Canción:</strong> @song.Title</li>
+        }
+    </ul>
+
+    <form asp-action="VerificarArtista" method="post">
+        <input type="hidden" name="artistId" value="@artista?.Id" />
+        <input type="hidden" name="peticionId" value="@Model.Id" />
+        <button type="submit" class="btn btn-success float-end">
+            ✅ Verificar Artista
+        </button>
+    </form>
+
+    <a asp-action="Index" class="btn btn-secondary mt-3">← Volver</a>
 </div>
