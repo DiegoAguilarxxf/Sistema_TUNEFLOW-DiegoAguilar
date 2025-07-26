@@ -1,15 +1,16 @@
 ﻿@page
 @model RegisterConfirmationModel
 @{
-    ViewData["Title"] = "Register confirmation";
+    ViewData["Title"] = "Confirmación de registro";
     Layout = "~/Views/Shared/_AuthLayout.cshtml";
 }
 
-<h1>@ViewData["Title"]</h1>
+
 @{
     if (@Model.DisplayConfirmAccountLink)
     {
         <div class="container mt-5">
+            <h1>@ViewData["Title"]</h1>
             <div class="row">
                 <div class="col-md-6 d-none d-md-block text-center">
                     <img src="~/img/reset.png" alt="Imagen de artista" class="img-fluid rounded-start" />

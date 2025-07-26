@@ -50,4 +50,6 @@ public DbSet<Modelos.Tuneflow.User.Administration.ArtistStatistics> ArtistsStati
 public DbSet<Modelos.Tuneflow.User.Production.Artist> Artists { get; set; } = default!;
 
 public DbSet<Modelos.Tuneflow.User.Production.Follow> Follows { get; set; } = default!;
+
+public DbSet<Modelos.Tuneflow.Models.ArtistVerificationRequest> ArtistVerificationRequest { get; set; } = default!;
     }

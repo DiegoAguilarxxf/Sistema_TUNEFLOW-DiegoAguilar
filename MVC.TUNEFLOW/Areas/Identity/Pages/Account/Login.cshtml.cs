@@ -74,63 +74,86 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            Console.WriteLine("OnPostAsync iniciado");
+
             returnUrl ??= Url.Action("MainPage", "Home");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
             {
+                Console.WriteLine($"Intentando login para: {Input.Email}");
+
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
+                Console.WriteLine($"Resultado login: Succeeded={result.Succeeded}, Requires2FA={result.RequiresTwoFactor}, IsLockedOut={result.IsLockedOut}");
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("Usuario inició sesión correctamente.");
+                    Console.WriteLine("Login exitoso");
 
                     var user = await _userManager.FindByEmailAsync(Input.Email);
 
                     if (user != null)
                     {
-                        var roles = await _userManager.GetRolesAsync(user);
+                        Console.WriteLine($"Usuario encontrado: {user.UserName}");
 
-                        if (roles.Contains("cliente")) {
-                            Console.Write("entro a rol cliente");
+                        var roles = await _userManager.GetRolesAsync(user);
+                        Console.WriteLine($"Roles del usuario: {string.Join(", ", roles)}");
+
+                        if (roles.Contains("cliente"))
+                        {
+                            Console.WriteLine("entro a rol cliente");
                             return RedirectToAction("Panel", "Panel", new { area = "Cliente" });
                         }
-
                         else if (roles.Contains("artista"))
                         {
-                            Console.Write("entro a artist"); 
+                            Console.WriteLine("entro a artista");
                             return RedirectToAction("Panel", "Panel", new { area = "Artista" });
                         }
-                           
                         else if (roles.Contains("admin"))
                         {
-                            Console.Write("entro a admin");
+                            Console.WriteLine("entro a admin");
                             return RedirectToAction("Panel", "Panel", new { area = "Admin" });
                         }
-                            
-                        
+                        else
+                        {
+                            Console.WriteLine("No se encontró un rol válido para el usuario");
+                        }
                     }
-                    
+                    else
+                    {
+                        Console.WriteLine("Usuario no encontrado después de login exitoso");
+                    }
 
                     return LocalRedirect(returnUrl);
                 }
 
                 if (result.RequiresTwoFactor)
                 {
+                    Console.WriteLine("Requiere autenticación de dos factores");
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
 
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("Cuenta bloqueada por múltiples intentos fallidos.");
+                    Console.WriteLine("Cuenta bloqueada");
                     return RedirectToPage("./Lockout");
                 }
 
+                Console.WriteLine("Intento de inicio de sesión inválido");
                 ModelState.AddModelError(string.Empty, "Intento de inicio de sesión inválido.");
+            }
+            else
+            {
+                Console.WriteLine("ModelState inválido");
             }
 
             return Page();
         }
+
+
     }
 }

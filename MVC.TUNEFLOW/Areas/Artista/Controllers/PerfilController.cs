@@ -166,9 +166,37 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             }
         }
 
-        public ActionResult SolicitarVerificacion(int id)
+
+        [HttpPost]
+        [Authorize(Roles = "artista")]
+        public async Task<IActionResult> SolicitarVerificacion()
         {
-            return View();
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { success = false, message = "No estás logueado" });
+
+            var artista = await Crud<Artist>.GetArtistaPorUsuarioId(userId);
+            if (artista == null)
+                return NotFound(new { success = false, message = "Artista no encontrado" });
+
+            if (artista.Verified)
+                return Ok(new { success = false, message = "Ya estás verificado" });
+
+            var peticiones = await Crud<ArtistVerificationRequest>.GetAllAsync();
+            if (peticiones.Any(p => p.ArtistId == artista.Id))
+                return Ok(new { success = false, message = "Ya enviaste una solicitud" });
+
+            var nueva = new ArtistVerificationRequest
+            {
+                ArtistId = artista.Id,
+                RequestDate = DateTime.Now
+            };
+            await Crud<ArtistVerificationRequest>.CreateAsync(nueva);
+
+            return Ok(new { success = true, message = "Solicitud enviada correctamente" });
         }
+
+
+
     }
 }

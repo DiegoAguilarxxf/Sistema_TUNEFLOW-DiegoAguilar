@@ -29,13 +29,8 @@
                     <a class="nav-link" asp-area="Admin" asp-controller="Canciones" asp-action="Index">Todas las canciones</a>
                     <a class="nav-link" asp-area="Admin" asp-controller="Admin" asp-action="Index">Administradores</a>
                     <a class="nav-link" asp-area="Admin" asp-controller="Estadisticas" asp-action="Index">Estadísticas</a>
-
-                    <form method="post" asp-area="Identity" asp-page="/Account/Logout" id="logoutForm" class="mt-3">
-                        <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none; background: none;"
-                                onclick="return confirm('¿Deseas cerrar sesión?');">
-                            Cerrar sesión
-                        </button>
-                    </form>
+                    <a class="nav-link" asp-area="Admin" asp-controller="Peticiones" asp-action="Index">Solicitudes</a>
+                    <a class="nav-link" asp-area="Admin" asp-controller="Cuenta" asp-action="Details" asp-route-id="@ViewBag.IdCliente">Mi Cuenta</a>
                 </nav>
             </div>
 
