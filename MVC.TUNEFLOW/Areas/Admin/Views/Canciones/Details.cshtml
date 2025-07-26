@@ -2,80 +2,52 @@
 
 @{
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles de Canción";
 }
 
 <div class="container py-5">
-<h1>Details</h1>
-
-<div>
-    <h4>Song</h4>
+    <h2>@Model.Title</h2>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Duration)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Duration)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Genre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Genre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ArtistId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ArtistId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AlbumId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AlbumId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FilePath)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FilePath)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ExplicitContent)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ExplicitContent)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImagePath)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImagePath)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReleaseDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReleaseDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Available)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Available)
-        </dd>
-    </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <img src="@Model.ImagePath" alt="Portada" class="img-fluid rounded shadow" />
+        </div>
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-4">Género</dt>
+                <dd class="col-sm-8">@Model.Genre</dd>
+
+                <dt class="col-sm-4">Duración</dt>
+                <dd class="col-sm-8">@Model.Duration</dd>
+
+                <dt class="col-sm-4">Artista</dt>
+                <dd class="col-sm-8">@Model.Artist?.StageName</dd>
+
+                <dt class="col-sm-4">Explícita</dt>
+                <dd class="col-sm-8 text-danger fw-bold">
+                    @(Model.ExplicitContent ? "Sí (+18)" : "No")
+                </dd>
+            </dl>
+
+            <!-- 🎵 Reproductor simple -->
+            <audio id="reproductor" controls style="width: 100%;">
+                <source src="@Model.FilePath" type="audio/mpeg">
+                Tu navegador no soporta el audio.
+            </audio>
+
+            <!-- 🧩 Botón para alternar contenido explícito -->
+            <form method="post" asp-action="ToggleExplicit" asp-controller="Songs" asp-route-id="@Model.Id" class="mt-3">
+                <button type="submit"
+                        class="btn @(Model.ExplicitContent ? "btn-danger" : "btn-success")">
+                    @(Model.ExplicitContent ? "+18 Marcado como Explícito" : "Marcar como Explícito")
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Editar</a>
+        <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+    </div>
 </div>
