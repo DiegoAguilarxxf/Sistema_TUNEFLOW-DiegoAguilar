@@ -257,6 +257,35 @@ async function agregarACualquierPlaylist() {
         mostrarNotificacion('Error al cargar playlists', 'error');
     }
 }
+async function togglePlaylist(idCancion, idPlaylist) {
+    try {
+        const response = await fetch('/Cliente/Playlist/AddToPlaylist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': getAntiForgeryToken()
+            },
+            body: JSON.stringify({ idCancion, idPlaylist })
+        });
+
+        const data = await response.json();
+        Console.WriteLine("Llego hasya esperar la respuesta")
+        if (response.ok) {
+            alert(data.message);
+            // Aquí actualizar UI si quieres
+        } else {
+            alert('Error: ' + data.message);
+        }
+    } catch (error) {
+        alert('Error al conectar con el servidor');
+        console.error(error);
+    }
+}
+
+function getAntiForgeryToken() {
+    return document.querySelector('input[name="__RequestVerificationToken"]').value;
+}
+
 
 function mostrarModalPlaylists(playlists) {
     const lista = document.getElementById('listaPlaylists');
