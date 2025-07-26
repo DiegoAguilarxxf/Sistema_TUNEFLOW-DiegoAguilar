@@ -192,6 +192,8 @@
     }
 </style>
 
+@Html.AntiForgeryToken()
+
 <!-- CABECERA -->
 <div class="playlist-header mb-4">
     <img src="@Model.PlaylistCover" alt="Portada" class="playlist-cover" />
@@ -202,6 +204,12 @@
         <button class="btn btn-play-all" onclick="reproducirPlaylist()">
             ▶ Reproducir
         </button>
+
+        <a href="@Url.Action("Search2", "Buscar", new { area = "Cliente", idPlaylist = Model.Id })"
+           class="btn btn-primary btn-sm ms-2 mt-2">
+            ➕ Agregar canciones
+        </a>
+
     </div>
 </div>
 
@@ -226,7 +234,7 @@
                 <tr class="song-row" onclick="reproducirCancion(@cancion.Id)">
                     <td>@index</td>
                     <td class="d-flex align-items-center">
-                        <img src="@cancion.ImagePath" alt="@cancion.Title" />
+                        <img src="@cancion.ImagePath" alt="@cancion.Title" style="width:40px; height:40px; object-fit:cover; margin-right:8px;" />
                         <div>
                             <div class="fw-bold">@cancion.Title</div>
                             <div class="text-muted small">@cancion.Genre</div>
@@ -253,6 +261,10 @@
                                             '@cancion.ImagePath',
                                             @ViewBag.IdCliente)">
                             ▶
+                        </button>
+
+                        <button class="btn btn-sm btn-primary ms-1" onclick="event.stopPropagation(); togglePlaylist(@cancion.Id, @Model.Id)">
+                            ➕
                         </button>
 
                         <form method="post"
@@ -289,5 +301,35 @@
     function reproducirPlaylist() {
         console.log("Reproducir toda la playlist");
         // lógica para reproducir la playlist
+    }
+
+    async function togglePlaylist(idCancion, idPlaylist) {
+        try {
+            const response = await fetch('/Cliente/Playlist/AddToPlaylist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': getAntiForgeryToken()
+                },
+                body: JSON.stringify({ idCancion, idPlaylist })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.message);
+                // Aquí podrías actualizar la UI para reflejar el cambio
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            alert('Error al conectar con el servidor');
+            console.error(error);
+        }
+    }
+
+    function getAntiForgeryToken() {
+        const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+        return tokenInput ? tokenInput.value : '';
     }
 </script>
