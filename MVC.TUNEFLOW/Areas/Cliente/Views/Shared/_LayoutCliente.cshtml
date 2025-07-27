@@ -67,7 +67,9 @@
         @Html.AntiForgeryToken()
     </form>
 
-    @await Html.PartialAsync("~/Areas/Cliente/Views/Reproductor/_Reproductor.cshtml")
+    <div id="contenedorReproductor" style="display:none;">
+        @await Html.PartialAsync("~/Areas/Cliente/Views/Reproductor/_Reproductor.cshtml")
+    </div>
     <script src="~/js/cola.js"></script>
     <script src="~/js/pila.js?v=1.0.1"></script>
     <script src="~/js/reproductor.js"></script>

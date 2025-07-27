@@ -62,6 +62,7 @@
                 url = item.FilePath,
                 portada = item.ImagePath ?? "/img/default-album.jpg",
                 idCliente = ViewBag.IdCliente ?? 0,
+                tipo=true,
                 artista = item.Artist?.StageName ?? "Desconocido"
             }))
         )'>

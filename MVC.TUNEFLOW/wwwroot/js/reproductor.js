@@ -28,14 +28,16 @@ let cancionEnReproduccion = {
     url: '',
     portada: '',
     tiempo: 0,
-    idCliente: 0
+    idCliente: 0,
+    tipo: true // true para canción, false para anuncio
 };
 
 let cancionParaGuardar = {
     id: '',
     title: '',
     filePath: '',
-    imagePath: ''
+    imagePath: '',
+    tipo: true // true para canción, false para anuncio
 };
 
 // --- AUXILIARES ---
@@ -85,8 +87,10 @@ function mostrarNotificacion(mensaje, tipo = 'info') {
 }
 
 // --- REPRODUCCIÓN ---
-async function reproducirCancion(id, titulo, url, portada, idCliente, tiempo = 0, autoPlay = true, artista = '') {
-    cancionEnReproduccion = { id, titulo, url, portada, tiempo, idCliente, artista };
+async function reproducirCancion(id, titulo, url, portada, idCliente, tipo, tiempo = 0, autoPlay = true, artista = '') {
+    
+    cancionEnReproduccion = { id, titulo, url, portada, tiempo, idCliente, artista, tipo};
+    
     clienteId = idCliente;
     if (cola.estaVacia()) {
         await llenarCola();
@@ -106,6 +110,7 @@ async function reproducirCancion(id, titulo, url, portada, idCliente, tiempo = 0
                 await audioPlayer.play();
                 estaReproduciendo = true;
                 actualizarIconoPlayPause();
+                mostrarReproductor(true);
                 await actualizarBotonFavorito();
             } catch (err) {
                 console.error('Error al reproducir:', err);
@@ -120,9 +125,15 @@ async function reproducirCancion(id, titulo, url, portada, idCliente, tiempo = 0
     if (mostrandoLetra) toggleLetra(false);
 }
 
+function mostrarReproductor(mostrar) {
+    const contenedor = document.getElementById('contenedorReproductor');
+    if (!contenedor) return;
+    contenedor.style.display = mostrar ? 'block' : 'none';
+}
+
 function agregarYReproducir(cancion) {
     if (indiceActual >= 0 && historialCanciones[indiceActual]?.id === cancion.id) {
-        reproducirCancion(cancion.id, cancion.titulo, cancion.url, cancion.portada, cancion.idCliente, 0, true, cancion.artista);
+        reproducirCancion(cancion.id, cancion.titulo, cancion.url, cancion.portada, cancion.idCliente, cancion.tipo, 0, true, cancion.artista);
         return;
     }
     if (indiceActual < historialCanciones.length - 1) {
@@ -131,7 +142,7 @@ function agregarYReproducir(cancion) {
     historialCanciones.push(cancion);
     indiceActual = historialCanciones.length - 1;
     guardarHistorial();
-    reproducirCancion(cancion.id, cancion.titulo, cancion.url, cancion.portada, cancion.idCliente, 0, true, cancion.artista);
+    reproducirCancion(cancion.id, cancion.titulo, cancion.url, cancion.portada, cancion.idCliente, cancion.tipo, 0, true, cancion.artista);
 }
 
 // Avanza a la siguiente canción: primero en historial, luego en servidor
@@ -145,16 +156,25 @@ async function siguienteCancion() {
             const title = cancionEnReproduccion.titulo;
             const filePath = cancionEnReproduccion.url;
             const imagePath = cancionEnReproduccion.portada;
-            cancionParaGuardar = { id, title, filePath, imagePath };
+            const tipo = cancionEnReproduccion.tipo;
+            cancionParaGuardar = { id, title, filePath, imagePath, tipo };
 
             const idGuardar = cancion.id;
             const titulo = cancion.title;
             const url = cancion.filePath;
             const portada = cancion.imagePath;
+            const tipoReproduccion = cancion.tipo ?? true; // true para canción, false para anuncio
 
-            pila.apilar(cancionParaGuardar); // Agregar a pila de historial
-            cancionEnReproduccion = { idGuardar, titulo, url, portada, clienteId };
-            reproducirCancion(cancion.id, cancion.title, cancion.filePath, cancion.imagePath, clienteId);
+            if (cancionParaGuardar.tipo) {
+                pila.apilar(cancionParaGuardar); // Agregar a pila de historial
+            }
+            cancionEnReproduccion = { idGuardar, titulo, url, portada, clienteId, tipo: tipoReproduccion };
+            if (!cancion.tipo) {
+                ocultarBotonesAvance();
+            } else {
+                visualizarBotonesAvance();
+        }
+        reproducirCancion(cancion.id, cancion.title, cancion.filePath, cancion.imagePath, clienteId, cancion.tipo);
          
     }
 }
@@ -172,15 +192,22 @@ async function cancionAnterior() {
             const title = cancionEnReproduccion.titulo;
             const filePath = cancionEnReproduccion.url;
             const imagePath = cancionEnReproduccion.portada;
-            cancionParaGuardar = { id, title, filePath, imagePath };
+            const tipo = cancionEnReproduccion.tipo;
+            cancionParaGuardar = { id, title, filePath, imagePath, tipo };
 
             const idGuardar = cancion.id;
             const titulo = cancion.title;
             const url = cancion.filePath;
             const portada = cancion.imagePath;
+            const tipoReproducir = cancion.tipo;
             cola.encolarInicio(cancionParaGuardar); // Reencolar la canción actual
-            cancionEnReproduccion = { idGuardar, titulo, url, portada, clienteId };
-            reproducirCancion(cancion.id, cancion.title, cancion.filePath, cancion.imagePath, clienteId);
+            cancionEnReproduccion = { idGuardar, titulo, url, portada, clienteId, tipo: tipoReproducir };
+            if (!cancion.tipo) {
+                ocultarBotonesAvance();
+            } else {
+                visualizarBotonesAvance();
+        }
+        reproducirCancion(cancion.id, cancion.title, cancion.filePath, cancion.imagePath, clienteId, cancion.tipo);
         
     }
 }
@@ -196,12 +223,24 @@ async function llenarCola() {
             let anuncioIndex = 0;
 
             canciones.forEach((cancion, i) => {
-                cola.encolar(cancion);
+                const id = cancion.id;
+                const title = cancion.title;
+                const filePath = cancion.filePath;
+                const imagePath = cancion.imagePath;
+                const tipo1 = true; // true para canciones
+                cancionParaGuardar = { id, title, filePath, imagePath, tipo: tipo1 };
+                cola.encolar(cancionParaGuardar);
 
                 // Cada 3 canciones, insertar un anuncio (si hay disponibles)
                 if ((i + 1) % 3 === 0 && anuncios.length > 0) {
                     const anuncio = anuncios[anuncioIndex % anuncios.length]; // para ciclar si hay menos anuncios
-                    cola.encolar(anuncio);
+                    const idAnuncio = anuncio.id;
+                    const tituloAnuncio = anuncio.title;
+                    const urlAnuncio = anuncio.filePath;
+                    const portadaAnuncio = anuncio.imagePath;
+                    const tipo = false; // false para anuncios
+                    cancionParaGuardar = { id: idAnuncio, title: tituloAnuncio, filePath: urlAnuncio, imagePath: portadaAnuncio, tipo: tipo };
+                    cola.encolar(cancionParaGuardar);
                     anuncioIndex++;
                 }
             });
@@ -210,10 +249,36 @@ async function llenarCola() {
         if (canciones.length > 0) {
             cola.vaciar();
             canciones.forEach(cancion => {
-                cola.encolar(cancion);
+                const id = cancion.id;
+                const title = cancion.title;
+                const filePath = cancion.filePath;
+                const imagePath = cancion.imagePath;
+                const tipoOtro = true; // true para canciones
+                cancionParaGuardar = { id, title, filePath, imagePath, tipo: tipoOtro };
+                cola.encolar(cancionParaGuardar);
             });
         }
     }
+}
+function ocultarBotonesAvance() {
+    document.getElementById('btn-atras').style.display = 'none';
+    document.getElementById('btn-siguiente').style.display = 'none';
+    document.getElementById('btn-descargar').style.setProperty('display', 'none', 'important');
+    document.getElementById('btn-letras').style.setProperty('display', 'none', 'important');
+    document.getElementById('btn-playlists').style.setProperty('display', 'none', 'important');
+    document.getElementById('btnfavorito').style.display = 'none';
+    document.getElementById('barraProgreso').style.pointerEvents = 'none';
+    
+}
+
+function visualizarBotonesAvance() {
+    document.getElementById('btn-atras').style.display = 'block';
+    document.getElementById('btn-siguiente').style.display = 'block';
+    document.getElementById('btn-descargar').style.display = 'block';
+    document.getElementById('btn-letras').style.display = 'block';
+    document.getElementById('btn-playlists').style.display = 'block';
+    document.getElementById('btnfavorito').style.display = 'block';
+    document.getElementById('barraProgreso').style.pointerEvents = 'auto';
 }
 
 
@@ -543,12 +608,24 @@ window.addEventListener('click', function (e) {
 document.addEventListener('DOMContentLoaded', () => {
     if (indiceActual >= 0 && historialCanciones[indiceActual]) {
         const c = historialCanciones[indiceActual];
-        reproducirCancion(c.id, c.titulo, c.url, c.portada, c.idCliente, c.tiempo, false, c.artista);
+        const tiempo = c.tiempo ?? 0;
+        reproducirCancion(c.id, c.titulo, c.url, c.portada, c.idCliente,c.tipo, tiempo, false, c.artista);
     } else {
         const guardada = sessionStorage.getItem('ultimaCancion');
         if (guardada) {
             const c = JSON.parse(guardada);
             agregarYReproducir(c);
+        }
+    }
+});
+
+window.addEventListener('beforeunload', () => {
+    if (audioPlayer && !audioPlayer.paused) {
+        const guardada = sessionStorage.getItem('ultimaCancion');
+        if (guardada) {
+            const c = JSON.parse(guardada);
+            c.tiempo = audioPlayer.currentTime;
+            sessionStorage.setItem('ultimaCancion', JSON.stringify(c));
         }
     }
 });

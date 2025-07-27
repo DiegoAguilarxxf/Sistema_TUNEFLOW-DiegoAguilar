@@ -32,14 +32,14 @@
             <!-- Barra de progreso -->
             <div class="d-flex align-items-center mt-1">
                 <span id="tiempoActual" style="min-width: 40px;">0:00</span>
-                <input type="range" id="barraProgreso" min="0" max="100" value="0" class="form-range mx-2" style="flex-grow: 1;" />
+                <input type="range" id="barraProgreso" min="0" max="100" value="0" class="form-range mx-2" style="flex-grow: 1;"/>
                 <span id="duracionTotal" style="min-width: 40px;">0:00</span>
             </div>
         </div>
 
         <!-- Controles -->
         <div class="reproductor-controles ms-3 d-flex align-items-center">
-            <button class="btn-icon" onclick="cancionAnterior()" id="btn-atras">
+            <button class="btn-icon" onclick="cancionAnterior()" id="btn-atras" style="display:block;">
                 <img src="~/img/icons/atras.png" alt="Anterior" />
             </button>
 
@@ -47,25 +47,25 @@
                 <img id="icono-play-pause" src="~/img/icons/play.png" alt="Play/Pause" />
             </button>
 
-            <button class="btn-icon" onclick="siguienteCancion()" id="btn-siguiente">
+            <button class="btn-icon" onclick="siguienteCancion()" id="btn-siguiente" style="display:block;">
                 <img src="~/img/icons/siguiente.png" alt="Siguiente" />
             </button>
 
             <!-- Solo en modo expandido -->
-            <button class="btn-icon btn-expandido" onclick="descargarCancion()">
+            <button class="btn-icon btn-expandido" onclick="descargarCancion()" id="btn-descargar" style="display:block;">
                 <img src="~/img/icons/descargar.png" alt="Descargar" />
             </button>
 
-            <button class="btn-icon btn-expandido" onclick="verLetra()">
+            <button class="btn-icon btn-expandido" onclick="verLetra()" id="btn-letras" style="display:block;">
                 <img src="~/img/icons/letra.png" alt="Letra" />
             </button>
 
-            <button class="btn-icon btn-expandido" onclick="agregarACualquierPlaylist()">
+            <button class="btn-icon btn-expandido" onclick="agregarACualquierPlaylist()" id="btn-playlists" style="display:block;">
                 <img src="~/img/icons/add-playlist.png" alt="Añadir a Playlist" />
             </button>
 
             <!-- Favorito -->
-            <button class="btn-icon" id="btnfavorito" onclick="funcionFavorito()">
+            <button class="btn-icon" id="btnfavorito" onclick="funcionFavorito()" style="display:block;">
                 <img id="imgFavorito" src="~/img/icons/me-gusta.png" alt="Favorito" />
             </button>
 
