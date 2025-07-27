@@ -12,6 +12,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using MVC.TUNEFLOW.Services;
 using Modelos.Tuneflow.User;
+using Microsoft.OpenApi.Writers;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -50,11 +51,24 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             Playlist playlist = await Crud<Playlist>.GetByIdAsync(id);
             playlist.Songs = await Crud<SongPlaylist>.GetCancionesPorPlaylist(id);
             Console.WriteLine($"Canciones {playlist.Songs.Count}");
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+            ViewBag.IdPlaylist = playlist.Id;
+            Console.WriteLine("el id de la playlist en el metodo/vista canciones es: " + ViewBag.IdPlaylist);
             ViewBag.IdCliente = client.Id;
+
+            var cancionesEnPlaylist = await Crud<SongPlaylist>.GetCancionesPorPlaylist(playlist.Id);
+
+            
+            var listaCanciones = cancionesEnPlaylist.ToList();
+
+            ViewBag.CancionesEnPlaylist = listaCanciones.Select(sp => sp.Id).ToList();
+
             return View(playlist);
         }
+
 
         public ActionResult Create() => View();
 
@@ -203,28 +217,39 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToPlaylist(int idCancion, int idPlaylist)
-        {Console.WriteLine("Entro a AddToPlaylist");
+        {   Console.WriteLine("Entro a AddToPlaylist");
+            Console.WriteLine("El id de la cancion es: " + idCancion);
+            Console.WriteLine("El id de la playlist es: " + idPlaylist);
+
             try
             {
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (string.IsNullOrEmpty(userId))
                     return Unauthorized(new { status = "error", message = "Usuario no autenticado" });
+                Console.WriteLine("El id de usuario es: " + userId);
 
                 var cliente = await Crud < Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
                 ViewBag.IdCliente = cliente.Id;
+                Console.WriteLine("El id de cliente es: " + cliente.Id);
                 if (cliente == null)
                     return NotFound(new { status = "error", message = "Cliente no encontrado" });
+               
 
+                Console.WriteLine("Va a buscar la playlist ");
+               Console.WriteLine("Ya se le paso el id de la Playlist El id de playlist es: " + idPlaylist);
                 var playlist = await Crud<Playlist>.GetByIdAsync(idPlaylist);
+                Console.WriteLine("El id de playlist es: " + idPlaylist);
                 if (playlist == null || playlist.ClientId != cliente.Id)
                     return NotFound(new { status = "error", message = "Playlist no encontrada o no te pertenece" });
 
-                // Aquí obtienes la lista de canciones que ya están en la playlist
+                
                 var cancionesEnPlaylist = await Crud<SongPlaylist>.GetCancionesPorPlaylist(idPlaylist);
                 Console.WriteLine("Va a verificar si la cancion existe");
-                // Verificar si ya existe la canción en la playlist
+            
                 var existe = cancionesEnPlaylist.Any(sp => sp.Id == idCancion);
+                
 
                 if (existe)
                 {

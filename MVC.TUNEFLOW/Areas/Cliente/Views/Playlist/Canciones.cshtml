@@ -204,8 +204,8 @@
         <button class="btn btn-play-all" onclick="event.stopPropagation(); reproducirPlaylist(@Model.Id)">
             ▶ Reproducir
         </button>
-
-        <a href="@Url.Action("Search2", "Buscar", new { area = "Cliente", idPlaylist = Model.Id })"
+        <p>Debug: IdPlaylist =@ViewBag.IdPlaylist</p>
+        <a href="@Url.Action("Search2", "Buscar", new { area = "Cliente", idPlaylist = ViewBag.IdPlaylist })"
            class="btn btn-primary btn-sm ms-2 mt-2">
             ➕ Agregar canciones
         </a>
@@ -292,7 +292,7 @@
 <script>
     function reproducirCancion(id) {
         console.log("Reproducir canción ID:", id);
-        // lógica de reproducción
+        
     }
 
 

@@ -112,7 +112,8 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         [HttpGet]
         public async Task<IActionResult> Search2(string nameSong, int? idPlaylist)
         {
-            Console.WriteLine($"Buscar llamado con parámetro: '{nameSong}', idPlaylist: {idPlaylist}");
+            Console.WriteLine("Id playlist: " + idPlaylist);
+            ViewBag.IdPlaylist = idPlaylist;
 
             if (string.IsNullOrWhiteSpace(nameSong))
             {
