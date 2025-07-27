@@ -6,6 +6,9 @@ using System.Diagnostics;
 using System.Security.Claims;
 using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.User.Production;
+using Npgsql;
+using Dapper;
+using Modelos.Tuneflow.Playlists;
 
 
 
@@ -15,7 +18,12 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
     [Authorize]
     public class BuscarController : Controller
     {
-            public async Task<IActionResult> Index()
+        private readonly IConfiguration _config;
+        public BuscarController(IConfiguration config)
+        {
+            _config = config;
+        }
+        public async Task<IActionResult> Index()
             {
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                
@@ -108,6 +116,22 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
             return View("Index", songs);
         }
+        private async Task<List<int>> GetSongIdsEnPlaylistAsync(int playlistId)
+        {
+            await using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            await connection.OpenAsync();
+
+            var sql = @"SELECT ""SongId"" 
+                FROM ""SongsPlaylists"" 
+                WHERE ""PlaylistId"" = @PlaylistId";
+
+            var songIds = await connection.QueryAsync<int>(sql, new { PlaylistId = playlistId });
+
+            return songIds.ToList();
+        }
+
+
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Search2(string nameSong, int? idPlaylist)
@@ -137,10 +161,18 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             }
 
             ViewBag.IdCliente = client.Id;
-            ViewBag.IdPlaylist = idPlaylist;
+
+            List<int> songIdsEnPlaylist = new List<int>();
+            if (idPlaylist.HasValue)
+            {
+                songIdsEnPlaylist = await GetSongIdsEnPlaylistAsync(idPlaylist.Value);
+
+            }
+            ViewBag.SongIdsEnPlaylist = songIdsEnPlaylist;
 
             return View("Index2", songs);
         }
+
 
     }
 

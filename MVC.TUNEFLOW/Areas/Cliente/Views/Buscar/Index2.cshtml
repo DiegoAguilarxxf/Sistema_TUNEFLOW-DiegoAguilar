@@ -3,10 +3,10 @@
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
     ViewData["Title"] = "Buscar Canciones";
-    
+    var cancionesEnPlaylist = ViewBag.SongIdsEnPlaylist as List<int> ?? new List<int>();
 }
 
-<!-- Necesario para el antiforgery token en JS -->
+
 @Html.AntiForgeryToken()
 
 <div class="buscar-container">
@@ -40,6 +40,8 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
+                        bool enPlaylist = (ViewBag.SongIdsEnPlaylist as List<int>)?.Contains(item.Id) ?? false;
+
                         <tr>
                             <td>
                                 <div class="reproductor-portada">
@@ -66,33 +68,36 @@
                                 <!-- Botón para reproducir -->
                                 <button class="btn btn-sm btn-success"
                                         onclick="reproducirCancion(
-                                            @item.Id,
-                                            '@item.Title',
-                                            '@item.FilePath',
-                                            '@item.ImagePath',
-                                            @ViewBag.IdCliente),
-                                            true">
+                            @item.Id,
+                            '@item.Title',
+                            '@item.FilePath',
+                            '@item.ImagePath',
+                            @ViewBag.IdCliente),
+                            true">
                                     ▶ Reproducir
                                 </button>
 
-                                <!-- Botón para agregar a playlist -->
-                                <p>Debug: IdCancion = @item.Id</p>
+                                <!-- Botón para agregar o eliminar según si está en la playlist -->
                                 <input type="hidden" name="idPlaylist" value="@ViewBag.IdPlaylist" />
-                                <p><strong>Debug: IdPlaylist:</strong> @ViewBag.IdPlaylist</p>
-
-                                <button class="btn btn-sm btn-primary ms-2"
-                                        onclick="togglePlaylist(this, @item.Id, @ViewBag.IdPlaylist)">
-                                    ➕ Agregar
-                                </button>
-
-
-
-
+                                @if (enPlaylist)
+                                {
+                                    <button class="btn btn-sm btn-danger ms-2"
+                                            onclick="togglePlaylist(this, @item.Id, @ViewBag.IdPlaylist)">
+                                        🗑️ Eliminar
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-primary ms-2"
+                                            onclick="togglePlaylist(this, @item.Id, @ViewBag.IdPlaylist)">
+                                        ➕ Agregar
+                                    </button>
+                                }
                             </td>
                         </tr>
                     }
-
                 </tbody>
+
             </table>
         </div>
     }

@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authorization;
 using MVC.TUNEFLOW.Services;
 using Modelos.Tuneflow.User;
 using Microsoft.OpenApi.Writers;
+using Npgsql;
+using Dapper;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -20,20 +22,22 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
     [Authorize]
     public class PlaylistController : Controller
     {
-
+        private readonly IConfiguration _config;
+       
         private readonly SupabaseStorageService _supabaseService;
 
-        public PlaylistController()
+        public PlaylistController(IConfiguration config)
         {
             string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co";
             string supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o";
             string bucket = "imagenesplaylistusuarios";
             string directory = "PortadasPlaylists";
-            
 
 
+            _config = config;
             _supabaseService = new SupabaseStorageService(supabaseUrl, supabaseAnonKey, bucket, directory);
         }
+       
 
         public async Task<IActionResult> Index()
         {
@@ -228,17 +232,13 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (string.IsNullOrEmpty(userId))
                     return Unauthorized(new { status = "error", message = "Usuario no autenticado" });
-                Console.WriteLine("El id de usuario es: " + userId);
+              
 
                 var cliente = await Crud < Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
                 ViewBag.IdCliente = cliente.Id;
-                Console.WriteLine("El id de cliente es: " + cliente.Id);
+             
                 if (cliente == null)
                     return NotFound(new { status = "error", message = "Cliente no encontrado" });
-               
-
-                Console.WriteLine("Va a buscar la playlist ");
-               Console.WriteLine("Ya se le paso el id de la Playlist El id de playlist es: " + idPlaylist);
                 var playlist = await Crud<Playlist>.GetByIdAsync(idPlaylist);
                 Console.WriteLine("El id de playlist es: " + idPlaylist);
                 if (playlist == null || playlist.ClientId != cliente.Id)
@@ -246,16 +246,29 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
                 
                 var cancionesEnPlaylist = await Crud<SongPlaylist>.GetCancionesPorPlaylist(idPlaylist);
-                Console.WriteLine("Va a verificar si la cancion existe");
+                Console.WriteLine("Va a verificar si la cancion existe en la playlist de Id"+ idPlaylist);
             
                 var existe = cancionesEnPlaylist.Any(sp => sp.Id == idCancion);
-                
+
 
                 if (existe)
                 {
-                    var relacion = cancionesEnPlaylist.First(sp => sp.Id == idCancion);
-                    await Crud<SongPlaylist>.DeleteAsync(relacion.Id);
-                    return Ok(new { status = "removed", message = "Canción eliminada de la playlist" });
+                    Console.WriteLine("Sí encontró la canción con mismo id");
+
+                    var ideliminar = await GetIdDeSongPlaylist(idCancion, idPlaylist);
+                    Console.WriteLine("El id de la songplylist es: " + ideliminar);
+
+                    if (ideliminar.HasValue)
+                    {
+                        int ideliminars = ideliminar.Value;
+                        await Crud<SongPlaylist>.DeleteAsync(ideliminars);
+                        Console.WriteLine("Eliminó la canción con id: " + ideliminars);
+                        return Ok(new { status = "removed", message = "Canción eliminada de la playlist" });
+                    }
+                    else
+                    {
+                        return NotFound(new { message = "No se encontró la relación Song-Playlist." });
+                    }
                 }
                 else
                 {
@@ -274,6 +287,27 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 return StatusCode(500, new { status = "error", message = "Error interno del servidor" });
             }
         }
+
+        private async Task<int?> GetIdDeSongPlaylist(int songId, int playlistId)
+        {
+            await using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            await connection.OpenAsync();
+
+            var sql = @"SELECT * 
+                FROM ""SongsPlaylists"" 
+                WHERE ""SongId"" = @SongId AND ""PlaylistId"" = @PlaylistId"; 
+
+            var songPlaylist = await connection.QuerySingleAsync<SongPlaylist>(sql, new
+            {
+                SongId = songId,
+                PlaylistId = playlistId
+            });
+
+            return songPlaylist?.Id;
+        }
+
+
+
         [HttpPost]
         public async Task<ActionResult> DeleteSong(int playlistId, int songId)
         {
@@ -294,12 +328,12 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 await Crud<SongPlaylist>.DeleteAsync(idEliminar);
                 Console.WriteLine($"🎵 Canción {songId} eliminada de playlist {playlistId}");
 
-                // Regresa a la vista de la playlist
+                
                 return RedirectToAction("Canciones", new { id = playlistId });
             }
             catch (Exception e)
             {
-                Console.WriteLine($"❌ Error al eliminar la canción: {e.Message}");
+                Console.WriteLine($" Error al eliminar la canción: {e.Message}");
                 return RedirectToAction("Canciones", new { id = playlistId });
             }
         }
