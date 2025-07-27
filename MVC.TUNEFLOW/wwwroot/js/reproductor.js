@@ -287,11 +287,8 @@ async function combprobarSuscripcion() {
         const response = await fetch('/Cliente/Reproductor/ComprobarSuscripcion');
         const { tieneSuscripcion } = await response.json();
         if (tieneSuscripcion) {
-            console.log("✅ Suscripción verificada correctamente.");
             return true;
         } else {
-            console.warn("⚠️ No tienes una suscripción activa.");
-            mostrarNotificacion('No tienes una suscripción activa', 'warning');
             return false;
         }
         
@@ -384,6 +381,77 @@ async function agregarACualquierPlaylist() {
         mostrarNotificacion('Error al cargar playlists', 'error');
     }
 }
+
+async function reproducirPlaylist(idPlaylist) {
+    try {
+        await obtenerCancionesPlaylist(idPlaylist);
+    } catch (error) {
+        console.error('Error al reproducir playlist:', error);
+        mostrarNotificacion('Error al cargar playlist', 'error');
+
+    }
+}
+
+async function obtenerCancionesPlaylist(idPlaylist) {
+    const response = await fetch(`/Cliente/Reproductor/ObtenerCancionesPorPlaylist?idPlaylist=${idPlaylist}`);
+
+    if (response.ok) {
+        const canciones = await response.json();
+        const anuncios = await obtenerAnuncios();
+        const suscripcion = await combprobarSuscripcion();
+        if (canciones.length > 0) {
+            if (suscripcion) {
+                for (let cancion of canciones) {
+                    cola.vaciar(); // Limpiar cola antes de cargar nuevas canciones
+                    const id = cancion.id;
+                    const title = cancion.title;
+                    const filePath = cancion.filePath;
+                    const imagePath = cancion.imagePath;
+                    const tipo = true; // true para canciones
+                    cancionParaGuardar = { id, title, filePath, imagePath, tipo };
+                    cola.encolar(cancionParaGuardar);
+                }
+            } else {
+                cola.vaciar();
+                let anuncioIndex = 0;
+                canciones.forEach((cancion, i) => {
+                    const id = cancion.id;
+                    const title = cancion.title;
+                    const filePath = cancion.filePath;
+                    const imagePath = cancion.imagePath;
+                    const tipo1 = true; // true para canciones
+                    cancionParaGuardar = { id, title, filePath, imagePath, tipo: tipo1 };
+                    cola.encolar(cancionParaGuardar);
+                    // Cada 3 canciones, insertar un anuncio (si hay disponibles)
+                    if ((i + 1) % 3 === 0 && anuncios.length > 0) {
+                        const anuncio = anuncios[anuncioIndex % anuncios.length]; // para ciclar si hay menos anuncios
+                        const idAnuncio = anuncio.id;
+                        const tituloAnuncio = anuncio.title;
+                        const urlAnuncio = anuncio.filePath;
+                        const portadaAnuncio = anuncio.imagePath;
+                        const tipo = false; // false para anuncios
+                        cancionParaGuardar = { id: idAnuncio, title: tituloAnuncio, filePath: urlAnuncio, imagePath: portadaAnuncio, tipo: tipo };
+                        cola.encolar(cancionParaGuardar);
+                        anuncioIndex++;
+                    }
+                });
+
+            }
+            const cancion = cola.desencolar();
+            const id2 = cancion.id;
+            const title2 = cancion.title;
+            const filePath2 = cancion.filePath;
+            const imagePath2 = cancion.imagePath;
+            const tipo2 = cancion.tipo;
+            cancionEnReproduccion = { id: id2, titulo: title2, url: filePath2, portada: imagePath2, idCliente: clienteId, tipo: tipo2 };
+            reproducirCancion(cancion.id, cancion.title, cancion.filePath, cancion.imagePath, clienteId, cancion.tipo);
+       } else {
+            mostrarNotificacion('No hay canciones en esta playlist', 'warning');
+        }
+    }
+}
+
+//OTROS
 async function togglePlaylist(idCancion, idPlaylist) {
     try {
         const response = await fetch('/Cliente/Playlist/AddToPlaylist', {

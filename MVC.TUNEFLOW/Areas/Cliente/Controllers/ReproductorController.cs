@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Modelos.Tuneflow.User;
 using Modelos.Tuneflow.Models;
 using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.Playlists;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -535,6 +536,22 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             catch (Exception ex)
             {
                 return Json(new { tieneSuscripcion = false, error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ObtenerCancionesPorPlaylist(int idPlaylist)
+        {
+            try
+            {
+                var canciones = await Crud<SongPlaylist>.GetCancionesPorPlaylist(idPlaylist);
+
+                return Ok(canciones);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener canciones aleatorias: {ex.Message}");
+                return StatusCode(500, "Error interno del servidor al obtener canciones aleatorias.");
             }
         }
     }
