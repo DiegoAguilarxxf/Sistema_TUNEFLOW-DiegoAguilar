@@ -7,6 +7,8 @@ using System.Text;
 using API.Consumer;
 using System.Security.Claims;
 using Modelos.Tuneflow.User;
+using Modelos.Tuneflow.Models;
+using Modelos.Tuneflow.User.Consumer;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -133,7 +135,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         // Obtiene una canción aleatoria, la agrega a la lista de sesión y devuelve sus datos en JSON.
         [HttpGet]
         public async Task<IActionResult> SiguienteCancion()
-        {Console.WriteLine("ENtro al metodo SiguienteCancion");
+        { Console.WriteLine("ENtro al metodo SiguienteCancion");
             try
             {
                 var cancion = await _httpClient.GetFromJsonAsync<Song>("songs/Random");
@@ -308,8 +310,8 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             }
         }
 
-            // Elimina una canción de la lista de favoritos del cliente y de su playlist de favoritos.
-            [HttpPost]
+        // Elimina una canción de la lista de favoritos del cliente y de su playlist de favoritos.
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarFavorito(int songId)
         {
@@ -462,6 +464,77 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ObtenerCancionesAleatorias()
+        {
+            try
+            {
+                var canciones = await Crud<Song>.GetCancionesAleatorias();
+
+                return Ok(canciones);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener canciones aleatorias: {ex.Message}");
+                return StatusCode(500, "Error interno del servidor al obtener canciones aleatorias.");
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ObtenerAnuncios()
+        {
+            try
+            {
+                var anuncios = await Crud<ADS>.GetAnuncios();
+
+                return Ok(anuncios);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener canciones aleatorias: {ex.Message}");
+                return StatusCode(500, "Error interno del servidor al obtener anuncios.");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ComprobarSuscripcion()
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+                if (cliente == null)
+                {
+                    return Json(new { tieneSuscripcion = false, error = "Usuario no encontrado." });
+                }
+
+                var suscripcionId = cliente.SubscriptionId;
+
+                if (suscripcionId == 0)
+                {
+                    return Json(new { tieneSuscripcion = false, error = "Usuario no tiene suscripción." });
+                }
+                var suscripcion = await Crud<Subscription>.GetByIdAsync(suscripcionId);
+                if (suscripcion == null)
+                {
+                    return Json(new { tieneSuscripcion = false, error = "Suscripción no encontrada." });
+                }
+
+                if (suscripcion.SubscriptionTypeId == 1)
+                {
+                    return Json(new { tieneSuscripcion = false, error = "Error tiene suscripcion Free" });
+                }
+                else
+                {
+                    return Json(new { tieneSuscripcion = true, error = "No hay error" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { tieneSuscripcion = false, error = ex.Message });
             }
         }
     }

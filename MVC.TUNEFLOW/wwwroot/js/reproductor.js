@@ -12,11 +12,14 @@ const togglePlayerBtn = document.getElementById('togglePlayerBtn');
 const iconoPlayPause = document.getElementById('icono-play-pause');
 const contenedorLetra = document.getElementById('contenedorLetra');
 const textoLetra = document.getElementById('textoLetra');
+const cola = new Cola(); // Asumiendo que Cola es una clase definida en otro lugar
+const pila = new Pila(); // Asumiendo que Pila es una clase definida en otro lugar
 
 let historialCanciones = JSON.parse(localStorage.getItem('historialCanciones') || '[]');
 let indiceActual = parseInt(localStorage.getItem('indiceActual') || '-1');
 let mostrandoLetra = false;
 let estaReproduciendo = false;
+let clienteId = 0;
 
 let cancionEnReproduccion = {
     id: '',
@@ -26,6 +29,13 @@ let cancionEnReproduccion = {
     portada: '',
     tiempo: 0,
     idCliente: 0
+};
+
+let cancionParaGuardar = {
+    id: '',
+    title: '',
+    filePath: '',
+    imagePath: ''
 };
 
 // --- AUXILIARES ---
@@ -77,7 +87,10 @@ function mostrarNotificacion(mensaje, tipo = 'info') {
 // --- REPRODUCCIÓN ---
 async function reproducirCancion(id, titulo, url, portada, idCliente, tiempo = 0, autoPlay = true, artista = '') {
     cancionEnReproduccion = { id, titulo, url, portada, tiempo, idCliente, artista };
-
+    clienteId = idCliente;
+    if (cola.estaVacia()) {
+        await llenarCola();
+    }
     if (portadaGrande) portadaGrande.src = portada;
     if (cancionActual) cancionActual.textContent = titulo;
     if (portadaActual) portadaActual.src = portada;
@@ -123,80 +136,129 @@ function agregarYReproducir(cancion) {
 
 // Avanza a la siguiente canción: primero en historial, luego en servidor
 async function siguienteCancion() {
-    console.log("➡️ Intentando avanzar a la siguiente canción...");
+    if (cola.estaVacia()) {
+        await llenarCola();
+    } else {
+        const cancion = cola.desencolar();
 
-    if (indiceActual < historialCanciones.length - 1) {
-        // Hay una canción más en el historial local
-        indiceActual++;
-        const cancion = historialCanciones[indiceActual];
-        console.log("🎵 Reproduciendo desde historial:", cancion);
-        guardarHistorial();
-        reproducirCancion(
-            cancion.id,
-            cancion.titulo,
-            cancion.url,
-            cancion.portada,
-            cancion.idCliente,
-            0,
-            true,
-            cancion.artista
-        );
-        return;
-    }
+            const id = cancionEnReproduccion.id;
+            const title = cancionEnReproduccion.titulo;
+            const filePath = cancionEnReproduccion.url;
+            const imagePath = cancionEnReproduccion.portada;
+            cancionParaGuardar = { id, title, filePath, imagePath };
 
-    // No hay más en historial: obtener una canción aleatoria desde el backend
-    try {
-        const response = await fetch('/Cliente/Reproductor/SiguienteCancion');
-        const data = await response.json();
+            const idGuardar = cancion.id;
+            const titulo = cancion.title;
+            const url = cancion.filePath;
+            const portada = cancion.imagePath;
 
-        if (data.success) {
-            console.log("🎲 Canción aleatoria recibida:", data.cancion);
-            historialCanciones.push(data.cancion);
-            indiceActual = historialCanciones.length - 1;
-            guardarHistorial();
-            reproducirCancion(
-                data.cancion.id,
-                data.cancion.titulo,
-                data.cancion.url,
-                data.cancion.portada,
-                data.cancion.idCliente,
-                0,
-                true,
-                data.cancion.artista
-            );
-        } else {
-            console.warn("⚠️ Error del servidor:", data.message);
-            mostrarNotificacion('No se pudo obtener la siguiente canción', 'error');
-        }
-    } catch (error) {
-        console.error("❌ Error de red al obtener canción aleatoria:", error);
-        mostrarNotificacion('Error al cargar la siguiente canción', 'error');
+            pila.apilar(cancionParaGuardar); // Agregar a pila de historial
+            cancionEnReproduccion = { idGuardar, titulo, url, portada, clienteId };
+            reproducirCancion(cancion.id, cancion.title, cancion.filePath, cancion.imagePath, clienteId);
+         
     }
 }
 
 
 // Retrocede a la canción anterior en el historial
 async function cancionAnterior() {
-    console.log("⬅️ Intentando retroceder a la canción anterior...");
-
-    if (indiceActual > 0) {
-        indiceActual--;
-        const cancion = historialCanciones[indiceActual];
-        console.log("🎵 Reproduciendo anterior desde historial:", cancion);
-        guardarHistorial();
-        reproducirCancion(
-            cancion.id,
-            cancion.titulo,
-            cancion.url,
-            cancion.portada,
-            cancion.idCliente,
-            0,
-            true,
-            cancion.artista
-        );
+    if (pila.estaVacia()) {
+        mostrarNotificacion('No hay canciones anteriores en el historial', 'warning');
+        return;
     } else {
-        mostrarNotificacion('No hay canciones anteriores en el historial', 'info');
-        console.log("📛 No hay canciones anteriores en el historial.");
+        const cancion = pila.desapilar();
+
+            const id = cancionEnReproduccion.id;
+            const title = cancionEnReproduccion.titulo;
+            const filePath = cancionEnReproduccion.url;
+            const imagePath = cancionEnReproduccion.portada;
+            cancionParaGuardar = { id, title, filePath, imagePath };
+
+            const idGuardar = cancion.id;
+            const titulo = cancion.title;
+            const url = cancion.filePath;
+            const portada = cancion.imagePath;
+            cola.encolarInicio(cancionParaGuardar); // Reencolar la canción actual
+            cancionEnReproduccion = { idGuardar, titulo, url, portada, clienteId };
+            reproducirCancion(cancion.id, cancion.title, cancion.filePath, cancion.imagePath, clienteId);
+        
+    }
+}
+
+async function llenarCola() {
+    const suscripcion = await combprobarSuscripcion();
+    const canciones = await obtenerCanciones();
+    const anuncios = await obtenerAnuncios();
+    if (!suscripcion) {
+        if (canciones.length > 0) {
+            cola.vaciar();
+
+            let anuncioIndex = 0;
+
+            canciones.forEach((cancion, i) => {
+                cola.encolar(cancion);
+
+                // Cada 3 canciones, insertar un anuncio (si hay disponibles)
+                if ((i + 1) % 3 === 0 && anuncios.length > 0) {
+                    const anuncio = anuncios[anuncioIndex % anuncios.length]; // para ciclar si hay menos anuncios
+                    cola.encolar(anuncio);
+                    anuncioIndex++;
+                }
+            });
+        }
+    } else {
+        if (canciones.length > 0) {
+            cola.vaciar();
+            canciones.forEach(cancion => {
+                cola.encolar(cancion);
+            });
+        }
+    }
+}
+
+
+async function combprobarSuscripcion() {
+    try {
+        const response = await fetch('/Cliente/Reproductor/ComprobarSuscripcion');
+        const { tieneSuscripcion } = await response.json();
+        if (tieneSuscripcion) {
+            console.log("✅ Suscripción verificada correctamente.");
+            return true;
+        } else {
+            console.warn("⚠️ No tienes una suscripción activa.");
+            mostrarNotificacion('No tienes una suscripción activa', 'warning');
+            return false;
+        }
+        
+    } catch (error) {
+        console.error("❌ Error al verificar suscripción:", error);
+        mostrarNotificacion('Error al verificar suscripción', 'error');
+        return false;
+    }
+}
+
+async function obtenerCanciones() {
+    const response = await fetch('/Cliente/Reproductor/ObtenerCancionesAleatorias');
+
+    if (response.ok) {
+        const canciones = await response.json();
+        return canciones;
+    } else {
+        console.error('Error al obtener canciones:', response.statusText);
+        mostrarNotificacion('Error al cargar canciones', 'error');
+        return [];
+    }
+}
+
+async function obtenerAnuncios() {
+    const response = await fetch('/Cliente/Reproductor/ObtenerAnuncios');
+    if (response.ok) {
+        const anuncios = await response.json();
+        return anuncios;
+    } else {
+        console.error('Error al obtener anuncios:', response.statusText);
+        mostrarNotificacion('Error al cargar anuncios', 'error');
+        return [];
     }
 }
 

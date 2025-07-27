@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Modelos.Tuneflow.Models;
 
 namespace API.Consumer
 {
@@ -461,7 +462,53 @@ namespace API.Consumer
             return JsonConvert.DeserializeObject<List<T>>(json);
         }
 
+        public static async Task<List<Song>> GetCancionesAleatorias()
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/Canciones/Random");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var canciones = JsonConvert.DeserializeObject<List<Song>>(json);
+                    return canciones;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron canciones");
+                    return new List<Song>();
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return new List<Song>();
+                }
+            }
+        }
 
+        public static async Task<List<ADS>> GetAnuncios()
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var canciones = JsonConvert.DeserializeObject<List<ADS>>(json);
+                    return canciones;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron canciones");
+                    return new List<ADS>();
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return new List<ADS>();
+                }
+            }
+        }
 
 
     }

@@ -316,6 +316,43 @@ namespace API.TUNEFLOW.Controllers
             return Ok(nombreArtista);
         }
 
+        [HttpGet("Canciones/Random")]
+        public ActionResult<IEnumerable<Song>> GetCancionesAleatorias()
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+
+            string sql = @"
+        SELECT 
+            c.""Id"", c.""Title"", c.""Duration"", c.""Genre"", c.""FilePath"", 
+            c.""ExplicitContent"", c.""ImagePath"",
+            al.""Title"" AS AlbumTitle,
+            ar.""Id"" AS ArtistId,
+            ar.""StageName"" AS StageName
+        FROM ""Songs"" c
+        LEFT JOIN ""Albums"" al ON c.""AlbumId"" = al.""Id""
+        LEFT JOIN ""Artists"" ar ON c.""ArtistId"" = ar.""Id""
+        ORDER BY RANDOM()
+        LIMIT 20;
+    ";
+
+            var songs = connection.Query<Song, string, int, string, Song>(
+                sql,
+                (song, albumTitle, artistId, stageName) =>
+                {
+                    song.Album = new Album { Title = albumTitle };
+                    song.Artist = new Artist { Id = artistId, StageName = stageName };
+                    return song;
+                },
+                splitOn: "AlbumTitle,ArtistId,StageName"
+            ).ToList();
+
+            if (!songs.Any())
+                return NotFound("No se encontraron canciones.");
+
+            return Ok(songs);
+        }
+
 
     }
 }

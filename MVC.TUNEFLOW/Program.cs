@@ -41,6 +41,7 @@ namespace MVC.TUNEFLOW
             Crud<Country>.EndPoint = "https://localhost:7031/api/Countries";
             Crud<Genre>.EndPoint = "https://localhost:7031/api/Genres";
             Crud<ArtistVerificationRequest>.EndPoint = "https://localhost:7031/api/ArtistVerificationRequests";
+            Crud<ADS>.EndPoint = "https://localhost:7031/api/ADS";
 
 
             builder.Services.AddTransient<IDbConnection>(sp =>
