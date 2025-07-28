@@ -509,7 +509,30 @@ namespace API.Consumer
                 }
             }
         }
-       
-        
+        public static async Task<List<Album>> GetAlbumsPorArtistaId(int idArtista)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/PorArtista/{idArtista}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var albums = JsonConvert.DeserializeObject<List<Album>>(json);
+                    return albums;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron canciones");
+                    return new List<Album>();
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return new List<Album>();
+                }
+            }
+
+
+        }
     }
 }
