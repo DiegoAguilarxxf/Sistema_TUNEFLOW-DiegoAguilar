@@ -1,0 +1,28 @@
+﻿@* Views/Admin/Anuncios/Subir.cshtml *@
+@{
+    ViewData["Title"] = "Subir Anuncio";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="cuenta-contenedor">
+    <h2>Subir nuevo anuncio</h2>
+    <form asp-action="Subir" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="Title" class="form-label">Título</label>
+            <input type="text" name="Title" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label for="Duration" class="form-label">Duración (segundos)</label>
+            <input type="number" name="Duration" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label for="archivoAudio" class="form-label">Archivo de Audio</label>
+            <input type="file" name="archivoAudio" class="form-control" accept="audio/*" required />
+        </div>
+        <div class="mb-3">
+            <label for="archivoImagen" class="form-label">Imagen</label>
+            <input type="file" name="archivoImagen" class="form-control" accept="image/*" required />
+        </div>
+        <button type="submit" class="btn btn-success">Subir</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

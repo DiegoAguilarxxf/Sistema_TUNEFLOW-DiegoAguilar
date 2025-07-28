@@ -45,9 +45,17 @@ else
                     <td>@artista.Country.Name</td>
                     <td>@peticion.RequestDate.ToString("dd/MM/yyyy")</td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@peticion.Id" class="btn btn-info btn-sm">Ver</a>
-                        <a asp-action="Delete" asp-route-id="@peticion.Id" class="btn btn-danger btn-sm">Eliminar</a>
+                        <a asp-area="Admin" asp-controller="Peticiones" asp-action="Details" asp-route-id="@peticion.Id"
+                           class="btn btn-info btn-sm me-1">
+                            Detalles
+                        </a>
+
+                        <a asp-area="Admin" asp-controller="Peticiones" asp-action="Delete"asp-route-id="@peticion.Id"
+                           class="btn btn-info btn-sm me-1">
+                           Eliminar
+                        </a>
                     </td>
+
                 </tr>
             }
         </tbody>

@@ -292,3 +292,99 @@ button.btn-primary {
         padding: var(--spacing-md);
     }
 }
+/* ===============================
+   SECCIÓN CUENTA 
+=============================== */
+.cuenta-contenedor {
+    max-width: 900px;
+    margin: 40px auto;
+    background: var(--bg-secondary);
+    padding: 3rem 3.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    color: var(--text-primary);
+}
+
+.cuenta-titulo {
+    font-size: 34px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+label,
+.cuenta-label {
+    display: block;
+    font-weight: 600;
+    color: var(--label-color);
+    margin-bottom: 6px;
+}
+
+.form-control {
+    background-color: var(--form-control-bg);
+    border: 1px solid var(--form-control-border);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .form-control:focus {
+        background-color: var(--form-control-bg);
+        border-color: var(--form-control-focus);
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+    }
+
+.form-check-input {
+    background-color: var(--form-control-bg);
+    border-color: var(--form-control-border);
+}
+
+    .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary-hover);
+    }
+
+.text-danger {
+    color: var(--error);
+}
+
+.cuenta-acciones {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: var(--radius-md);
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+    }
+
+.btn-outline-secondary {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: var(--radius-md);
+    background: transparent;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+    .btn-outline-secondary:hover {
+        background-color: var(--primary-hover);
+        color: white;
+    }

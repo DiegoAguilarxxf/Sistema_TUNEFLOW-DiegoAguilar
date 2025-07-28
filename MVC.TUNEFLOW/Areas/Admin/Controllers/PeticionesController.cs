@@ -73,7 +73,7 @@ namespace MVC.TUNEFLOW.Areas.Admin.Controllers
             {
                 var peticion = await Crud<ArtistVerificationRequest>.GetByIdAsync(id);
                 ModelState.AddModelError("", "No se pudo eliminar la petición: " + ex.Message);
-                return View("Delete", peticion);
+                return RedirectToAction(nameof(Index));
             }
         }
 

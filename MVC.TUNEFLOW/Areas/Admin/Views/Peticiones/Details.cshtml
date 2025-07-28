@@ -41,13 +41,14 @@
         }
     </ul>
 
-    <form asp-action="VerificarArtista" method="post">
+    <form asp-area="Admin" asp-controller="Peticiones" asp-action="VerificarArtista" method="post">
         <input type="hidden" name="artistId" value="@artista?.Id" />
         <input type="hidden" name="peticionId" value="@Model.Id" />
         <button type="submit" class="btn btn-success float-end">
             ✅ Verificar Artista
         </button>
     </form>
+
 
     <a asp-action="Index" class="btn btn-secondary mt-3">← Volver</a>
 </div>
