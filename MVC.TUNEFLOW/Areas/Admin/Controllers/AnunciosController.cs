@@ -19,7 +19,7 @@ namespace MVC.TUNEFLOW.Areas.Admin.Controllers
             string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co";
             string anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o";
             _storageAudio = new SupabaseStorageService(supabaseUrl, anonKey, "anuncios");
-            _storageImage = new SupabaseStorageService(supabaseUrl, anonKey, "anuncios", "imagenesAnuncios");
+            _storageImage = new SupabaseStorageService(supabaseUrl, anonKey, "anuncios", "nuevosanuncios");
         }
 
         public async Task<IActionResult> Index()
