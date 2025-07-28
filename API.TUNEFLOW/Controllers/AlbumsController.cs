@@ -63,7 +63,8 @@ namespace API.TUNEFLOW.Controllers
                 ""Genre"" = @Genre, 
                ""CreationDate"" = @CreationDate, 
                 ""Descripction"" = @Description, 
-                ""CoverPath"" = @CoverPath
+                ""CoverPath"" = @CoverPath,
+                ""ArtistId"" = @ArtistId
                 WHERE ""Id"" = @Id",
                 new
                 {
@@ -73,6 +74,7 @@ namespace API.TUNEFLOW.Controllers
                     CreationDate= album.CreationDate,
                     Description = album.Description,
                     CoverPath = album.CoverPath,
+                    ArtistId = album.ArtistId,
                     Id = id
 
                 });
@@ -81,26 +83,43 @@ namespace API.TUNEFLOW.Controllers
         // POST: api/Albums
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public Album Post([FromBody]Album album)
+        [HttpPost]
+        public async Task<ActionResult<Album>> Post([FromBody] Album album)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
-            connection.Open();
-            connection.Execute(
-                @"Insert INTO ""Albums"" (""Title"", ""ReleaseDate"", ""Genre"", ""FechaCreacion"", ""Description"", ""CoverPath"")VALUES
-                (@Title, @ReleaseDate, @Genre, @CreationDate, @Description, @CoverPath",
-                new
+            await connection.OpenAsync();
+            using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                var albumQuery = @"
+            INSERT INTO ""Albums"" (""Title"", ""ReleaseDate"", ""Genre"", ""CreationDate"", ""Description"", ""CoverPath"", ""ArtistId"") 
+            VALUES (@Title, @ReleaseDate, @Genre, @CreationDate, @Description, @CoverPath, @ArtistId)
+            RETURNING ""Id"";";
+
+                album.Id = await connection.ExecuteScalarAsync<int>(albumQuery, album, transaction);
+
+                var songQuery = @"
+            INSERT INTO ""Songs"" (""Title"", ""Duration"", ""Genre"", ""ArtistId"", ""AlbumId"", ""FilePath"", ""ExplicitContent"", ""ImagePath"", ""ReleaseDate"", ""Available"") 
+            VALUES (@Title, @Duration, @Genre, @ArtistId, @AlbumId, @FilePath, @ExplicitContent, @ImagePath, @ReleaseDate, @Available)
+            RETURNING ""Id"";";
+
+                foreach (var song in album.Songs)
                 {
-                    Title= album.Title,
-                    ReleaseDate = album.ReleaseDate,
-                    Genre = album.Genre,
-                    CreationDate = album.CreationDate,
-                    Description = album.Description,
-                    CoverPath = album.CoverPath
-
-
-                });
-            return album;
+                    song.AlbumId = album.Id;
+                    song.Id = await connection.ExecuteScalarAsync<int>(songQuery, song, transaction);
+                }
+                 await transaction.CommitAsync();
+                return Ok(album);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, $"Error al crear álbum con canciones: {ex.Message}");
+            }
         }
+
+
 
         // DELETE: api/Albums/5
         [HttpDelete("{id}")]
@@ -124,7 +143,7 @@ namespace API.TUNEFLOW.Controllers
             a.""Id"", a.""StageName"", a.""MusicGenre"", a.""CountryId"", a.""Verified"", a.""UserId"",
             
             al.""Id"", al.""Title"", al.""ReleaseDate"", al.""Genre"",
-            al.""CreationDate"", al.""Description"", al.""CoverPath""
+            al.""CreationDate"", al.""Description"", al.""CoverPath"", al.""ArtistId""
 
         FROM ""Songs"" s
         INNER JOIN ""Artists"" a ON s.""ArtistId"" = a.""Id""

@@ -21,7 +21,7 @@ namespace API.TUNEFLOW.Controllers
         }
 
         [HttpPost("play")]
-        public IActionResult ReproducirCancion([FromQuery] int songId, [FromQuery] int clientId)
+        public IActionResult RegistrarReproducirCancion([FromQuery] int songId, [FromQuery] int clientId)
         {
 
             try
@@ -47,11 +47,11 @@ namespace API.TUNEFLOW.Controllers
                 });
 
 
-                return Ok(new { message = "🎵 Reproducción registrada exitosamente." });
+                return Ok(new { message = "Reproducción registrada exitosamente." });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = "❌ Error al registrar la reproducción", details = ex.Message });
+                return BadRequest(new { error = " Error al registrar la reproducción", details = ex.Message });
             }
         }
     }

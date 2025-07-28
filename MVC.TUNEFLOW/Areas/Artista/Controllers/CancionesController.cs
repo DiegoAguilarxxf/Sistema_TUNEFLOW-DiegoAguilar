@@ -195,25 +195,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> SubirCancion(int artistaId)
-        {
-            var artista = await Crud<Artist>.GetByIdAsync(artistaId);
-
-            if (artista == null)
-            {
-                return NotFound("No se encontró el artista.");
-            }
-
-            ViewBag.ArtistaId = artista.Id;
-            ViewBag.Generos = await GetGenerosAsync();
-            var nuevaCancion = new Song
-            {
-                ArtistId = artista.Id
-            };
-
-            return View("Subir", nuevaCancion); // ✅ Aquí sí
-        }
+       
 
         private async Task<List<SelectListItem>> GetGenerosAsync()
         {

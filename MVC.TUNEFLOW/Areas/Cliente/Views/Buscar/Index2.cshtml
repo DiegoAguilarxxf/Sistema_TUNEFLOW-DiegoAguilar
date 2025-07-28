@@ -3,9 +3,10 @@
 @{
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
     ViewData["Title"] = "Buscar Canciones";
+    var cancionesEnPlaylist = ViewBag.SongIdsEnPlaylist as List<int> ?? new List<int>();
 }
 
-<!-- Necesario para el antiforgery token en JS -->
+
 @Html.AntiForgeryToken()
 
 <div class="buscar-container">
@@ -39,6 +40,8 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
+                        bool enPlaylist = (ViewBag.SongIdsEnPlaylist as List<int>)?.Contains(item.Id) ?? false;
+
                         <tr>
                             <td>
                                 <div class="reproductor-portada">
@@ -65,26 +68,36 @@
                                 <!-- Botón para reproducir -->
                                 <button class="btn btn-sm btn-success"
                                         onclick="reproducirCancion(
-                                            @item.Id,
-                                            '@item.Title',
-                                            '@item.FilePath',
-                                            '@item.ImagePath',
-                                            @ViewBag.IdCliente),
-                                            true">
+                            @item.Id,
+                            '@item.Title',
+                            '@item.FilePath',
+                            '@item.ImagePath',
+                            @ViewBag.IdCliente),
+                            true">
                                     ▶ Reproducir
                                 </button>
 
-                                <!-- Botón para agregar a playlist -->
-                                <button class="btn btn-sm btn-primary ms-2"
-                                        onclick="togglePlaylist(@item.Id, @ViewBag.IdPlaylist)">
-                                    ➕ Agregar
-                                </button>
-
-
+                                <!-- Botón para agregar o eliminar según si está en la playlist -->
+                                <input type="hidden" name="idPlaylist" value="@ViewBag.IdPlaylist" />
+                                @if (enPlaylist)
+                                {
+                                    <button class="btn btn-sm btn-danger ms-2"
+                                            onclick="togglePlaylist(this, @item.Id, @ViewBag.IdPlaylist)">
+                                        🗑️ Eliminar
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-primary ms-2"
+                                            onclick="togglePlaylist(this, @item.Id, @ViewBag.IdPlaylist)">
+                                        ➕ Agregar
+                                    </button>
+                                }
                             </td>
                         </tr>
                     }
                 </tbody>
+
             </table>
         </div>
     }
@@ -99,29 +112,43 @@
 
 @section Scripts {
     <script>
-        async function togglePlaylist(idCancion, idPlaylist) {
-            try {
-                const response = await fetch('/Cliente/Playlist/AddToPlaylist', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': getAntiForgeryToken()
-                    },
-                    body: JSON.stringify({ idCancion, idPlaylist })
-                });
+               async function togglePlaylist(button, idCancion, idPlaylist) {
+    try {
+        const formData = new FormData();
+        formData.append('idCancion', idCancion);
+        formData.append('idPlaylist', idPlaylist);
+        formData.append('__RequestVerificationToken', getAntiForgeryToken());
 
-                const data = await response.json();
+        const response = await fetch('/Cliente/Playlist/AddToPlaylist', {
+            method: 'POST',
+            body: formData
+        });
 
-                if (response.ok) {
-                    alert(data.message);
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            } catch (error) {
-                alert('Error al conectar con el servidor');
-                console.error(error);
+        const data = await response.json();
+
+        if (response.ok) {
+            alert(data.message);
+
+            
+            if(data.status === 'added') {
+                button.textContent = '❌ Eliminar';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-danger');
             }
+            else if(data.status === 'removed') {
+                button.textContent = '➕ Agregar';
+                button.classList.remove('btn-danger');
+                button.classList.add('btn-primary');
+            }
+        } else {
+            alert('Error: ' + data.message);
         }
+    } catch (error) {
+        alert('Error al conectar con el servidor');
+        console.error(error);
+    }
+}
+
 
         function getAntiForgeryToken() {
             return document.querySelector('input[name="__RequestVerificationToken"]').value;

@@ -2,42 +2,51 @@
 
 @{
     Layout = "~/Areas/Artista/Views/Shared/_LayoutArtista.cshtml";
-    ViewData["Title"] = "Editar";
+    ViewData["Title"] = "Editar Álbum";
+    var canciones = ViewBag.Canciones as List<Modelos.Tuneflow.Media.Song>;
+    var coverUrl = Url.Content($"~/img/portadas/{Model.CoverPath}");
 }
 
-<div class="container">
-    <h1>Editar Album</h1>
-    <h4>Album</h4>
+<div class="container mt-3">
+    <h1>Editar Álbum</h1>
+    <h4>Álbum</h4>
     <hr />
+
     <div class="row">
         <div class="col-md-6">
             <form asp-action="Edit">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                 <div class="form-group">
                     <label asp-for="Title" class="control-label">Título</label>
                     <input asp-for="Title" class="form-control" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
+
                 <div class="form-group">
                     <label asp-for="ReleaseDate" class="control-label">Fecha Lanzamiento</label>
                     <input asp-for="ReleaseDate" class="form-control" />
                     <span asp-validation-for="ReleaseDate" class="text-danger"></span>
                 </div>
+
                 <div class="form-group">
                     <label asp-for="Genre" class="control-label">Género</label>
                     <input asp-for="Genre" class="form-control" />
                     <span asp-validation-for="Genre" class="text-danger"></span>
                 </div>
+
                 <div class="form-group">
                     <label asp-for="Description" class="control-label">Descripción</label>
                     <input asp-for="Description" class="form-control" />
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
+
                 <div class="form-group">
                     <label asp-for="CoverPath" class="control-label">Portada</label>
                     <input asp-for="CoverPath" class="form-control" />
                     <span asp-validation-for="CoverPath" class="text-danger"></span>
                 </div>
+
                 <div class="form-group mt-3">
                     <input type="submit" value="Guardar" class="btn btn-primary" />
                     <a asp-action="Index" class="btn btn-secondary ms-2">Regresar</a>
@@ -45,4 +54,49 @@
             </form>
         </div>
     </div>
+
+    <hr />
+
+    <h4>Canciones del Álbum</h4>
+
+    @if (canciones != null && canciones.Count > 0)
+    {
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Portada</th>
+                    <th>Título</th>
+                    <th>Duración</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cancion in canciones)
+                {
+                    <tr>
+                        <td>
+                            <img src="@Model.CoverPath" alt="Portada" class="img-fluid rounded" style="max-height:100px;" />
+                        </td>
+                        <td>@cancion.Title</td>
+                        <td>@cancion.Duration</td>
+                        <td>
+                            <a asp-controller="Canciones" asp-action="Edit" asp-route-id="@cancion.Id" class="btn btn-warning btn-sm me-1">Editar</a>
+
+                            <form asp-controller="Canciones" asp-action="EliminarCancion" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@cancion.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('¿Eliminar esta canción?')">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No hay canciones en este álbum.</p>
+    }
 </div>
