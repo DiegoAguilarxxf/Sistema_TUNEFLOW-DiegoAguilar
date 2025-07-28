@@ -500,3 +500,196 @@ label,
             font-size: 2rem;
         }
 }
+
+
+
+
+/* ========================================
+   ESTILOS PARA IMPRESIÓN
+   ======================================== */
+@media print {
+    /* Ocultar elementos no necesarios en impresión */
+    .no-print,
+    .navbar,
+    .sidebar,
+    .breadcrumb,
+    .btn,
+    button,
+    .pagination,
+    .alert-dismissible .close,
+    .modal,
+    .tooltip,
+    .popover,
+    .dropdown-menu,
+    .nav-tabs,
+    .nav-pills,
+    .carousel-control-prev,
+    .carousel-control-next,
+    .carousel-indicators,
+    .scroll-to-top,
+    .footer,
+    .fixed-top,
+    .fixed-bottom,
+    .sticky-top {
+        display: none !important;
+    }
+
+    /* Ajustar layout general para impresión */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+
+    body {
+        font-size: 12pt !important;
+        line-height: 1.4 !important;
+        background: white !important;
+        color: black !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Eliminar márgenes innecesarios */
+    .container,
+    .container-fluid {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Encabezados */
+    h1, h2, h3, h4, h5, h6 {
+        color: black !important;
+        page-break-after: avoid !important;
+        margin-top: 20px !important;
+        margin-bottom: 10px !important;
+    }
+
+    h1 {
+        font-size: 18pt !important;
+    }
+
+    h2 {
+        font-size: 16pt !important;
+    }
+
+    h3 {
+        font-size: 14pt !important;
+    }
+
+    /* Párrafos y texto */
+    p {
+        color: black !important;
+        margin-bottom: 8px !important;
+        orphans: 3;
+        widows: 3;
+    }
+
+    /* Tabla */
+    table {
+        page-break-inside: avoid !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-bottom: 20px !important;
+        font-size: 10pt !important;
+    }
+
+        table th,
+        table td {
+            border: 1px solid #333 !important;
+            padding: 6px !important;
+            text-align: left !important;
+        }
+
+        table th {
+            background-color: #f0f0f0 !important;
+            font-weight: bold !important;
+            color: black !important;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f9f9f9 !important;
+        }
+
+    /* Gráfico */
+    .chart-container {
+        page-break-before: always !important;
+        page-break-inside: avoid !important;
+        width: 100% !important;
+        height: auto !important; /* Ajustar altura automáticamente */
+        margin: 20px 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        box-shadow: none !important;
+    }
+
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        margin: 0 auto !important;
+    }
+
+    /* Información del reporte */
+    .report-info {
+        background-color: transparent !important;
+        border: 1px solid #333 !important;
+        padding: 10px !important;
+        margin-bottom: 20px !important;
+    }
+
+    /* Saltos de página */
+    .page-break {
+        page-break-before: always !important;
+    }
+
+    .page-break-avoid {
+        page-break-inside: avoid !important;
+    }
+
+    /* Eliminar márgenes y paddings innecesarios */
+    .row {
+        margin: 0 !important;
+    }
+
+    .col,
+    [class*="col-"] {
+        padding: 0 !important;
+    }
+
+    /* Ocultar elementos específicos del admin */
+    .admin-sidebar,
+    .admin-header,
+    .admin-footer,
+    .breadcrumb-container,
+    .action-buttons,
+    .filter-section,
+    .search-box {
+        display: none !important;
+    }
+
+    /* Alinear contenido al borde de la página */
+    .report-container {
+        margin: 0 !important;
+        padding: 20mm 15mm !important; /* Márgenes reales para impresión */
+        width: 100% !important;
+        max-width: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    /* Mejorar tabla */
+    .table-responsive {
+        overflow: visible !important; /* Evitar scroll */
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Ajustar gráfico */
+    #chartClientes {
+        width: 100% !important;
+        height: 300px !important; /* Altura fija para el gráfico */
+    }
+}}

@@ -5,103 +5,70 @@
     var datos = ViewBag.Data as List<Modelos.Tuneflow.Models.ChartDataModel> ?? new List<Modelos.Tuneflow.Models.ChartDataModel>();
 }
 
-<h2>@ViewData["Title"]</h2>
-<p><strong>Total registrados:</strong> @totalAlbums</p>
-
-@if (!datos.Any())
-{
-    <p>No hay datos registrados.</p>
-}
-else
-{
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Cantidad</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in datos)
-            {
-                <tr>
-                    <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
-                    <td>@item.Cantidad</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <div style="margin-top: 30px;">
-        <canvas id="chartAlbums" width="400" height="150"></canvas>
+<div class="report-container">
+    <!-- Botón de impresión -->
+    <div class="no-print">
+        <button class="print-button" onclick="imprimirPDF()">
+            📄 Generar PDF
+        </button>
     </div>
 
-    <!-- Incluir Chart.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- Información del reporte -->
+    <div class="report-info">
+        <h2>@ViewData["Title"]</h2>
+        <p><strong>Total registrados:</strong> @totalAlbums</p>
+        <p><strong>Fecha de reporte:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+    </div>
 
-    <script>
-        const ctx = document.getElementById('chartAlbums').getContext('2d');
+    @if (!datos.Any())
+    {
+        <div class="alert alert-info">
+            <p>No hay datos registrados.</p>
+        </div>
+    }
+    else
+    {
+        <!-- Tabla -->
+        <div class="table-responsive page-break-avoid">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in datos)
+                    {
+                        <tr>
+                            <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td>@item.Cantidad</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-        // Preparar los datos
-        const fechas = @Html.Raw(Json.Serialize(datos.Select(d => d.Fecha.ToString("dd/MM/yyyy"))));
-        const cantidades = @Html.Raw(Json.Serialize(datos.Select(d => d.Cantidad)));
+        <!-- Gráfico -->
+        <div class="chart-container">
+            <canvas id="chartAlbums" width="800" height="400"></canvas>
+        </div>
+    }
+</div>
 
-        const chartAlbums = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: fechas,
-                datasets: [{
-                    label: 'Albums Subidos',
-                    data: cantidades,
-                    borderColor: 'rgba(255, 159, 64, 1)',
-                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
-                    pointBackgroundColor: 'rgba(255, 159, 64, 1)',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Albums Subidos por Fecha'
-                    },
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0,
-                            stepSize: 1
-                        },
-                        title: {
-                            display: true,
-                            text: 'Cantidad de Albums'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Fecha'
-                        }
-                    }
-                },
-                elements: {
-                    point: {
-                        hoverRadius: 8
-                    }
-                }
-            }
-        });
-    </script>
-}
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="~/js/reportes.js" defer></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const datos = {
+            labels: @Html.Raw(Json.Serialize(datos.Select(d => d.Fecha.ToString("dd/MM/yyyy")))),
+            values: @Html.Raw(Json.Serialize(datos.Select(d => d.Cantidad)))
+        };
+
+        const reporte = new ReporteImpresion('chartAlbums', '@ViewData["Title"]', datos);
+        reporte.initChart('bar');
+        reporte.setupPrintEvents();
+        window.imprimirPDF = () => reporte.imprimirPDF();
+    });
+</script>

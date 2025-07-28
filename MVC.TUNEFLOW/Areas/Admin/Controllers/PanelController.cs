@@ -119,35 +119,32 @@ namespace MVC.TUNEFLOW.Areas.Admin.Controllers
 
         public async Task<IActionResult> Canciones()
         {
-            Console.WriteLine("Inicio método Canciones");
+            Console.WriteLine("📌 Inicio método Canciones");
 
             var canciones = await Crud<Song>.GetAllAsync();
-            if (canciones == null)
-            {
-                Console.WriteLine("canciones es null");
-            }
-            else
-            {
-                Console.WriteLine($"canciones.Count = {canciones.Count()}");
-            }
 
             if (canciones == null || !canciones.Any())
             {
-                Console.WriteLine("No hay canciones o lista vacía");
+                Console.WriteLine("⚠️ No hay canciones o lista vacía");
                 ViewData["TotalCanciones"] = 0;
-                ViewBag.Data = new List<object>(); // Cambiado de Datos a Data
+                ViewBag.Data = new List<object>();
                 return View();
             }
 
-            var cancionesValidas = canciones.Where(s => s.ReleaseDate > DateTime.MinValue);
-            Console.WriteLine($"cancionesValidas.Count = {cancionesValidas.Count()}");
+            // Mostrar las fechas exactas para debug
+            foreach (var s in canciones)
+            {
+                Console.WriteLine($"🎵 Song ID {s.Id} - ReleaseDate: {s.ReleaseDate} - Fecha como texto: {s.ReleaseDate.ToString("yyyy-MM-dd")}");
+            }
 
-            var cancionesPorFecha = cancionesValidas
-                .GroupBy(s => s.ReleaseDate.Date)
+            // Usamos ToString para evitar desfases de zona horaria al agrupar
+            var cancionesPorFecha = canciones
+                .Where(s => s.ReleaseDate.Year > 2000) // Filtrado por lógica razonable
+                .GroupBy(s => s.ReleaseDate.ToString("yyyy-MM-dd"))
                 .Select(g =>
                 {
-                    Console.WriteLine($"Fecha: {g.Key}, Cantidad: {g.Count()}");
-                    return new ChartDataModel
+                    Console.WriteLine($"📅 Fecha agrupada: {g.Key}, Total: {g.Count()}");
+                    return new
                     {
                         Fecha = g.Key,
                         Cantidad = g.Count()
@@ -156,14 +153,15 @@ namespace MVC.TUNEFLOW.Areas.Admin.Controllers
                 .OrderBy(x => x.Fecha)
                 .ToList();
 
-            Console.WriteLine($"cancionesPorFecha.Count = {cancionesPorFecha.Count}");
+            Console.WriteLine($"✅ cancionesPorFecha.Count = {cancionesPorFecha.Count}");
 
-            ViewData["TotalCanciones"] = cancionesValidas.Count();
+            ViewData["TotalCanciones"] = canciones.Count;
             ViewBag.Data = cancionesPorFecha;
 
-            Console.WriteLine("Fin método Canciones");
+            Console.WriteLine("✅ Fin método Canciones");
             return View();
         }
+
 
         public async Task<IActionResult> Albums()
         {
