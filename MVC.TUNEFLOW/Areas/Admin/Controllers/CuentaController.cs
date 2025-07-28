@@ -20,7 +20,6 @@ namespace MVC.TUNEFLOW.Areas.Admin.Controllers
             return View(admin);
         }
 
-        // Editar cliente (GET) sin parámetro, basado en usuario autenticado
         public async Task<IActionResult> Edit()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

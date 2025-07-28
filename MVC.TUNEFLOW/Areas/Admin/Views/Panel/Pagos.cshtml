@@ -1,0 +1,107 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Pagos Realizados";
+    var totalPagos = ViewData["TotalPagos"] ?? 0;
+    var datos = ViewBag.Data as List<Modelos.Tuneflow.Models.ChartDataModel> ?? new List<Modelos.Tuneflow.Models.ChartDataModel>();
+}
+
+<h2>@ViewData["Title"]</h2>
+<p><strong>Total registrados:</strong> @totalPagos</p>
+
+@if (!datos.Any())
+{
+    <p>No hay datos registrados.</p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in datos)
+            {
+                <tr>
+                    <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Cantidad</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div style="margin-top: 30px;">
+        <canvas id="chartPagos" width="400" height="150"></canvas>
+    </div>
+
+    <!-- Incluir Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <script>
+        const ctx = document.getElementById('chartPagos').getContext('2d');
+
+        // Preparar los datos
+        const fechas = @Html.Raw(Json.Serialize(datos.Select(d => d.Fecha.ToString("dd/MM/yyyy"))));
+        const cantidades = @Html.Raw(Json.Serialize(datos.Select(d => d.Cantidad)));
+
+        const chartPagos = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: fechas,
+                datasets: [{
+                    label: 'Pagos Realizados',
+                    data: cantidades,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Pagos Realizados por Fecha'
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            stepSize: 1
+                        },
+                        title: {
+                            display: true,
+                            text: 'Cantidad de Pagos'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Fecha'
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        hoverRadius: 8
+                    }
+                }
+            }
+        });
+    </script>
+}

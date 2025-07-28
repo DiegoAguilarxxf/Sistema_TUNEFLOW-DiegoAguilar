@@ -428,3 +428,75 @@ label,
         background-color: var(--primary-hover);
         color: white;
     }
+
+/* ===============================
+   SECCIÓN PANEL
+=============================== */
+
+.panel-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 1rem;
+    color: var(--text-color);
+}
+
+.panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.panel-btn {
+    background: var(--card-bg-solid);
+    border-radius: var(--radius);
+    padding: 2.2rem 1rem;
+    box-shadow: var(--shadow-light);
+    color: var(--text-color);
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+    user-select: none;
+}
+
+    .panel-btn i {
+        font-size: 2.5rem;
+        margin-bottom: 0.6rem;
+        color: var(--primary);
+        transition: color 0.3s ease;
+    }
+
+    .panel-btn:hover,
+    .panel-btn:focus {
+        background: var(--primary-light);
+        color: white;
+        box-shadow: var(--shadow-medium);
+        transform: translateY(-4px);
+        border-color: var(--primary);
+        outline: none;
+    }
+
+        .panel-btn:hover i,
+        .panel-btn:focus i {
+            color: white;
+        }
+
+/* Responsive text size */
+@media (max-width: 480px) {
+    .panel-btn {
+        font-size: 1rem;
+        padding: 1.8rem 0.8rem;
+    }
+
+        .panel-btn i {
+            font-size: 2rem;
+        }
+}

@@ -1,0 +1,107 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Artistas Registrados";
+    var totalArtistas = ViewData["TotalArtistas"] ?? 0;
+    var datos = ViewBag.Data as List<Modelos.Tuneflow.Models.ChartDataModel> ?? new List<Modelos.Tuneflow.Models.ChartDataModel>();
+}
+
+<h2>@ViewData["Title"]</h2>
+<p><strong>Total registrados:</strong> @totalArtistas</p>
+
+@if (!datos.Any())
+{
+    <p>No hay datos registrados.</p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in datos)
+            {
+                <tr>
+                    <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Cantidad</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div style="margin-top: 30px;">
+        <canvas id="chartArtistas" width="400" height="150"></canvas>
+    </div>
+
+    <!-- Incluir Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <script>
+        const ctx = document.getElementById('chartArtistas').getContext('2d');
+
+        // Preparar los datos
+        const fechas = @Html.Raw(Json.Serialize(datos.Select(d => d.Fecha.ToString("dd/MM/yyyy"))));
+        const cantidades = @Html.Raw(Json.Serialize(datos.Select(d => d.Cantidad)));
+
+        const chartArtistas = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: fechas,
+                datasets: [{
+                    label: 'Artistas Registrados',
+                    data: cantidades,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Registro de Artistas por Fecha'
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            stepSize: 1
+                        },
+                        title: {
+                            display: true,
+                            text: 'Cantidad de Artistas'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Fecha'
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        hoverRadius: 8
+                    }
+                }
+            }
+        });
+    </script>
+}
