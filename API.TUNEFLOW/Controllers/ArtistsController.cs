@@ -73,7 +73,7 @@ namespace API.TUNEFLOW.Controllers
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             connection.Open();
-            connection.Execute(@"UPDATE ""Artistas"" SET 
+            connection.Execute(@"UPDATE ""Artists"" SET 
                 ""StageName"" = @StageName, 
                 ""MusicGenre"" = @MusicGenre,  
                 ""CountryId"" = @CountryId, 

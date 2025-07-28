@@ -1,0 +1,20 @@
+﻿@* Views/Admin/Anuncios/Delete.cshtml *@
+@model Modelos.Tuneflow.Models.ADS
+@{
+    ViewData["Title"] = "Eliminar Anuncio";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="cuenta-contenedor">
+    <h2>¿Estás seguro que deseas eliminar este anuncio?</h2>
+    <div>
+        <strong>@Model.Title</strong>
+        <p>Duración: @Model.Duration segundos</p>
+        <p><audio controls src="@Model.FilePath"></audio></p>
+        <p><img src="@Model.ImagePath" style="height:100px" /></p>
+    </div>
+    <form asp-action="DeleteConfirmed" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

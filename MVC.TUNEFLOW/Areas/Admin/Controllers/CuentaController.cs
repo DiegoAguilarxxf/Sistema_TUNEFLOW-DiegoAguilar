@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Modelos.Tuneflow.User.Administration;
 using System.Security.Claims;
 
 namespace MVC.TUNEFLOW.Areas.Admin.Controllers
@@ -14,90 +15,50 @@ namespace MVC.TUNEFLOW.Areas.Admin.Controllers
         public async Task<IActionResult> Details()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
-            if (cliente == null) return NotFound();
-            return View(cliente);
+            var admin = await Crud<Modelos.Tuneflow.User.Administration.Administrator>.GetAdminPorUsuarioId(userId);
+            if (admin == null) return NotFound();
+            return View(admin);
         }
 
-        // Editar cliente (GET) sin parámetro, basado en usuario autenticado
         public async Task<IActionResult> Edit()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
-            if (cliente == null) return NotFound();
-            return View(cliente);
+            var admin = await Crud<Modelos.Tuneflow.User.Administration.Administrator>.GetAdminPorUsuarioId(userId);
+            if (admin == null) return NotFound();
+            return View(admin);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Modelos.Tuneflow.User.Consumer.Client cliente)
+        public async Task<IActionResult> Edit(Modelos.Tuneflow.User.Administration.Administrator admin)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var adminDb = await Crud<Administrator>.GetAdminPorUsuarioId(userId);
 
-            var clienteDb = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
-            if (clienteDb == null || clienteDb.Id != id)
-            {
+            if (adminDb == null || adminDb.Id != admin.Id)
                 return BadRequest();
-            }
 
             if (!ModelState.IsValid)
-            {
-                return View(cliente);
-            }
+                return View(admin);
 
             try
             {
-                clienteDb.FirstName = cliente.FirstName;
-                clienteDb.LastName = cliente.LastName;
-                clienteDb.Phone = cliente.Phone;
-                clienteDb.BirthDate = cliente.BirthDate;
+                adminDb.FirstName = admin.FirstName;
+                adminDb.LastName = admin.LastName;
+                adminDb.Phone = admin.Phone;
+                adminDb.BirthDate = admin.BirthDate;
 
-                await Crud<Modelos.Tuneflow.User.Consumer.Client>.UpdateAsync(clienteDb.Id, clienteDb);
+                await Crud<Administrator>.UpdateAsync(adminDb.Id, adminDb);
 
                 TempData["SuccessMessage"] = "Datos actualizados correctamente";
-
-                // Redirige a Details que muestra datos del usuario actual
                 return RedirectToAction(nameof(Details));
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, $"Ocurrió un error al actualizar el cliente: {ex.Message}");
-                return View(clienteDb);
+                ModelState.AddModelError(string.Empty, $"Ocurrió un error al actualizar: {ex.Message}");
+                return View(adminDb);
             }
         }
 
-
-        // Confirmar eliminación (GET)
-        public async Task<IActionResult> ConfirmDelete()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
-            if (cliente == null) return NotFound();
-            return View(cliente);
-        }
-
-        // POST: ClienteController/ConfirmDelete
-        [HttpPost]
-        [ActionName("ConfirmDelete")] // Esto hace que coincida con asp-action="ConfirmDelete"
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ConfirmDeletePost()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
-            if (cliente == null)
-                return NotFound();
-
-            try
-            {
-                await Crud<Modelos.Tuneflow.User.Consumer.Client>.DeleteAsync(cliente.Id);
-                await HttpContext.SignOutAsync(); // Cerrar sesión tras eliminar cuenta
-                return RedirectToPage("/Account/Login", new { area = "Identity" }); // o donde quieras
-            }
-            catch
-            {
-                ModelState.AddModelError(string.Empty, "No se pudo eliminar la cuenta.");
-                return View(cliente);
-            }
-        }
     }
 }

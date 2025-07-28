@@ -72,38 +72,7 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         }
 
 
-        // Confirmar eliminación (GET)
-        public async Task<IActionResult> ConfirmDelete()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
-            if (cliente == null) return NotFound();
-            return View(cliente);
-        }
 
-        // POST: ClienteController/ConfirmDelete
-        [HttpPost]
-        [ActionName("ConfirmDelete")] // Esto hace que coincida con asp-action="ConfirmDelete"
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ConfirmDeletePost()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
-            if (cliente == null)
-                return NotFound();
-
-            try
-            {
-                await Crud<Modelos.Tuneflow.User.Consumer.Client>.DeleteAsync(cliente.Id);
-                await HttpContext.SignOutAsync(); // Cerrar sesión tras eliminar cuenta
-                return RedirectToPage("/Account/Login", new { area = "Identity" }); // o donde quieras
-            }
-            catch
-            {
-                ModelState.AddModelError(string.Empty, "No se pudo eliminar la cuenta.");
-                return View(cliente);
-            }
-        }
 
     }
 }

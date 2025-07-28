@@ -1,9 +1,39 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-   
+﻿@{
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
-    ViewData["Title"] = "Inicio";
+    ViewData["Title"] = "Panel de Administración";
+}
 
+<div class="panel-container">
+    <h2 class="cuenta-titulo">@ViewData["Title"]</h2>
+
+    <div class="panel-grid">
+        <a href="@Url.Action("Clientes", "Panel")" class="panel-btn" tabindex="0" role="button" aria-label="Clientes Registrados">
+            <i class="fa fa-users" aria-hidden="true"></i>
+            Clientes Registrados
+        </a>
+
+        <a href="@Url.Action("Artistas", "Panel")" class="panel-btn" tabindex="0" role="button" aria-label="Artistas Registrados">
+            <i class="fa fa-microphone" aria-hidden="true"></i>
+            Artistas Registrados
+        </a>
+
+        <a href="@Url.Action("Canciones", "Panel")" class="panel-btn" tabindex="0" role="button" aria-label="Canciones Subidas">
+            <i class="fa fa-music" aria-hidden="true"></i>
+            Canciones Subidas
+        </a>
+
+        <a href="@Url.Action("Albums", "Panel")" class="panel-btn" tabindex="0" role="button" aria-label="Álbums Subidos">
+            <i class="fa fa-compact-disc" aria-hidden="true"></i>
+            Álbums Subidos
+        </a>
+
+        <a href="@Url.Action("Pagos", "Panel")" class="panel-btn" tabindex="0" role="button" aria-label="Pagos Realizados">
+            <i class="fa fa-credit-card" aria-hidden="true"></i>
+            Pagos Realizados
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a2d06bfa4a.js" crossorigin="anonymous"></script>
 }

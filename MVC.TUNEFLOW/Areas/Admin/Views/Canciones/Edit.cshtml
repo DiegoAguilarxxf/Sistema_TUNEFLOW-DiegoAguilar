@@ -1,78 +1,77 @@
 ﻿@model Modelos.Tuneflow.Media.Song
 
 @{
-    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
-    ViewData["Title"] = "Edit";
+	Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+	ViewData["Title"] = "Editar Contenido Explícito";
 }
 
-
 <div class="container py-5">
-<h1>Edit</h1>
+	<h1>Editar Contenido Explícito</h1>
+	<hr />
 
-<h4>Song</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Duration" class="control-label"></label>
-                <input asp-for="Duration" class="form-control" />
-                <span asp-validation-for="Duration" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Genre" class="control-label"></label>
-                <input asp-for="Genre" class="form-control" />
-                <span asp-validation-for="Genre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ArtistId" class="control-label"></label>
-                <input asp-for="ArtistId" class="form-control" />
-                <span asp-validation-for="ArtistId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AlbumId" class="control-label"></label>
-                <input asp-for="AlbumId" class="form-control" />
-                <span asp-validation-for="AlbumId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FilePath" class="control-label"></label>
-                <input asp-for="FilePath" class="form-control" />
-                <span asp-validation-for="FilePath" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="ExplicitContent" /> @Html.DisplayNameFor(model => model.ExplicitContent)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="ImagePath" class="control-label"></label>
-                <input asp-for="ImagePath" class="form-control" />
-                <span asp-validation-for="ImagePath" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReleaseDate" class="control-label"></label>
-                <input asp-for="ReleaseDate" class="form-control" />
-                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Available" /> @Html.DisplayNameFor(model => model.Available)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+	<div class="row">
+		<div class="col-md-6">
+			<form asp-action="Edit">
+				@Html.AntiForgeryToken()
+				<input type="hidden" asp-for="Id" />
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+				<div class="form-group">
+					<label class="control-label">Título</label>
+					<input class="form-control" value="@Model.Title" readonly />
+				</div>
+
+				<div class="form-group">
+					<label class="control-label">Género</label>
+					<input class="form-control" value="@Model.Genre" readonly />
+				</div>
+
+				<div class="form-group">
+					<label class="control-label">Artista</label>
+					<input class="form-control" value="@Model.Artist?.StageName" readonly />
+				</div>
+
+				<div class="form-group">
+					<label class="control-label">Álbum</label>
+					<input class="form-control" value="@Model.Album?.Title" readonly />
+
+				</div>
+
+				<div class="form-group">
+					<label class="control-label">Archivo de Audio</label>
+					<audio controls class="w-100 rounded shadow-sm mb-2">
+						<source src="@Model.FilePath" type="audio/mpeg">
+						Tu navegador no soporta el audio.
+					</audio>
+				</div>
+
+				<div class="form-group">
+					<label class="control-label">Portada</label><br />
+					<img src="@Model.ImagePath" alt="Portada" class="img-fluid rounded shadow mb-2" style="max-width: 300px;" />
+
+				</div>
+
+				<div class="form-group">
+					<label class="control-label">Fecha de lanzamiento</label>
+					<input class="form-control" value="@Model.ReleaseDate.ToString("yyyy-MM-dd")" readonly />
+				</div>
+
+				<div class="form-group">
+					<label class="control-label">Disponible</label>
+					<input class="form-control" value="@(Model.Available ? "Sí" : "No")" readonly />
+				</div>
+
+				<div class="form-group form-check mt-4">
+					<label class="switch-label dark-mode-labe">
+						<input class="form-check-input" asp-for="ExplicitContent" />
+						@Html.DisplayNameFor(model => model.ExplicitContent)
+					</label>
+				</div>
+
+				<div class="form-group mt-4">
+					<input type="submit" value="Guardar" class="btn btn-primary" />
+					<a asp-action="Index" class="btn btn-secondary">Volver</a>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>

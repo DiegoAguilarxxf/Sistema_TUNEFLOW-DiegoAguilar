@@ -1,86 +1,262 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using API.Consumer;
+using Modelos.Tuneflow.User.Consumer;
+using Modelos.Tuneflow.Media;
+using Modelos.Tuneflow.Payments;
+using Modelos.Tuneflow.Playlists;
+using Modelos.Tuneflow.User.Production;
+using Modelos.Tuneflow.Models;
 
 namespace MVC.TUNEFLOW.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public class PanelController : Controller
     {
-        // GET: PanelController
-        public ActionResult Panel()
+        public IActionResult Panel()
         {
             return View();
         }
 
-        // GET: PanelController/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Clientes()
         {
-            return View();
-        }
+            Console.WriteLine("Inicio método Clientes");
 
-        // GET: PanelController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: PanelController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+            var clientes = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetAllAsync();
+            if (clientes == null)
             {
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine("clientes es null");
             }
-            catch
+            else
             {
+                Console.WriteLine($"clientes.Count = {clientes.Count()}");
+            }
+
+            // Verificación mejorada como en tu código que funcionaba
+            if (clientes == null || !clientes.Any())
+            {
+                Console.WriteLine("No hay clientes o lista vacía");
+                ViewData["TotalClientes"] = 0;
+                ViewBag.Data = new List<object>();
                 return View();
             }
-        }
 
-        // GET: PanelController/Edit/5
-        public ActionResult Edit(int id)
-        {
+            var clientesValidos = clientes.Where(c => c.RegistrationDate > DateTime.MinValue).ToList();
+            Console.WriteLine($"clientesValidos.Count = {clientesValidos.Count}");
+
+            var clientesPorFecha = clientesValidos
+                .GroupBy(c => c.RegistrationDate.Date)
+                .Select(g =>
+                {
+                    Console.WriteLine($"Fecha: {g.Key}, Cantidad: {g.Count()}");
+                    return new ChartDataModel
+                    {
+                        Fecha = g.Key,
+                        Cantidad = g.Count()
+                    };
+                })
+                .OrderBy(x => x.Fecha)
+                .ToList();
+
+            Console.WriteLine($"clientesPorFecha.Count = {clientesPorFecha.Count}");
+
+            ViewData["TotalClientes"] = clientesValidos.Count();
+            ViewBag.Data = clientesPorFecha;
+
+            Console.WriteLine("Fin método Clientes");
             return View();
         }
 
-        // POST: PanelController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Artistas()
         {
-            try
+            Console.WriteLine("Inicio método Artistas");
+
+            var artistas = await Crud<Artist>.GetAllAsync();
+            if (artistas == null)
             {
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine("artistas es null");
             }
-            catch
+            else
             {
+                Console.WriteLine($"artistas.Count = {artistas.Count()}");
+            }
+
+            if (artistas == null || !artistas.Any())
+            {
+                Console.WriteLine("No hay artistas o lista vacía");
+                ViewData["TotalArtistas"] = 0;
+                ViewBag.Data = new List<object>(); // Cambiado de Datos a Data
                 return View();
             }
-        }
 
-        // GET: PanelController/Delete/5
-        public ActionResult Delete(int id)
-        {
+            var artistasValidos = artistas.Where(a => a.RegistrationDate > DateTime.MinValue);
+            Console.WriteLine($"artistasValidos.Count = {artistasValidos.Count()}");
+
+            var artistasPorFecha = artistasValidos
+                .GroupBy(a => a.RegistrationDate.Date)
+                .Select(g =>
+                {
+                    Console.WriteLine($"Fecha: {g.Key}, Cantidad: {g.Count()}");
+                    return new ChartDataModel
+                    {
+                        Fecha = g.Key,
+                        Cantidad = g.Count()
+                    };
+                })
+                .OrderBy(x => x.Fecha)
+                .ToList();
+
+            Console.WriteLine($"artistasPorFecha.Count = {artistasPorFecha.Count}");
+
+            ViewData["TotalArtistas"] = artistasValidos.Count();
+            ViewBag.Data = artistasPorFecha;
+
+            Console.WriteLine("Fin método Artistas");
             return View();
         }
 
-        // POST: PanelController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> Canciones()
         {
-            try
+            Console.WriteLine("📌 Inicio método Canciones");
+
+            var canciones = await Crud<Song>.GetAllAsync();
+
+            if (canciones == null || !canciones.Any())
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
+                Console.WriteLine("⚠️ No hay canciones o lista vacía");
+                ViewData["TotalCanciones"] = 0;
+                ViewBag.Data = new List<object>();
                 return View();
             }
+
+            // Mostrar las fechas exactas para debug
+            foreach (var s in canciones)
+            {
+                Console.WriteLine($"🎵 Song ID {s.Id} - ReleaseDate: {s.ReleaseDate} - Fecha como texto: {s.ReleaseDate.ToString("yyyy-MM-dd")}");
+            }
+
+            // Usamos ToString para evitar desfases de zona horaria al agrupar
+            var cancionesPorFecha = canciones
+                .Where(s => s.ReleaseDate.Year > 2000) // Filtrado por lógica razonable
+                .GroupBy(s => s.ReleaseDate.ToString("yyyy-MM-dd"))
+                .Select(g =>
+                {
+                    Console.WriteLine($"📅 Fecha agrupada: {g.Key}, Total: {g.Count()}");
+                    return new
+                    {
+                        Fecha = g.Key,
+                        Cantidad = g.Count()
+                    };
+                })
+                .OrderBy(x => x.Fecha)
+                .ToList();
+
+            Console.WriteLine($"✅ cancionesPorFecha.Count = {cancionesPorFecha.Count}");
+
+            ViewData["TotalCanciones"] = canciones.Count;
+            ViewBag.Data = cancionesPorFecha;
+
+            Console.WriteLine("✅ Fin método Canciones");
+            return View();
+        }
+
+
+        public async Task<IActionResult> Albums()
+        {
+            Console.WriteLine("Inicio método Albums");
+
+            var albums = await Crud<Album>.GetAllAsync();
+            if (albums == null)
+            {
+                Console.WriteLine("albums es null");
+            }
+            else
+            {
+                Console.WriteLine($"albums.Count = {albums.Count()}");
+            }
+
+            if (albums == null || !albums.Any())
+            {
+                Console.WriteLine("No hay albums o lista vacía");
+                ViewData["TotalAlbums"] = 0;
+                ViewBag.Data = new List<object>(); // Cambiado de Datos a Data
+                return View();
+            }
+
+            var albumsValidos = albums.Where(a => a.ReleaseDate > DateTime.MinValue);
+            Console.WriteLine($"albumsValidos.Count = {albumsValidos.Count()}");
+
+            var albumsPorFecha = albumsValidos
+                .GroupBy(a => a.ReleaseDate.Date)
+                .Select(g =>
+                {
+                    Console.WriteLine($"Fecha: {g.Key}, Cantidad: {g.Count()}");
+                    return new ChartDataModel
+                    {
+                        Fecha = g.Key,
+                        Cantidad = g.Count()
+                    };
+                })
+                .OrderBy(x => x.Fecha)
+                .ToList();
+
+            Console.WriteLine($"albumsPorFecha.Count = {albumsPorFecha.Count}");
+
+            ViewData["TotalAlbums"] = albumsValidos.Count();
+            ViewBag.Data = albumsPorFecha;
+
+            Console.WriteLine("Fin método Albums");
+            return View();
+        }
+
+        public async Task<IActionResult> Pagos()
+        {
+            Console.WriteLine("Inicio método Pagos");
+
+            var pagos = await Crud<Payment>.GetAllAsync();
+            if (pagos == null)
+            {
+                Console.WriteLine("pagos es null");
+            }
+            else
+            {
+                Console.WriteLine($"pagos.Count = {pagos.Count()}");
+            }
+
+            if (pagos == null || !pagos.Any())
+            {
+                Console.WriteLine("No hay pagos o lista vacía");
+                ViewData["TotalPagos"] = 0;
+                ViewBag.Data = new List<object>(); // Cambiado de Datos a Data
+                return View();
+            }
+
+            var pagosValidos = pagos.Where(p => p.PaymentDate > DateTime.MinValue);
+            Console.WriteLine($"pagosValidos.Count = {pagosValidos.Count()}");
+
+            var pagosPorFecha = pagosValidos
+                .GroupBy(p => p.PaymentDate.Date)
+                .Select(g =>
+                {
+                    Console.WriteLine($"Fecha: {g.Key}, Cantidad: {g.Count()}");
+                    return new ChartDataModel
+                    {
+                        Fecha = g.Key,
+                        Cantidad = g.Count()
+                    };
+                })
+                .OrderBy(x => x.Fecha)
+                .ToList();
+
+            Console.WriteLine($"pagosPorFecha.Count = {pagosPorFecha.Count}");
+
+            ViewData["TotalPagos"] = pagosValidos.Count();
+            ViewBag.Data = pagosPorFecha;
+
+            Console.WriteLine("Fin método Pagos");
+            return View();
         }
     }
 }

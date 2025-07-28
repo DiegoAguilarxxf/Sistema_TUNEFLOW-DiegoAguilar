@@ -202,6 +202,36 @@ namespace API.Consumer
                 }
             }
         }
+        public static async Task<Administrator> GetAdminPorUsuarioId(string idUsuario)
+        {
+            using (var admin = new HttpClient())
+            {
+                var response = await admin.GetAsync($"{EndPoint}/Usuario/{idUsuario}");
+                Console.WriteLine($"{EndPoint}/Usuario/{idUsuario}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("JSON recibido: " + json);
+
+                    try
+                    {
+                        var admini = JsonConvert.DeserializeObject<Administrator>(json);
+                        return admini;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error de deserialización: " + ex.Message);
+                        throw;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("La API devolvió: " + response.StatusCode);
+                    return null;
+                }
+            }
+        }
         public static async Task<Artist> GetArtistaPorUsuarioId(string idUsuario)
         {
             using (var client = new HttpClient())

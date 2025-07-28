@@ -24,28 +24,6 @@ namespace MVC.TUNEFLOW.Areas.Admin.Controllers
             return View(cancion);
         }
 
-        // GET: CancionesController/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: CancionesController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Song cancion)
-        {
-            try
-            {
-                await Crud<Song>.CreateAsync(cancion);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "No se pudo crear la canción: " + ex.Message);
-                return View(cancion);
-            }
-        }
 
         // GET: CancionesController/Edit/5
         public async Task<IActionResult> Edit(int id)
@@ -60,42 +38,44 @@ namespace MVC.TUNEFLOW.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Song cancion)
         {
+            var original = await Crud<Song>.GetByIdAsync(id);
+            if (original == null) return NotFound();
+
             try
             {
-                await Crud<Song>.UpdateAsync(id, cancion);
+
+                original.ExplicitContent = cancion.ExplicitContent;
+
+                await Crud<Song>.UpdateAsync(id, original);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "No se pudo editar la canción: " + ex.Message);
-                return View(cancion);
+                ModelState.AddModelError("", "No se pudo actualizar la canción: " + ex.Message);
+                return View(original); 
             }
         }
 
-        // GET: CancionesController/Delete/5
-        public async Task<IActionResult> Delete(int id)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarcarExplicito(int id)
         {
             var cancion = await Crud<Song>.GetByIdAsync(id);
             if (cancion == null) return NotFound();
-            return View(cancion);
-        }
 
-        // POST: CancionesController/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
             try
             {
-                await Crud<Song>.DeleteAsync(id);
-                return RedirectToAction(nameof(Index));
+                cancion.ExplicitContent = !cancion.ExplicitContent;
+                await Crud<Song>.UpdateAsync(id, cancion);
+                return RedirectToAction(nameof(Details), new { id });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "No se pudo eliminar la canción: " + ex.Message);
-                var cancion = await Crud<Song>.GetByIdAsync(id);
-                return View("Delete", cancion);
+                ModelState.AddModelError("", "Error al actualizar el estado explícito: " + ex.Message);
+                return View("Details", cancion); 
             }
         }
+
     }
 }

@@ -85,6 +85,16 @@
     --btn-bg: var(--primary);
     --btn-text: white;
     --btn-hover: var(--primary-hover);
+    /* Cabecera playlist*/
+    --color-morado-claro: #9b59b6;
+        --color-morado-oscuro: #6a1b9a;
+        --color-fondo-claro: #f9f7fb;
+        --color-texto-claro: #2c2c2c;
+        --color-sombra: rgba(107, 42, 121, 0.25);
+        --color-hover-claro: #d8bde8;
+        --color-boton-bg: var(--color-morado-claro);
+        --color-boton-hover-bg: var(--color-morado-oscuro);
+        --color-boton-texto: #fff;
 }
 
 /* Modo Oscuro - Más oscuro */
@@ -326,7 +336,7 @@ body {
         }
 
 /* ===============================
-🎧 REPRODUCTOR MUSICAL FIJO (MODULAR)
+REPRODUCTOR MUSICAL FIJO 
 =============================== */
 .cliente-reproductor {
     position: fixed;
@@ -347,13 +357,13 @@ body {
     gap: 16px;
 }
 
-    /* 🔽 Modo reducido */
+    /* Modo reducido */
     .cliente-reproductor.reducido {
         height: 80px;
         padding: 10px 16px;
     }
 
-/* 🎵 Imagen de portada */
+/* Imagen de portada */
 .reproductor-portada img {
     width: 60px;
     height: 60px;
@@ -367,7 +377,7 @@ body {
     transform: scale(1.05);
 }
 
-/* 📃 Información canción */
+/* Información canción */
 .reproductor-info {
     flex: 1;
     min-width: 0;
@@ -407,7 +417,7 @@ body {
         box-shadow: var(--progress-shadow);
     }
 
-/* 🎮 Controles */
+/* Controles */
 .reproductor-controles {
     display: flex;
     align-items: center;
@@ -440,20 +450,20 @@ body {
         transform: scale(1.1);
     }
 
-/* ❤️ Favorito */
+/* Favorito */
 #btnfavorito:hover img {
     transform: scale(1.2);
     transition: transform var(--transition-normal);
 }
 
-/* 🔊 Volumen */
+/* Volumen */
 #volumenControl {
     width: 100px;
     accent-color: var(--primary);
     transition: all var(--transition-fast);
 }
 
-/* ⬆ Minimizar / Expandir */
+/* Minimizar / Expandir */
 .btn-toggle-player {
     position: fixed;
     bottom: 20px;
@@ -477,7 +487,7 @@ body {
         transform: scale(1.2);
     }
 
-/* 🎧 Solo visible en modo expandido */
+/* Solo visible en modo expandido */
 .btn-expandido {
     display: none;
 }
@@ -487,7 +497,7 @@ body {
 }
 
 /* ===============================
-🎧 MODO EXPANDIDO DEL REPRODUCTOR
+ MODO EXPANDIDO DEL REPRODUCTOR
 =============================== */
 .cliente-reproductor.expanded {
     height: 100vh;
@@ -1293,3 +1303,193 @@ input:checked + .slider {
         font-size: 1.5rem;
     }
 }
+
+/* ===============================
+   SECCIÓN CUENTA 
+=============================== */
+.cuenta-contenedor {
+    max-width: 900px;
+    margin: 40px auto;
+    background: var(--bg-secondary);
+    padding: 3rem 3.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    color: var(--text-primary);
+}
+
+.cuenta-titulo {
+    font-size: 34px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+label,
+.cuenta-label {
+    display: block;
+    font-weight: 600;
+    color: var(--label-color);
+    margin-bottom: 6px;
+}
+
+.form-control {
+    background-color: var(--form-control-bg);
+    border: 1px solid var(--form-control-border);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .form-control:focus {
+        background-color: var(--form-control-bg);
+        border-color: var(--form-control-focus);
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+    }
+
+.form-check-input {
+    background-color: var(--form-control-bg);
+    border-color: var(--form-control-border);
+}
+
+    .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary-hover);
+    }
+
+.text-danger {
+    color: var(--error);
+}
+
+.cuenta-acciones {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: var(--radius-md);
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+    }
+
+.btn-outline-secondary {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: var(--radius-md);
+    background: transparent;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+    .btn-outline-secondary:hover {
+        background-color: var(--primary-hover);
+        color: white;
+    }
+
+
+/* ===============================
+ CABECERA DE LA PLAYLIST
+=============================== */
+
+.playlist-header {
+    background: linear-gradient(to bottom right, var(--color-morado-claro), var(--color-morado-oscuro));
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    border-radius: 16px;
+    box-shadow: 0 10px 24px var(--color-sombra);
+    color: var(--color-boton-texto);
+    margin-bottom: 2rem;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.playlist-cover {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    flex-shrink: 0;
+}
+
+.playlist-info {
+    flex: 1;
+    min-width: 250px;
+}
+
+    .playlist-info > .text-uppercase {
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        opacity: 0.9;
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+        text-transform: uppercase;
+    }
+
+.playlist-title {
+    font-size: 2.6rem;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    word-break: break-word;
+}
+
+.playlist-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* Botón reproducir */
+.btn-play-all {
+    font-size: 1.1rem;
+    padding: 0.6rem 1.8rem;
+    background-color: var(--color-boton-bg);
+    color: var(--color-boton-texto);
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--color-sombra);
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+    .btn-play-all:hover,
+    .btn-play-all:focus {
+        background-color: var(--color-boton-hover-bg);
+        box-shadow: 0 6px 20px var(--color-sombra);
+        outline: none;
+    }
+
+/* Botón agregar */
+.btn-agregar {
+    background-color: #fff;
+    color: var(--color-morado-oscuro);
+    font-weight: 600;
+    border: 2px solid #fff;
+    padding: 0.6rem 1.4rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+    .btn-agregar:hover {
+        background-color: var(--color-hover-claro);
+        border-color: #ccc;
+        color: #2c2c2c;
+    }

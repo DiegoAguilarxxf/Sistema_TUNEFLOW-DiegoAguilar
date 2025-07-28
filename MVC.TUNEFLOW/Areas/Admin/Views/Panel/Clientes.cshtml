@@ -1,0 +1,69 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Clientes Registrados";
+    var totalClientes = ViewData["TotalClientes"] ?? 0;
+    var datos = ViewBag.Data as List<Modelos.Tuneflow.Models.ChartDataModel> ?? new List<Modelos.Tuneflow.Models.ChartDataModel>();
+}
+
+<div class="report-container">
+    <div class="no-print">
+        <button class="print-button" onclick="imprimirPDF()">
+            📄 Generar PDF
+        </button>
+    </div>
+
+    <div class="report-info">
+        <h2>@ViewData["Title"]</h2>
+        <p><strong>Total registrados:</strong> @totalClientes</p>
+        <p><strong>Fecha de reporte:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+    </div>
+
+    @if (!datos.Any())
+    {
+        <div class="alert alert-info">
+            <p>No hay datos registrados.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive page-break-avoid">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in datos)
+                    {
+                        <tr>
+                            <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td>@item.Cantidad</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="chartClientes" width="800" height="400"></canvas>
+        </div>
+    }
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="~/js/reportes.js" defer></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const datos = {
+            labels: @Html.Raw(Json.Serialize(datos.Select(d => d.Fecha.ToString("dd/MM/yyyy")))),
+            values: @Html.Raw(Json.Serialize(datos.Select(d => d.Cantidad)))
+        };
+
+        const reporte = new ReporteImpresion('chartClientes', '@ViewData["Title"]', datos);
+        reporte.initChart('line');
+        reporte.setupPrintEvents();
+        window.imprimirPDF = () => reporte.imprimirPDF();
+    });
+</script>
