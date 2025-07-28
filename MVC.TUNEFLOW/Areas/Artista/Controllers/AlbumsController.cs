@@ -1,7 +1,9 @@
 ﻿using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Security.Claims;
 using API.Consumer;
+using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +13,8 @@ using Modelos.Tuneflow.Models;
 using Modelos.Tuneflow.Playlists;
 using Modelos.Tuneflow.User.Production;
 using MVC.TUNEFLOW.Services;
+using Newtonsoft.Json;
+using Npgsql;
 
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
@@ -18,7 +22,8 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
     [Authorize]
     public class AlbumsController : Controller
     {
-        
+        private readonly IConfiguration _configuration;
+
         string supabaseUrl = "https://kblhmjrklznspeijwzeg.supabase.co";
         string supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibGhtanJrbHpuc3BlaWp3emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MDk2MDcsImV4cCI6MjA2NjM4NTYwN30.CpoCYjAUi4ijZzAEqi9R_3HeGq5xpWANMMIlAQjJx-o";
         string bucket = "albumstuneflow";
@@ -28,11 +33,11 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         private readonly SupabaseStorageService _supaPortada;
         private readonly CancionService _cancionService = new CancionService();
    
-        public AlbumsController()
+        public AlbumsController(IConfiguration configuration)
         {
             _supaCancion = new SupabaseStorageService(supabaseUrl, supabaseAnonKey, bucket);
             _supaPortada = new SupabaseStorageService(supabaseUrl, supabaseAnonKey, bucketImagen, directory);
-        
+            _configuration = configuration;
         }
         
         // GET: AlbumsController
@@ -51,16 +56,18 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 
             ViewBag.ArtistaId = artista.Id;
             Console.WriteLine("ArtistaId con viewbag: " + ViewBag.ArtistaId);
-            var albums = await Crud<Song>.GetAlbumsPorArtistaId(artista.Id);
+            var albums = await GetAlbumsPorArtistaId(artista.Id);
             return View(albums);
         }
 
         // GET: AlbumsController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            var album = Crud<Album>.GetByIdAsync(id);
+            var album = await Crud<Album>.GetByIdAsync(id);
+            ViewBag.Canciones = await GetCancionesPorAlbum(id);
             return View(album);
         }
+
 
         // GET: AlbumsController/Create
         public async Task< ActionResult> Create(int artistaId)
@@ -92,19 +99,30 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         }
 
         // GET: AlbumsController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            var album = Crud<Album>.GetByIdAsync(id);
+            
+           
+            var generos = await Crud<Genre>.GetAllAsync();
+            var opciones = string.Join("", generos.Select(g => $"<option value='{g.Name}'>{g.Name}</option>"));
+            ViewBag.GenerosOptions = opciones;
+            var album= await Crud<Album>.GetByIdAsync(id); 
+            ViewBag.Canciones = await GetCancionesPorAlbum(id);
+            ViewBag.Album = album; 
+          
             return View(album);
         }
 
         // POST: AlbumsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Album album)
+        public async Task<ActionResult> Edit(int id, Album album)
         {
             try
             {
+                ViewBag.Canciones = await GetCancionesPorAlbum(id);
+                await Crud<Album>.GetByIdAsync(id);
+                ViewBag.Album = album;
                 Crud<Album>.UpdateAsync(id, album);
                 return RedirectToAction(nameof(Index));
             }
@@ -245,6 +263,53 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                 return View("Create");
             }
         }
+
+        public async Task<List<Album>> GetAlbumsPorArtistaId(int idArtista)
+        {
+            using var connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+            await connection.OpenAsync();
+
+            var sql = @"SELECT * 
+                FROM ""Albums"" 
+                WHERE ""ArtistId"" = @ArtistId";
+
+            var albums = await connection.QueryAsync<Album>(sql, new { ArtistId = idArtista });
+
+            return albums.ToList();
+
+
+        }
+
+        public async Task<List<Song>> GetCancionesPorAlbum(int albumId)
+        {
+            using var connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+            await connection.OpenAsync();
+
+            var sql = @"SELECT * 
+                FROM ""Songs"" 
+                WHERE ""AlbumId"" = @AlbumId";
+
+            var canciones = await connection.QueryAsync<Song>(sql, new { AlbumId = albumId });
+
+            return canciones.ToList();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EliminarAlbum(int id)
+        {
+            try
+            {
+                await Crud<Album>.DeleteAsync(id);
+                return RedirectToAction("Index"); 
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+                return View("Error");
+            }
+        }
+
 
 
 

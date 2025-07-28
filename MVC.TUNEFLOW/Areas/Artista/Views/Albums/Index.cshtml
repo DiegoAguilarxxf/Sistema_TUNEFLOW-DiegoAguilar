@@ -2,43 +2,39 @@
 
 @{
     Layout = "~/Areas/Artista/Views/Shared/_LayoutArtista.cshtml";
-    ViewData["Title"] = "Mis Albums";
+    ViewData["Title"] = "Mis Álbumes";
 }
 
-<div class="container">
-    <h1>Mis Álbumes</h1>
+<div class="container mt-4">
+    <h1 class="mb-3">🎵 Mis Álbumes</h1>
 
     <p>
-        <a href="/Artista/Albums/Create?artistaId=@ViewBag.ArtistaId" class="btn btn-primary btn-sm">Subir Album</a>
+        <a href="/Artista/Albums/Create?artistaId=@ViewBag.ArtistaId" class="btn btn-primary btn-sm">➕ Subir Álbum</a>
     </p>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Fecha Lanzamiento</th>
-                <th>Género</th>
-                <th>Descripción</th>
-                <th>Portada</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
-                    <td>@Html.DisplayFor(modelItem => item.ReleaseDate)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Genre)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
-                    <td>@Html.DisplayFor(modelItem => item.CoverPath)</td>
-                    <td>
-                        @Html.ActionLink("Editar", "Edit", new { id = item.Id }, new { @class = "btn btn-sm btn-warning me-1" })
-                        @Html.ActionLink("Detalles", "Details", new { id = item.Id }, new { @class = "btn btn-sm btn-info me-1" })
-                        @Html.ActionLink("Eliminar", "Delete", new { id = item.Id }, new { @class = "btn btn-sm btn-danger" })
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="@item.CoverPath" class="card-img-top" style="height: 250px; object-fit: cover;" alt="Portada del álbum">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Title</h5>
+                       
+
+                        <div class="d-grid gap-2">
+                            
+                            <a href="/Artista/Albums/Edit/@item.Id" class="btn btn-warning btn-sm">✏️ Editar</a>
+                            <a href="/Artista/Albums/Details/@item.Id" class="btn btn-info btn-sm">ℹ️ Detalles</a>
+
+                            <form asp-action="EliminarAlbum" method="post" onsubmit="return confirm('¿Estás seguro de eliminar este álbum?');">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">🗑️ Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
