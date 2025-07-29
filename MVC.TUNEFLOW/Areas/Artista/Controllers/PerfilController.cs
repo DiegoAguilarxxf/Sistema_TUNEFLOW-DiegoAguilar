@@ -33,12 +33,11 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         [Authorize(Roles = "cliente,artista")]
         public async Task<ActionResult> Index(int id, int idCliente)
         {
-            //string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //var artista = await Crud<Artist>.GetArtistaPorUsuarioId(userId);
-            Console.WriteLine($"Al perfil ingresó el id: {id}"); // Para depuración
+
+            Console.WriteLine($"Al perfil ingresó el id: {id}"); 
             var artista = await Crud<Artist>.GetByIdAsync(id);
             var profile = await Crud<Profile>.GetPerfilPorArtistaId(artista.Id);
-            ViewBag.IdCliente = idCliente; // Pasar el ID del cliente a la vista
+            ViewBag.IdCliente = idCliente; 
             var seguido = await Crud<Follow>.GetFollowByIdClient(idCliente, id);
             if(seguido != 0)
             {
@@ -49,7 +48,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                 ViewBag.Seguido = false;
             }
             ViewBag.ArtistaId = artista.Id;
-            ViewBag.StageName = artista.StageName; // Si necesitas nombre para carpeta o mostrar
+            ViewBag.StageName = artista.StageName; 
 
 
             Console.WriteLine($"Estado de Seguido: {ViewBag.Seguido}");
@@ -126,14 +125,14 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
                     var urlDefault = "https://kblhmjrklznspeijwzeg.supabase.co/storage/v1/object/public/imagenestuneflow/PerfilesDefecto/ImagenDefault.jpeg";
-                    var urlEliminar = perfil.ProfileImage; // Guardar la URL actual para eliminarla después
+                    var urlEliminar = perfil.ProfileImage; 
                     if (!string.Equals(urlDefault, urlEliminar, StringComparison.OrdinalIgnoreCase))
                     {
                         var eliminado = await _supabaseService.EliminarArchivoAsync(urlEliminar);
                     }
                     var imageUrl = await _supabaseService.SubirArchivoAsync(ImageFile);
-                    perfil.ProfileImage = imageUrl; // Asignar la URL de la imagen al perfil
-                    perfil.Biography = Biography; // Asignar la biografía al perfil
+                    perfil.ProfileImage = imageUrl; 
+                    perfil.Biography = Biography; 
 
                     await Crud<Profile>.UpdateAsync(perfil.Id, perfil);
                 }

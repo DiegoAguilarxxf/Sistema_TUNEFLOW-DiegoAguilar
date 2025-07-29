@@ -57,12 +57,11 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
 
-                // Asignar la suscripción al cliente
                 var suscripcionCliente = await Crud<Subscription>.GetByIdAsync(cliente.SubscriptionId);
-                suscripcionCliente.SubscriptionTypeId = 2; // Asignamos el tipo de suscripción a la del código ingresado
+                suscripcionCliente.SubscriptionTypeId = 2; 
                 await Crud<Subscription>.UpdateAsync(suscripcionCliente.Id ,suscripcionCliente);
 
-                suscripcion.NumberMembers = miembros - 1; // Reducir el número de miembros disponibles en la suscripción
+                suscripcion.NumberMembers = miembros - 1; 
                 
                 await Crud<Subscription>.UpdateAsync(suscripcion.Id,suscripcion);
                 return RedirectToAction("Panel", "Panel", new { area = "Cliente" });
