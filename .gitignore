@@ -361,5 +361,3 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/MVC.TUNEFLOW/Services
-/MVC.TUNEFLOW/Areas/Identity/Pages/Account
