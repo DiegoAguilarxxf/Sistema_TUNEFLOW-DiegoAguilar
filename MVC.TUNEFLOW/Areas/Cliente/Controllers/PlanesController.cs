@@ -34,6 +34,46 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             return View(planes);
         }
 
-        
+        public ActionResult UnirseCodigo()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UnirsePorCodigo(string codigo)
+        {
+            var suscripcion = await Crud<Subscription>.CombrobarCodigoUnion(codigo);
+
+            if (suscripcion == null)
+            {
+                ModelState.AddModelError("", "El código de unión no es válido o no existe.");
+                return View("UnirseCodigo");
+            }
+
+            var miembros = suscripcion.NumberMembers;
+
+            if(miembros > 0)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+
+                // Asignar la suscripción al cliente
+                var suscripcionCliente = await Crud<Subscription>.GetByIdAsync(cliente.SubscriptionId);
+                suscripcionCliente.SubscriptionTypeId = 2; // Asignamos el tipo de suscripción a la del código ingresado
+                await Crud<Subscription>.UpdateAsync(suscripcionCliente.Id ,suscripcionCliente);
+
+                suscripcion.NumberMembers = miembros - 1; // Reducir el número de miembros disponibles en la suscripción
+                
+                await Crud<Subscription>.UpdateAsync(suscripcion.Id,suscripcion);
+                return RedirectToAction("Panel", "Panel", new { area = "Cliente" });
+            }
+
+            ModelState.AddModelError("", "Este plan ya tiene 4 miembros");
+            return View("UnirseCodigo");
+
+        }
+
+
+
     }
 }

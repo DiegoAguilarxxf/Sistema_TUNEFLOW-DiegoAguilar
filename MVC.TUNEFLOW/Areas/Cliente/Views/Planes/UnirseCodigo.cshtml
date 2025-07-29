@@ -1,0 +1,20 @@
+﻿@{
+    Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
+    ViewData["Title"] = "Unirse por Código";
+}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4 rounded" style="max-width: 500px; width: 100%;">
+        <h2 class="mb-4 text-center text-primary">Unirse a un Plan por Código</h2>
+
+        <form asp-action="UnirsePorCodigo" method="post">
+            <div class="mb-3">
+                <label for="codigo" class="form-label fw-bold">Código de Plan</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" placeholder="Ej: ABC123XYZ" required />
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Unirse</button>
+            </div>
+        </form>
+    </div>
+</div>

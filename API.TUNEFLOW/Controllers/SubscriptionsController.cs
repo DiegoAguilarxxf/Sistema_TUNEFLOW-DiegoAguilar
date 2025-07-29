@@ -52,6 +52,20 @@ namespace API.TUNEFLOW.Controllers
             return subscription;
         }
 
+        [HttpGet("Codigo/Union/{codigo}")]
+        public ActionResult<Subscription> GetSuscripcion(string codigo)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            var sql = @"SELECT * FROM ""Subscriptions"" WHERE LOWER(""JoinCode"") = LOWER(@JoinCode)";
+            var suscripcion = connection.QuerySingleOrDefault<Subscription>(sql, new { JoinCode = codigo });
+            if (suscripcion == null)
+            {
+                return NotFound(); // No se encontró la suscripción con ese código
+            }
+            return suscripcion;
+        }
+
         // PUT: api/Suscripciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

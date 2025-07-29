@@ -17,6 +17,10 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var cliente = await Crud<Modelos.Tuneflow.User.Consumer.Client>.GetClientePorUsuarioId(userId);
+            var suscripcion = await Crud<Subscription>.GetByIdAsync(cliente.SubscriptionId);
+            cliente.Subscription  = suscripcion;
+            var tipoCuenta  = await Crud<SubscriptionType>.GetByIdAsync(suscripcion.SubscriptionTypeId);
+            ViewBag.TipoCuenta = tipoCuenta.Name;
             if (cliente == null) return NotFound();
             return View(cliente);
         }

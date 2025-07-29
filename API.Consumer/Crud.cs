@@ -587,6 +587,30 @@ namespace API.Consumer
             }
         }
 
+        public static async Task<Subscription> CombrobarCodigoUnion(string codigo)
+        {
+            using (var client = new HttpClient())
+            {
+                var url = $"{EndPoint}/Codigo/Union/{Uri.EscapeDataString(codigo)}";
+                var response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<Subscription>(json);
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontró el código de unión");
+                    return null;
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return null;
+                }
+            }
+        }
+
     }
 }
 

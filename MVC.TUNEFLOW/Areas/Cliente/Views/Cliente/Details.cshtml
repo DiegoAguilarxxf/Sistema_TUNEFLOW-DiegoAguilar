@@ -5,48 +5,103 @@
     Layout = "~/Areas/Cliente/Views/Shared/_LayoutCliente.cshtml";
 }
 
-<div class="cuenta-contenedor">
-    <div class="cuenta-tarjeta">
-        <h2 class="cuenta-titulo">👤 Mi cuenta</h2>
+<style>
+    .cuenta-contenedor {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
 
-        <div class="cuenta-info">
-            <div class="cuenta-item">
-                <span class="cuenta-label">Nombre:</span>
-                <span class="cuenta-valor">@Model.FirstName</span>
-            </div>
-            <div class="cuenta-item">
-                <span class="cuenta-label">Apellido:</span>
-                <span class="cuenta-valor">@Model.LastName</span>
-            </div>
-            <div class="cuenta-item">
-                <span class="cuenta-label">Correo electrónico:</span>
-                <span class="cuenta-valor">@Model.Email</span>
-            </div>
-            <div class="cuenta-item">
-                <span class="cuenta-label">Teléfono:</span>
-                <span class="cuenta-valor">@Model.Phone</span>
-            </div>
-            <div class="cuenta-item">
-                <span class="cuenta-label">Fecha de nacimiento:</span>
-                <span class="cuenta-valor">@Model.BirthDate.ToString("dd/MM/yyyy")</span>
-            </div>
-            <div class="cuenta-item">
-                <span class="cuenta-label">Cuenta activa:</span>
-                <span class="cuenta-valor">@(Model.IsActive ? "Sí" : "No")</span>
-            </div>
-            <div class="cuenta-item">
-                <span class="cuenta-label">Registrado el:</span>
-                <span class="cuenta-valor">@Model.RegistrationDate.ToString("dd/MM/yyyy")</span>
-            </div>
+    .cuenta-titulo {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #343a40;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .cuenta-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .cuenta-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .cuenta-valor {
+        color: #212529;
+        font-weight: 500;
+        max-width: 60%;
+        text-align: right;
+        word-break: break-word;
+    }
+
+    .cuenta-acciones {
+        text-align: center;
+    }
+
+        .cuenta-acciones .btn {
+            min-width: 140px;
+        }
+</style>
+
+<div class="cuenta-contenedor bg-white mt-5">
+    <h2 class="cuenta-titulo">👤 Mi cuenta</h2>
+
+    <div class="cuenta-info">
+        <div class="cuenta-item">
+            <span class="cuenta-label">Nombre:</span>
+            <span class="cuenta-valor">@Model.FirstName</span>
+        </div>
+        <div class="cuenta-item">
+            <span class="cuenta-label">Apellido:</span>
+            <span class="cuenta-valor">@Model.LastName</span>
+        </div>
+        <div class="cuenta-item">
+            <span class="cuenta-label">Correo electrónico:</span>
+            <span class="cuenta-valor">@Model.Email</span>
+        </div>
+        <div class="cuenta-item">
+            <span class="cuenta-label">Teléfono:</span>
+            <span class="cuenta-valor">@Model.Phone</span>
+        </div>
+        <div class="cuenta-item">
+            <span class="cuenta-label">Fecha de nacimiento:</span>
+            <span class="cuenta-valor">@Model.BirthDate.ToString("dd/MM/yyyy")</span>
+        </div>
+        <div class="cuenta-item">
+            <span class="cuenta-label">Cuenta activa:</span>
+            <span class="cuenta-valor">@(Model.IsActive ? "Sí" : "No")</span>
+        </div>
+        <div class="cuenta-item">
+            <span class="cuenta-label">Registrado el:</span>
+            <span class="cuenta-valor">@Model.RegistrationDate.ToString("dd/MM/yyyy")</span>
+        </div>
+        <div class="cuenta-item">
+            <span class="cuenta-label">Plan actual:</span>
+            <span class="cuenta-valor">@ViewBag.TipoCuenta</span>
         </div>
 
-        <div class="cuenta-acciones mt-4">
-            <a asp-action="Edit"  class="btn btn-primary me-2">✏️ Editar cuenta</a>
-
-            <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="d-inline ms-3">
-                <button type="submit" class="btn btn-outline-secondary">🚪 Cerrar sesión</button>
-            </form>
-        </div>
+        @if (Model.Subscription?.JoinCode != null)
+        {
+            <div class="cuenta-item">
+                <span class="cuenta-label">Código unión:</span>
+                <span class="cuenta-valor">@Model.Subscription.JoinCode</span>
+            </div>
+        }
     </div>
-</div>
+
+    <div class="cuenta-acciones mt-4">
+        <a asp-action="Edit" class="btn btn-primary me-2">Editar cuenta</a>
+        <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="d-inline ms-2">
+            <button type="submit" class="btn btn-outline-secondary">Cerrar sesión</button>
+        </form>
+    </div>
 
