@@ -9,6 +9,8 @@ paceOptions = {
 // Cuando Pace.js indica que la página ha terminado de cargar
 Pace.on('done', function () {
     // Animación 
+    gsap.to('.p', 1, {
+        // Animación 
         opacity: 0,   // Desvanecer los elementos '.p'
         y: '-15%',    // Moverlos ligeramente hacia arriba
         stagger: -.1, // Pequeño retraso entre cada elemento '.p' para un efecto escalonado
