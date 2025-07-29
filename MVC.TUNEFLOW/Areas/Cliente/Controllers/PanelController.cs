@@ -42,7 +42,6 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
             using var httpClient = new HttpClient();
 
-            // ✅ URL actualizada según tu mensaje
             var response = await httpClient.GetAsync($"https://localhost:7031/api/Countries/{paisId}/songs");
 
             if (!response.IsSuccessStatusCode)

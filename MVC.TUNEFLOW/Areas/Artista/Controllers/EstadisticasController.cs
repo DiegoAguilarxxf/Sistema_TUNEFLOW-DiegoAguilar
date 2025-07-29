@@ -49,9 +49,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             }
             catch(Exception ex)
             {
-                // Log the exception (ex) if necessary
                 ModelState.AddModelError("", "Unable to create statistics. Please try again.");
-                // Return the view with the model to show validation errors
                 return View(estadisticas);
     
             }
@@ -76,9 +74,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             }
             catch(Exception ex)
             {
-                // Log the exception (ex) if necessary
                 ModelState.AddModelError("", "Unable to update statistics. Please try again.");
-                // Return the view with the model to show validation errors
                 return View(estadisticas);
             }
         }
@@ -102,9 +98,9 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             }
             catch(Exception ex)
             {
-                // Log the exception (ex) if necessary
+
                 ModelState.AddModelError("", "Unable to delete statistics. Please try again.");
-                // Return the view with the model to show validation errors
+
                     return View(estadistica);
             }
         }
