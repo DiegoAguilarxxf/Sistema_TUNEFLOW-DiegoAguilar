@@ -24,12 +24,12 @@
 
                         <div class="d-grid gap-2">
                             
-                            <a href="/Artista/Albums/Edit/@item.Id" class="btn btn-warning btn-sm">✏️ Editar</a>
-                            <a href="/Artista/Albums/Details/@item.Id" class="btn btn-info btn-sm">ℹ️ Detalles</a>
+                            <a href="/Artista/Albums/Edit/@item.Id" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="/Artista/Albums/Details/@item.Id" class="btn btn-info btn-sm">Detalles</a>
 
                             <form asp-action="EliminarAlbum" method="post" onsubmit="return confirm('¿Estás seguro de eliminar este álbum?');">
                                 <input type="hidden" name="id" value="@item.Id" />
-                                <button type="submit" class="btn btn-danger btn-sm">🗑️ Eliminar</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                             </form>
                         </div>
                     </div>

@@ -2,73 +2,55 @@
 
 @{
     Layout = "~/Areas/Artista/Views/Shared/_LayoutArtista.cshtml";
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles de la Canción";
 }
-<div class="container">
-<h1>Details</h1>
 
-<div>
-    <h4>Song</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            Título
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            Duración
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Duration)
-        </dd>
-        <dt class = "col-sm-2">
-            Género
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Genre)
-        </dd>
-        <dt class = "col-sm-2">
-            Artista
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ArtistId)
-        </dd>
-        <dt class = "col-sm-2">
-            Album
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AlbumId)
-        </dd>
-        <dt class = "col-sm-2">
-            Audio Mp3
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FilePath)
-        </dd>
-        <dt class = "col-sm-2">
-            Contenido Explícito
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ExplicitContent)
-        </dd>
-        <dt class = "col-sm-2">
-            Portada
-        </dt>
-        <dd class = "col-sm-10">
-            <img src="@Model.ImagePath" />
-        </dd>
-        <dt class = "col-sm-2">
-            Fecha Lanzamiento
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReleaseDate)
-        </dd>
-    </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new {  id = Model.Id }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+<div class="container py-4">
+    <h2 class="text-primary mb-4">🎵 Detalles de la Canción</h2>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">Título:</dt>
+                <dd class="col-sm-8">@Model.Title</dd>
+
+                <dt class="col-sm-4">Duración:</dt>
+                <dd class="col-sm-8">@Model.TimeInMinutes(Model.Duration) min</dd>
+
+                <dt class="col-sm-4">Género:</dt>
+                <dd class="col-sm-8">@Model.Genre</dd>
+
+                <dt class="col-sm-4">Álbum:</dt>
+                <dd class="col-sm-8">
+                    @(Model.Album != null ? Model.Album.Title : "Single")
+                </dd>
+
+                <dt class="col-sm-4">Explícito:</dt>
+                <dd class="col-sm-8">
+                    @(Model.ExplicitContent ? "Sí" : "No")
+                </dd>
+
+                <dt class="col-sm-4">Lanzamiento:</dt>
+                <dd class="col-sm-8">@Model.ReleaseDate.ToString("dd MMM yyyy")</dd>
+
+                <dt class="col-sm-4">Audio:</dt>
+                <dd class="col-sm-8">
+                    <audio controls style="width: 100%;">
+                        <source src="@Model.FilePath" type="audio/mpeg" />
+                        Tu navegador no soporta audio.
+                    </audio>
+                </dd>
+            </dl>
+        </div>
+
+        <div class="col-md-6 text-center">
+            <img src="@Model.ImagePath" alt="Portada" class="img-fluid rounded shadow" style="max-height: 300px;" />
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+        </a>
+    </div>
 </div>

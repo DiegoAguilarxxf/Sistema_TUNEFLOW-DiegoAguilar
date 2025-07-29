@@ -58,6 +58,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                     cancion.Album = album;
                 }
             }
+            ViewBag.ErrorMessage = null;
             return View(canciones);
         }
 
@@ -146,12 +147,14 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 
                 estadistica.PublishedSongs = canciones - 1;
                 await Crud<ArtistStatistics>.UpdateAsync(estadistica.Id, estadistica);
+                ViewBag.ErrorMessage = null;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 // Log the exception (ex) if necessary
                 ModelState.AddModelError("", "Unable to delete song. Please try again.");
+                ViewBag.ErrorMessage = "No se pudo eliminar la canción, pertenece a un Álbum";
                 Console.WriteLine("No se puede eliminar la cancion");
                 return RedirectToAction(nameof(Index));
             }

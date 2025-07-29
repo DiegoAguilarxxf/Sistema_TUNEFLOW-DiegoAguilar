@@ -53,16 +53,18 @@ namespace API.TUNEFLOW.Controllers
         // PUT: api/Albums/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void Put(int id,[FromBody] Album album)
+        public ActionResult Put(int id, [FromBody] Album album)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open(); 
+            Console.WriteLine($"Actualizando álbum con ID: {id} y título: {album.Title}");
             connection.Execute(
                 @"UPDATE ""Albums"" SET 
                 ""Title"" = @Title, 
                 ""ReleaseDate"" = @ReleaseDate, 
                 ""Genre"" = @Genre, 
                ""CreationDate"" = @CreationDate, 
-                ""Descripction"" = @Description, 
+                ""Description"" = @Description, 
                 ""CoverPath"" = @CoverPath,
                 ""ArtistId"" = @ArtistId
                 WHERE ""Id"" = @Id",
@@ -78,6 +80,8 @@ namespace API.TUNEFLOW.Controllers
                     Id = id
 
                 });
+
+            return NoContent();
         }
 
         // POST: api/Albums

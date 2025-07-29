@@ -105,8 +105,11 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             
            
             var generos = await Crud<Genre>.GetAllAsync();
-            var opciones = string.Join("", generos.Select(g => $"<option value='{g.Name}'>{g.Name}</option>"));
-            ViewBag.GenerosOptions = opciones;
+            ViewBag.GenerosOptions = generos.Select(g => new SelectListItem
+            {
+                Text = g.Name,
+                Value = g.Name
+            }).ToList();
             var album= await Crud<Album>.GetByIdAsync(id); 
             ViewBag.Canciones = await GetCancionesPorAlbum(id);
             ViewBag.Album = album; 
@@ -117,19 +120,43 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         // POST: AlbumsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, Album album)
+        public async Task<ActionResult> Edit(int id, string Title, string Genre, string Description)
         {
             try
             {
-                ViewBag.Canciones = await GetCancionesPorAlbum(id);
-                await Crud<Album>.GetByIdAsync(id);
-                ViewBag.Album = album;
-                Crud<Album>.UpdateAsync(id, album);
+                Console.WriteLine($"Editando álbum con ID: {id}, Título: {Title}, Género: {Genre}, Descripción: {Description}");
+                var album = await Crud<Album>.GetByIdAsync(id);
+
+                var albumNuevo = new Album
+                {
+                    Id = id,
+                    Title = Title,
+                    Genre = Genre,
+                    Description = Description,
+                    ArtistId = album.ArtistId,
+                    CoverPath = album.CoverPath,
+                    ReleaseDate = album.ReleaseDate,
+                    CreationDate = album.CreationDate
+                };
+                Console.WriteLine($"Nuevo álbum: {JsonConvert.SerializeObject(albumNuevo)}");
+
+                await Crud<Album>.UpdateAsync(id, albumNuevo);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                // Log the exception (ex) if necessary
+                var album = await Crud<Album>.GetByIdAsync(id);
+
+                var generos = await Crud<Genre>.GetAllAsync();
+                ViewBag.GenerosOptions = generos.Select(g => new SelectListItem
+                {
+                    Text = g.Name,
+                    Value = g.Name
+                }).ToList();
+
+                ViewBag.Canciones = await GetCancionesPorAlbum(id);
+                ViewBag.Album = album;
+
                 ModelState.AddModelError("", "Unable to update album. Please try again.");
                 return View(album);
             }

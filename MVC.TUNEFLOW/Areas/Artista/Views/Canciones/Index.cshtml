@@ -13,11 +13,12 @@
 <h1>Mis Canciones</h1>
 
 <p>
-        <a href="/Artista/Canciones/SubirC?artistaId=@ViewBag.ArtistaId" class="btn btn-primary btn-sm">Subir Canción</a>
-
-
-
+        <a href="/Artista/Canciones/Subir?artistaId=@ViewBag.ArtistaId" class="btn btn-primary btn-sm">Subir Canción</a>
 </p>
+@if (ViewBag.ErrorMessage != null)
+{
+        <div class="alert alert-warning text-center">@ViewBag.ErrorMessage</div>
+}
 <table class="table">
     <thead>
         <tr>
@@ -58,9 +59,12 @@
                         <td>@(item.ExplicitContent ? "Sí" : "No")</td>
                         <td>@item.ReleaseDate.ToString("dd/MM/yyyy")</td>
                         <td>
-                            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                            <a href="/Artista/Canciones/Details?id=@item.Id" class="btn btn-primary btn-sm">
+                                Detalles
+                            </a>
+                            <a href="/Artista/Canciones/Delete?id=@item.Id" class="btn btn-primary btn-sm">
+                                Eliminar
+                            </a>
                         </td>
                     </tr>
                 }

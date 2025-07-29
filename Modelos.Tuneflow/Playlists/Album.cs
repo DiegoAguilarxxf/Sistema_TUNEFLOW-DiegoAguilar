@@ -18,7 +18,7 @@ namespace Modelos.Tuneflow.Playlists
         public DateTime CreationDate { get; set; } // Album creation date
         public string Description { get; set; } // Album description
         public string CoverPath { get; set; } // Path to the album cover image
-        public List<Song> Songs { get; set; } // List of songs that belong to this album
+        public List<Song>? Songs { get; set; } // List of songs that belong to this album
         public int ArtistId { get; set; } // Foreign key to the artist who created the album
         public Artist? Artist { get; set; } // Navigation property to the artist
     }
