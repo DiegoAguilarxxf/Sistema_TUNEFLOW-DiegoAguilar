@@ -50,10 +50,23 @@ namespace API.TUNEFLOW.Controllers
             return artistStatistics;
         }
 
+        [HttpGet("Estadisticas/Artista/{idArtista}")]
+        public ActionResult<ArtistStatistics> GetEstadisticasArtistaByArtistId(int idArtista)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+            var artistStatistics = connection.QuerySingle<ArtistStatistics>(@"SELECT * FROM ""ArtistsStatistics"" WHERE ""ArtistId"" = @Id", new { Id = idArtista });
+            if (artistStatistics == null)
+            {
+                return NotFound();
+            }
+            return artistStatistics;
+        }
+
         // PUT: api/EstadisticasArtistas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void PutEstadisticasArtista(int id, [FromBody] ArtistStatistics artistStatistics)
+        public async Task<IActionResult> PutEstadisticasArtista(int id, [FromBody] ArtistStatistics artistStatistics)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
             connection.Open();
@@ -72,7 +85,9 @@ namespace API.TUNEFLOW.Controllers
                PublishedSongs = artistStatistics.PublishedSongs,
                PublishedAlbums = artistStatistics.PublishedAlbums
            });
-            
+
+            return NoContent();
+
         }
 
         // POST: api/EstadisticasArtistas

@@ -75,7 +75,9 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
             [DataType(DataType.Date), Display(Name = "Fecha de Nacimiento")]
             public DateTime BirthDate { get; set; }
 
-            [Required, Display(Name = "Nombre Artístico")]
+            [Required(ErrorMessage = "El nombre artístico es obligatorio.")]
+            [Remote(action: "VerificarStageName", controller: "Registro", areaName: "Cliente", ErrorMessage = "Ya en uso", AdditionalFields = "Input.StageName")]
+            [Display(Name = "Nombre Artístico")]
             public string StageName { get; set; }
 
             [Required, Display(Name = "Género Musical")]
@@ -132,7 +134,7 @@ namespace MVC.TUNEFLOW.Areas.Identity.Pages.Account
                         IsActive = true,
                         RegistrationDate = DateTime.UtcNow,
                         Verified = false, // por defecto
-                        Password = Input.Password,
+                        Password = user.PasswordHash,
                         UserId = user.Id // Asignar el ID del usuario recién creado
                     };
 

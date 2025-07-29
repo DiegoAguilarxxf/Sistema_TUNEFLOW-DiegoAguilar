@@ -89,7 +89,9 @@ function mostrarNotificacion(mensaje, tipo = 'info') {
 // --- REPRODUCCIÓN ---
 async function reproducirCancion(id, titulo, url, portada, idCliente, tipo, tiempo = 0, autoPlay = true, artista = '') {
     
-    cancionEnReproduccion = { id, titulo, url, portada, tiempo, idCliente, artista, tipo};
+    cancionEnReproduccion = { id, titulo, url, portada, tiempo, idCliente, artista, tipo };
+
+    await actualizarReproduccion(id);
     
     clienteId = idCliente;
     if (cola.estaVacia()) {
@@ -279,6 +281,20 @@ function visualizarBotonesAvance() {
     document.getElementById('btn-playlists').style.display = 'block';
     document.getElementById('btnfavorito').style.display = 'block';
     document.getElementById('barraProgreso').style.pointerEvents = 'auto';
+}
+
+async function actualizarReproduccion(idCancion) {
+    var response = await fetch(`/Cliente/Reproductor/ActualizarEstadisticasReproduccion?idCancion=${idCancion}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: '{}' // aunque no necesites cuerpo, PUT necesita body
+    });
+
+    if (response.status == 204) {
+        console.log('Estadísticas de reproducción actualizadas correctamente.');
+    }
 }
 
 

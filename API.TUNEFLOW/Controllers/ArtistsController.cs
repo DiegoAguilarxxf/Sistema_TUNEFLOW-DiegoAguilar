@@ -66,6 +66,19 @@ namespace API.TUNEFLOW.Controllers
             return artista;
         }
 
+        [HttpGet("Comprobar/StageName/{stageName}")]
+        public async Task<ActionResult<bool>> ComprobarStageName(string stageName)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("TUNEFLOWContext"));
+            connection.Open();
+
+            var exists = await connection.ExecuteScalarAsync<int>(
+                @"SELECT COUNT(1) FROM ""Artists"" WHERE LOWER(""StageName"") = LOWER(@StageName)",
+                new { StageName = stageName });
+
+            return Ok(!(exists > 0));
+        }
+
         // PUT: api/Artistas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

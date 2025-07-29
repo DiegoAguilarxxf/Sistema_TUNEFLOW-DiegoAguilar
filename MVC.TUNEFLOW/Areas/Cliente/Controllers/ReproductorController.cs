@@ -10,6 +10,7 @@ using Modelos.Tuneflow.User;
 using Modelos.Tuneflow.Models;
 using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.Playlists;
+using Modelos.Tuneflow.User.Administration;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -136,7 +137,8 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
         // Obtiene una canción aleatoria, la agrega a la lista de sesión y devuelve sus datos en JSON.
         [HttpGet]
         public async Task<IActionResult> SiguienteCancion()
-        { Console.WriteLine("ENtro al metodo SiguienteCancion");
+        {
+            Console.WriteLine("ENtro al metodo SiguienteCancion");
             try
             {
                 var cancion = await _httpClient.GetFromJsonAsync<Song>("songs/Random");
@@ -196,7 +198,8 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
         [HttpGet]
         public IActionResult CancionAnterior()
-        { Console.WriteLine("Entrando al método CancionAnterior");
+        {
+            Console.WriteLine("Entrando al método CancionAnterior");
             var lista = ObtenerListaDeSesion();
             if (lista == null || !lista.Any())
             {
@@ -552,6 +555,37 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
             {
                 Console.WriteLine($"Error al obtener canciones aleatorias: {ex.Message}");
                 return StatusCode(500, "Error interno del servidor al obtener canciones aleatorias.");
+            }
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> ActualizarEstadisticasReproduccion(int idCancion)
+        {
+            try
+            {
+                var cancion = await Crud<Song>.GetByIdAsync(idCancion);
+                if (cancion == null)
+                {
+                    return NotFound("Canción no encontrada.");
+                }
+                var artista = await Crud<Modelos.Tuneflow.User.Production.Artist>.GetByIdAsync(cancion.ArtistId);
+                if (artista == null)
+                {
+                    return NotFound("Artista no encontrado.");
+                }
+                var estadistica = await Crud<ArtistStatistics>.GetArtistStatisticsByArtist(artista.Id);
+
+                var reproducciones = estadistica.TotalPlays;
+
+                estadistica.TotalPlays = reproducciones + 1;
+
+                var newEstadistica = await Crud<ArtistStatistics>.UpdateAsync(estadistica.Id, estadistica);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener canciones por álbum: {ex.Message}");
+                return StatusCode(500, "Error interno del servidor al obtener canciones por álbum.");
             }
         }
     }

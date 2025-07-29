@@ -539,9 +539,54 @@ namespace API.Consumer
                 }
             }
         }
-        
 
-
+        public static async Task<ArtistStatistics> GetArtistStatisticsByArtist(int artistId)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"{EndPoint}/Estadisticas/Artista/{artistId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<ArtistStatistics>(json);
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontraron estadísticas para el artista");
+                    return new ArtistStatistics();
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return new ArtistStatistics();
+                }
+            }
         }
+
+        public static async Task<bool> ComprobarSiStageNameExiste(string stageName)
+        {
+            using (var client = new HttpClient())
+            {
+                var url = $"{EndPoint}/Comprobar/StageName/{Uri.EscapeDataString(stageName)}";
+                var response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<bool>(json);
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("No se encontró el Stage Name");
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine($"Error en llamada API: {response.StatusCode}");
+                    return false;
+                }
+            }
+        }
+
     }
+}
 
