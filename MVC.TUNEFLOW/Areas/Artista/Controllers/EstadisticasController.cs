@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Modelos.Tuneflow.User.Administration;
+using System.Security.Claims;
 
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
@@ -13,8 +14,14 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         // GET: EstadisticasController
         public async Task<ActionResult> Index()
         {
-            var estadisticas = await Crud<ArtistStatistics>.GetAllAsync();
-            return View(estadisticas);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var artista = await Crud<Modelos.Tuneflow.User.Production.Artist>.GetArtistaPorUsuarioId(userId);
+            var estadistica = await Crud<ArtistStatistics>.GetArtistStatisticsByArtist(artista.Id);
+            return View(estadistica);
         }
 
         // GET: EstadisticasController/Details/5

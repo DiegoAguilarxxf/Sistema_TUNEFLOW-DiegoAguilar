@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Modelos.Tuneflow.Media;
 using Modelos.Tuneflow.Models;
 using Modelos.Tuneflow.Playlists;
+using Modelos.Tuneflow.User.Administration;
 using Modelos.Tuneflow.User.Production;
 using MVC.TUNEFLOW.Services;
 using Newtonsoft.Json;
@@ -162,8 +163,8 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubirAlbum(
-                    IFormFile archivoImagenAlbum,int artistaId,string tituloAlbum,string generoAlbum, string descripcionAlbum,
-    List<IFormFile> archivosCanciones, List<string> titulosCanciones)      
+        IFormFile archivoImagenAlbum,int artistaId,string tituloAlbum,string generoAlbum, string descripcionAlbum,
+         List<IFormFile> archivosCanciones, List<string> titulosCanciones)      
         {
             Console.WriteLine("Artista id: " + artistaId);
             var generos = await Crud<Genre>.GetAllAsync();
@@ -213,6 +214,11 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                     CreationDate = DateTime.UtcNow,
                     Songs = new List<Song>()
                 };
+                var estatistica = await Crud<ArtistStatistics>.GetArtistStatisticsByArtist(artistaId);
+                var numeroSongs = estatistica.PublishedSongs;
+                int canciones = 0;
+
+                var albumCreado = await Crud<Album>.CreateAsync(nuevoAlbum);
 
                 for (int i = 0; i < archivosCanciones.Count; i++)
                 {
@@ -233,6 +239,7 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                         Title = tituloCancion,
                         FilePath = urlCancion,
                         ArtistId = artistaId,
+                        AlbumId = albumCreado.Id, // Asignar el ID del álbum recién creado
                         Duration = duracion,
                         Genre = generoAlbum,
                         ImagePath = urlImagenAlbum,
@@ -241,11 +248,21 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                         ExplicitContent = false 
                     };
 
+                    var cancionCreada = await Crud<Song>.CreateAsync(nuevaCancion);
+
+                    canciones++;
+
                     nuevoAlbum.Songs.Add(nuevaCancion);
                 }
 
                
-                var albumCreado = await Crud<Album>.CreateAsync(nuevoAlbum);
+                
+                
+                var numeroAlbums = estatistica.PublishedAlbums;
+                estatistica.PublishedAlbums = numeroAlbums + 1;
+                var numeroCanciones = estatistica.PublishedSongs;
+                estatistica.PublishedSongs = numeroCanciones + canciones;
+                await Crud<ArtistStatistics>.UpdateAsync(estatistica.Id, estatistica);
 
                 if (albumCreado == null)
                 {
@@ -300,6 +317,22 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
         {
             try
             {
+                // Primero, obtenemos el álbum para asegurarnos de que existe
+                var album = await Crud<Album>.GetByIdAsync(id);
+                var canciones = await GetCancionesPorAlbum(album.Id);
+
+                int varNumeroCanciones = 0;
+                // Eliminar las canciones asociadas al álbum
+                foreach (var cancion in canciones)
+                {
+                    await Crud<Song>.DeleteAsync(cancion.Id);
+                    varNumeroCanciones++;
+                }
+                var estadistica = await Crud<ArtistStatistics>.GetArtistStatisticsByArtist(album.ArtistId);
+                var numeroAlbums = estadistica.PublishedAlbums;
+                estadistica.PublishedAlbums = numeroAlbums - 1;
+                estadistica.PublishedSongs = estadistica.PublishedSongs - varNumeroCanciones;
+                await Crud<ArtistStatistics>.UpdateAsync(estadistica.Id, estadistica);
                 await Crud<Album>.DeleteAsync(id);
                 return RedirectToAction("Index"); 
             }

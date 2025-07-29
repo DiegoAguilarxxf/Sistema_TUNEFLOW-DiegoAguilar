@@ -540,8 +540,8 @@ namespace API.Consumer
             }
         }
 
-        public static async Task<ArtistStatistics> GetArtistStatisticsByArtist(int artistId)
-        {
+        public static async Task<ArtistStatistics>GetArtistStatisticsByArtist(int artistId)
+        { 
             using (var client = new HttpClient())
             {
                 var response = await client.GetAsync($"{EndPoint}/Estadisticas/Artista/{artistId}");

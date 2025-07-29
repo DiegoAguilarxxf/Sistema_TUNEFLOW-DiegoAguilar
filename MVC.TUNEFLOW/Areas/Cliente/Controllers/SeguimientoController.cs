@@ -6,6 +6,7 @@ using System.Security.Claims;
 using Modelos.Tuneflow.User.Consumer;
 using Modelos.Tuneflow.User.Production;
 using Modelos.Tuneflow.User.Profiles;
+using Modelos.Tuneflow.User.Administration;
 
 namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 {
@@ -63,6 +64,13 @@ namespace MVC.TUNEFLOW.Areas.Cliente.Controllers
 
                 await Crud<Follow>.CreateAsync(nuevoSeguimiento);
             }
+
+            var estadistica = await Crud<ArtistStatistics>.GetArtistStatisticsByArtist(id);
+
+            var seguimientos = estadistica.TotalFollowers;
+            estadistica.TotalFollowers = seguimientos + 1;
+
+            await Crud<ArtistStatistics>.UpdateAsync(estadistica.Id, estadistica);
 
             return RedirectToAction("Index", "Perfil", new { area = "Artista", id = id });
         }
@@ -156,6 +164,10 @@ public async Task<ActionResult> DejarSeguir(int artistId)
 
         if (eliminado)
         {
+            var estadistica = await Crud<ArtistStatistics>.GetArtistStatisticsByArtist(artistId);
+            var seguimientoEstadistica = estadistica.TotalFollowers;
+            estadistica.TotalFollowers = seguimientoEstadistica - 1;
+            await Crud<ArtistStatistics>.UpdateAsync(estadistica.Id, estadistica);
             Console.WriteLine($"Seguimiento eliminado para el artista con ID: {artistId}");
             return RedirectToAction("Index", "Perfil", new { area = "Artista", id = artistId, idCliente = client.Id });
         }

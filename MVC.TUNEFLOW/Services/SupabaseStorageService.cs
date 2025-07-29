@@ -241,33 +241,32 @@ namespace MVC.TUNEFLOW.Services
             Console.WriteLine($"Carpeta '{artistaClean}' creada correctamente en el bucket '{_bucket}'.");
         }
 
-        public async Task EliminarCancionAsync(string urlCancion, string nombreArtista)
+        public async Task EliminarCancionAsync(string urlCancion)
         {
             if (string.IsNullOrWhiteSpace(urlCancion))
                 throw new ArgumentException("La URL de la canción no puede estar vacía");
 
-            if (string.IsNullOrWhiteSpace(nombreArtista))
-                throw new ArgumentException("El nombre del artista no puede estar vacío");
-
-            // Limpiar nombre del artista igual que en subir para evitar problemas
-            var artistaClean = Regex.Replace(nombreArtista, @"[^a-zA-Z0-9_\-]", "");
-
-            // Extraer el nombre del archivo de la URL
-            // La URL tiene este formato: https://<supabaseUrl>/storage/v1/object/public/<bucket>/<artista>/<archivo>
-            // Queremos obtener solo "<archivo>"
             var uri = new Uri(urlCancion);
             var segments = uri.Segments;
 
             if (segments.Length < 5)
                 throw new ArgumentException("La URL no tiene el formato esperado");
 
-            // Último segmento es el nombre del archivo
-            var nombreArchivo = segments[^1].Trim('/');
+            // Construir ruta relativa a partir de la url
+            // Ejemplo: /storage/v1/object/public/bucket/artista/archivo.mp3
+            // Queremos obtener "artista/archivo.mp3"
 
-            // Construir la ruta del archivo en el bucket
-            var filePath = $"{artistaClean}/{nombreArchivo}";
+            // Aquí saltamos los primeros segmentos que corresponden al host y a /storage/v1/object/public/<bucket>/
+            // Si sabemos que el bucket es fijo, podemos hacer algo así:
 
-            var response = await _httpClient.DeleteAsync($"/storage/v1/object/{_bucket}/{filePath}");
+            var bucketIndex = Array.FindIndex(segments, s => s.Trim('/').Equals(_bucket, StringComparison.OrdinalIgnoreCase));
+            if (bucketIndex == -1 || bucketIndex + 1 >= segments.Length)
+                throw new ArgumentException("La URL no contiene la información del bucket correctamente");
+
+            // La ruta relativa dentro del bucket es todo lo que sigue después del bucket
+            var rutaRelativa = string.Join("", segments.Skip(bucketIndex + 1)).Trim('/');
+
+            var response = await _httpClient.DeleteAsync($"/storage/v1/object/{_bucket}/{rutaRelativa}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -275,7 +274,7 @@ namespace MVC.TUNEFLOW.Services
                 throw new Exception($"Error al eliminar la canción en Supabase (Status: {response.StatusCode}): {error}");
             }
 
-            Console.WriteLine($"Canción '{filePath}' eliminada correctamente del bucket '{_bucket}'.");
+            Console.WriteLine($"Canción '{rutaRelativa}' eliminada correctamente del bucket '{_bucket}'.");
         }
 
 

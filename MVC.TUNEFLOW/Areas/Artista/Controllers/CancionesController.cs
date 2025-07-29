@@ -11,6 +11,8 @@ using Npgsql;
 using Dapper;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Modelos.Tuneflow.Models;
+using Modelos.Tuneflow.User.Administration;
+using Modelos.Tuneflow.Playlists;
 
 namespace MVC.TUNEFLOW.Areas.Artista.Controllers
 {
@@ -46,14 +48,30 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             ViewBag.ArtistaId = artista.Id;
 
             var canciones = await Crud<Song>.GetCancionesPorArtistaId(artista.Id);
+
+            foreach(var cancion in canciones)
+            {
+                if(cancion.AlbumId != null)
+                {
+                    int albumId = (int)cancion.AlbumId;
+                    var album = await Crud<Album>.GetByIdAsync(albumId);
+                    cancion.Album = album;
+                }
+            }
             return View(canciones);
         }
 
 
         // GET: CancionesController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            var cancion = Crud<Song>.GetByIdAsync(id);
+            var cancion = await Crud<Song>.GetByIdAsync(id);
+            if(cancion.Id != null)
+            {
+                int albumId = (int)cancion.AlbumId;
+                var album = await Crud<Album>.GetByIdAsync(albumId);
+                cancion.Album = album;
+            }
             return View(cancion);
         }
 
@@ -107,31 +125,46 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
             }
         }
 
-        // GET: CancionesController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            var cancion = Crud<Song>.GetByIdAsync(id);
-            return View(cancion);
-        }
-
-        // POST: CancionesController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, Song cancion)    
+        public async Task<ActionResult> Delete(int id)    
         {
             try
             {
-                Crud<Song>.DeleteAsync(id);
+                
+                var song = await Crud<Song>.GetByIdAsync(id);
+                var artista = await Crud<Artist>.GetByIdAsync(song.ArtistId);
+                string url = song.FilePath;
+                string urlImagen = song.ImagePath;
+                string nombre = artista.StageName;
+
+                await _supaCancion.EliminarCancionAsync(url);
+                var eliminado = await _supaImagen.EliminarArchivoAsync(urlImagen);
+
+                await Crud<Song>.DeleteAsync(id);
+
+                var estadistica = await Crud<ArtistStatistics>.GetArtistStatisticsByArtist(song.ArtistId);
+                var canciones = estadistica.PublishedSongs;
+
+                estadistica.PublishedSongs = canciones - 1;
+                await Crud<ArtistStatistics>.UpdateAsync(estadistica.Id, estadistica);
                 return RedirectToAction(nameof(Index));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // Log the exception (ex) if necessary
                 ModelState.AddModelError("", "Unable to delete song. Please try again.");
-     
-                return View();
+                Console.WriteLine("No se puede eliminar la cancion");
+                return RedirectToAction(nameof(Index));
             }
         }
+
+        [HttpGet]
+        public async Task<ActionResult> Subir(int artistaId)
+        {
+            ViewBag.ArtistaId = artistaId;
+            ViewBag.Generos = await GetGenerosAsync();
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubirCancion(IFormFile archivoCancion, IFormFile archivoImagen, int artistaId, string Title,string Genre, bool ExplicitContent)
@@ -182,6 +215,10 @@ namespace MVC.TUNEFLOW.Areas.Artista.Controllers
                     return RedirectToAction("SubirCancion", new { artistaId = artistaId });
                 }
 
+                var estadistica = await Crud<ArtistStatistics>.GetArtistStatisticsByArtist(artistaId);
+                var numeroCanciones = estadistica.PublishedSongs;
+                estadistica.PublishedSongs = numeroCanciones + 1;
+                await Crud<ArtistStatistics>.UpdateAsync(estadistica.Id, estadistica);
                 Console.WriteLine("Canción subida correctamente");
                 TempData["Success"] = "Canción subida correctamente.";
                 return RedirectToAction("Index", "Canciones", new {area = "Artista"});

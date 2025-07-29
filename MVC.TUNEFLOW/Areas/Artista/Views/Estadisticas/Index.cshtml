@@ -1,57 +1,55 @@
-﻿@model IEnumerable<Modelos.Tuneflow.User.Administration.ArtistStatistics>
+﻿@model Modelos.Tuneflow.User.Administration.ArtistStatistics
 
 @{
     Layout = "~/Areas/Artista/Views/Shared/_LayoutArtista.cshtml";
-    ViewData["Title"] = "Estadisticas";
+    ViewData["Title"] = "Estadísticas del Artista";
 }
 
-<h1>Mis Estadisticas</h1>
+<div class="container py-5">
+    <h2 class="text-center mb-4 text-primary">Estadísticas Generales</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Artista
-            </th>
-            <th>
-                Total Reproduciones
-            </th>
-            <th>
-                Total Seguidores
-            </th>
-            <th>
-                Canciones Publicadas
-            </th>
-            <th>
-                Albums Publicados
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Artist.StageName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalPlays)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalFollowers)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PublishedSongs)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PublishedAlbums)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary">Reproducciones Totales</h5>
+                    <p class="display-6 fw-bold">@Model.TotalPlays</p>
+                    <i class="bi bi-play-circle-fill text-primary fs-2"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary">Seguidores</h5>
+                    <p class="display-6 fw-bold">@Model.TotalFollowers</p>
+                    <i class="bi bi-people-fill text-primary fs-2"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary">Canciones Publicadas</h5>
+                    <p class="display-6 fw-bold">@Model.PublishedSongs</p>
+                    <i class="bi bi-music-note-beamed text-primary fs-2"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary">Álbumes Publicados</h5>
+                    <p class="display-6 fw-bold">@Model.PublishedAlbums</p>
+                    <i class="bi bi-disc-fill text-primary fs-2"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end mt-4">
+        <a href="~/Artista/Panel/Panel" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left-circle"></i> Volver al Panel
+        </a>
+    </div>
+</div>
